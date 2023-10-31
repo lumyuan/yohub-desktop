@@ -1,5 +1,7 @@
 # yohub-desktop
- 一个基于Jetpack Compose For Desktop实现的Android手机工具箱--桌面版
+[<img src="resources/ic_launcher_logo.png" width="200"/>](https://yohub.cn)
+ 
+一个基于Jetpack Compose For Desktop实现的Android手机工具箱--桌面版
 
 ## 特性
 - [x] 自动识别Android设备
@@ -28,7 +30,7 @@
 
 ## 功能持续开发中，敬请期待
 
-## 版权与许可
-<div>© Copyright @ 2023 优谭云网络科技 All Rights Reserved</div>
+## Logo版权与许可
+© Copyright @ 2023 优谭云网络科技 All Rights Reserved
 
 LICENSE: [Apache 2.0](LICENSE)
