@@ -10,6 +10,12 @@
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
+# Build cache
+build/**
+
+# Gradle cache
+.gradle/**
+
 # Package Files #
 #*.jar
 #*.war
