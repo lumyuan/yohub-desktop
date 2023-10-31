@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: org.jetbrains.compose.material:material-ripple-desktop:1.4.1" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="org.jetbrains.compose.material" artifactId="material-ripple-desktop" version="1.4.1" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.compose.material/material-ripple-desktop/1.4.1/4c42972aefc0908954af022d213e4c6d00daf288/material-ripple-desktop-1.4.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.compose.material/material-ripple-desktop/1.4.1/ae0b445c3efee5647378e42ddd370004f2e99bd6/material-ripple-desktop-1.4.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

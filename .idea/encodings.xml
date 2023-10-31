@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding" defaultCharsetForPropertiesFiles="GBK">
+    <file url="file://$PROJECT_DIR$/build.gradle.kts" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/common/shell/KeepShell.kt" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/common/shell/KeepShellPublic.kt" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/common/utils/ZipUtils.kt" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/ui/component/Button.kt" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/ui/component/SideNav.kt" charset="UTF-8" />
+    <file url="PROJECT" charset="GBK" />
+  </component>
+</project>

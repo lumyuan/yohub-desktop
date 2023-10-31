@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: org.jetbrains.skiko:skiko-awt-runtime-windows-x64:0.7.63" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="org.jetbrains.skiko" artifactId="skiko-awt-runtime-windows-x64" version="0.7.63" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.skiko/skiko-awt-runtime-windows-x64/0.7.63/a1e930529804f43fff759466a08acdafcc8909a1/skiko-awt-runtime-windows-x64-0.7.63.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.skiko/skiko-awt-runtime-windows-x64/0.7.63/19f637a6670c95c09fa67e4d1a6dabf0eb7f3a3a/skiko-awt-runtime-windows-x64-0.7.63-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

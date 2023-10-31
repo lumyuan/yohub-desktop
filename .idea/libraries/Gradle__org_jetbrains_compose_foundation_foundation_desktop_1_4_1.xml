@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: org.jetbrains.compose.foundation:foundation-desktop:1.4.1" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="org.jetbrains.compose.foundation" artifactId="foundation-desktop" version="1.4.1" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.compose.foundation/foundation-desktop/1.4.1/3af50bcd26973491ed32b251d234fae55c0b3c97/foundation-desktop-1.4.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.compose.foundation/foundation-desktop/1.4.1/d9a7f4d00365f4eebd8db74d45312fb575d95944/foundation-desktop-1.4.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

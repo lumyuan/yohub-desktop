@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: org.jetbrains.compose.material:material-icons-extended-desktop:1.4.1" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="org.jetbrains.compose.material" artifactId="material-icons-extended-desktop" version="1.4.1" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.compose.material/material-icons-extended-desktop/1.4.1/3d7960ddfae216b09945f4dc54d3c632bf87e12a/material-icons-extended-desktop-1.4.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.compose.material/material-icons-extended-desktop/1.4.1/d125d6d3499b6eac23023ee19c7b17d9639a6cba/material-icons-extended-desktop-1.4.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

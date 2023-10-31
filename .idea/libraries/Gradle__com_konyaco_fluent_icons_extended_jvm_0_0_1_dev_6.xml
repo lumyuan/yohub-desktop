@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: com.konyaco:fluent-icons-extended-jvm:0.0.1-dev.6" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="com.konyaco" artifactId="fluent-icons-extended-jvm" version="0.0.1-dev.6" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.konyaco/fluent-icons-extended-jvm/0.0.1-dev.6/5c1817cae5565b63b03b40d25a113ed6a1377bff/fluent-icons-extended-jvm-0.0.1-dev.6.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.konyaco/fluent-icons-extended-jvm/0.0.1-dev.6/90e3cbe7704a98e1d1672e506972805f5d3c84f/fluent-icons-extended-jvm-0.0.1-dev.6-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

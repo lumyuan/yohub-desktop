@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="Gradle: com.mayakapps.compose:window-styler-jvm:0.3.2" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="com.mayakapps.compose" artifactId="window-styler-jvm" version="0.3.2" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.mayakapps.compose/window-styler-jvm/0.3.2/e1f6e778926d10c3b84b6280b70cb4b7333ee7af/window-styler-jvm-0.3.2.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.mayakapps.compose/window-styler-jvm/0.3.2/a495217e99580181e2bcc6d280e225ea908bc726/window-styler-jvm-0.3.2-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.mayakapps.compose/window-styler-jvm/0.3.2/2d54dd96864422b1b2677417e9f79da48de81ead/window-styler-jvm-0.3.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: com.konyaco:fluent-jvm:0.0.1-dev.6" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="com.konyaco" artifactId="fluent-jvm" version="0.0.1-dev.6" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.konyaco/fluent-jvm/0.0.1-dev.6/734862908b93bb77a0edc49e01331e7295891cc6/fluent-jvm-0.0.1-dev.6.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.konyaco/fluent-jvm/0.0.1-dev.6/94bb47d7c72b9fe335ef33806dcb6a98fa520669/fluent-jvm-0.0.1-dev.6-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
