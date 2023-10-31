@@ -28,3 +28,6 @@
 
 ## 功能持续开发中，敬请期待
 
+## 版权与许可
+<div>© Copyright @ 2023 优谭云网络科技 All Rights Reserved</div>
+<div>LICENSE: [Apache 2.0](LICENSE)</div>
