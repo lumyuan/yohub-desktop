@@ -17,16 +17,16 @@
 - [ ] 提取Apk（待实现）
 - [ ] 更多特性欢迎您的提案
 
-## 贡献者
-<a href="https://github.com/lumyuan/yohub-desktop/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=lumyuan/yohub-desktop"/>
-</a>
-
 ## 程序截图（DEV-1.0.0）
 ![](resources/md/app_screenshot_1.png)
 
 ## 讨论
 * QQ群：945339560
+
+## 贡献者
+<a href="https://github.com/lumyuan/yohub-desktop/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=lumyuan/yohub-desktop"/>
+</a>
 
 ## 功能持续开发中，敬请期待
 
