@@ -12,11 +12,14 @@ import java.io.FileOutputStream
 
 val LocalPreferences = compositionLocalOf<PreferencesStore> { error("Not provided.") }
 
+enum class PreferencesName {
+    DARK_MODEL
+}
+
 class PreferencesStore(
     fileDir: File,
-    val preference: SnapshotStateMap<String, Any?>
+    val preference: SnapshotStateMap<String, String?>
 ) {
-
     /**
      * 加载数据
      */
@@ -32,7 +35,7 @@ class PreferencesStore(
             config = "{}"
         }
         preference.clear()
-        preference.putAll(gson.fromJson(config, object : TypeToken<Map<String, Any?>>() {}.type))
+        preference.putAll(gson.fromJson(config, object : TypeToken<Map<String, String?>>() {}.type))
     }
 
     /**

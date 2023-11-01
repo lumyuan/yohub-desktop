@@ -22,6 +22,7 @@ import io.lumstudio.yohub.ui.component.Dialog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.jetbrains.skiko.hostOs
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -38,20 +39,21 @@ fun DeviceScreen() {
     ) {
         val selectDevice = deviceStore.device
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-            val flowRowScope = this
-            InfoItem(
-                onClick = {
-                    if (!driverStore.isInstall) {
-                        CoroutineScope(Dispatchers.IO).launch {
-                            fastbootDriverStore.install()
+            when {
+                hostOs.isWindows -> InfoItem(
+                    onClick = {
+                        if (!driverStore.isInstall) {
+                            CoroutineScope(Dispatchers.IO).launch {
+                                fastbootDriverStore.install()
+                            }
                         }
+                    },
+                    icon = {
+                        Icon(Icons.Default.DeviceEq, null, modifier = Modifier.fillMaxSize())
                     }
-                },
-                icon = {
-                    Icon(Icons.Default.DeviceEq, null, modifier = Modifier.fillMaxSize())
+                ) {
+                    Text("驱动状态：${if (driverStore.isInstall) "正常" else "异常（点击修复）"}")
                 }
-            ) {
-                Text("驱动状态：${if (driverStore.isInstall) "正常" else "异常（点击修复）"}")
             }
 
             InfoItem(

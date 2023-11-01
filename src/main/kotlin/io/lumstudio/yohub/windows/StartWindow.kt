@@ -54,23 +54,25 @@ fun StartWindow() {
         size = DpSize(300.dp, 200.dp)
     )
 
+    val contextStore = remember { ContextStore() }
+    val preference = remember { mutableStateMapOf<String, String?>() }
+    val preferencesStore = remember { PreferencesStore(contextStore.fileDir, preference) }
+
     //监听窗口变化
     LaunchedEffect(floatState) {
+        preferencesStore.loadPreference()
         snapshotFlow { floatState.value }
             .onEach { windowState.size = DpSize(400.dp, 300.dp) * it }
             .launchIn(this)
     }
 
     val coroutineScope = remember { IOCoroutine() }
-    val contextStore = remember { ContextStore() }
-    val preference = remember { mutableStateMapOf<String, Any?>() }
-    val preferencesStore = remember { PreferencesStore(contextStore.fileDir, preference) }
     val runtimeStore = remember { RuntimeStore(contextStore.fileDir) }
     val deviceStore = remember { DeviceStore() }
     val adbRuntimeStore = remember { AdbStore(runtimeStore.runtimeFile, deviceStore) }
     val pythonStore = remember { PythonStore(runtimeStore.runtimeFile) }
     val payloadDumperStore = remember { PayloadDumperStore(runtimeStore.runtimeFile) }
-    val magiskPatcherStore = remember { MagiskPatcherStore(runtimeStore.runtimeFile) }
+    val magiskPatcherStore = remember { MagiskPatcherStore(pythonStore.pythonHostFile) }
 
     val driverStore = remember { DriverStore() }
 
@@ -118,12 +120,18 @@ fun StartWindow() {
         LocalDevices provides devicesStore,
         LocalDriver provides driverStore
     ) {
+        InitProperties()
         if (!isFinished) {
             LoadUI(isFinishedAnimatable, windowState)
         } else {
             MainUI()
         }
     }
+}
+
+@Composable
+private fun InitProperties() {
+
 }
 
 /**
@@ -201,7 +209,6 @@ private fun LoadConfigurations(
     isFinishedAnimatable: MutableState<Boolean>,
     tipText: MutableState<String>
 ) {
-    val preferencesStore = LocalPreferences.current
     val adbStore = LocalAdbRuntime.current
     val pythonStore = LocalPythonRuntime.current
     val payloadDumperStore = LocalPayloadDumperRuntime.current
@@ -216,10 +223,6 @@ private fun LoadConfigurations(
         ) {
             tipText.value = "准备中..."
             delay(1000)
-            run {
-                tipText.value = "加载核心配置..."
-                preferencesStore.loadPreference()
-            }
             run {
                 tipText.value = "开始初始化ADB环境..."
                 adbStore.installRuntime(

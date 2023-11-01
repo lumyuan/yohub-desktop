@@ -30,6 +30,7 @@ import io.lumstudio.yohub.runtime.LocalRuntime
 import io.lumstudio.yohub.runtime.PayloadDumperStore
 import io.lumstudio.yohub.runtime.RuntimeStore
 import io.lumstudio.yohub.ui.component.LocalExpand
+import io.lumstudio.yohub.ui.component.Toolbar
 import io.lumstudio.yohub.ui.component.TooltipText
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -42,7 +43,7 @@ import java.io.FilenameFilter
 import javax.swing.JFrame
 
 @Composable
-fun PayloadScreen() {
+fun PayloadScreen(payloadPage: PayloadPage) {
     val keepShellStore = LocalKeepShell.current
     val payloadDumperStore = LocalPayloadDumperRuntime.current
 
@@ -60,14 +61,7 @@ fun PayloadScreen() {
         Column(
             modifier = Modifier.fillMaxHeight().verticalScroll(scrollState).padding(16.dp)
         ) {
-            val visible = LocalExpand.current
-            AnimatedVisibility(!visible) {
-                Text(
-                    "Payload镜像提取",
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-            }
+            Toolbar(payloadPage.label)
             TargetPathEditor(targetPath, outPath, fileDialog)
             Spacer(modifier = Modifier.size(8.dp))
             OutputPathEditor(targetPath, outPath)
@@ -134,6 +128,8 @@ private fun TargetPathEditor(targetPath: MutableState<String>, outPath: MutableS
                 if (fileDialog.file?.endsWith(".bin") == true) {
                     targetPath.value = fileDialog.directory + fileDialog.file
                     outPath.value = fileDialog.directory + "images"
+                }else {
+                    sendNotice("选择失败", "不受支持的文件类型：${fileDialog.file}")
                 }
             },
             shape = RoundedCornerShape(8.dp)
@@ -145,7 +141,7 @@ private fun TargetPathEditor(targetPath: MutableState<String>, outPath: MutableS
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun OutputPathEditor(targetPath: MutableState<String>, outPath: MutableState<String>) {
+private fun ColumnScope.OutputPathEditor(targetPath: MutableState<String>, outPath: MutableState<String>) {
     AnimatedVisibility(targetPath.value.endsWith(".bin") && File(targetPath.value).exists()) {
         Column(
             modifier = Modifier.fillMaxSize()
@@ -161,7 +157,7 @@ private fun OutputPathEditor(targetPath: MutableState<String>, outPath: MutableS
                         Text("镜像文件提取路径")
                     },
                     singleLine = true,
-                    enabled = false,
+                    readOnly = true,
                     textStyle = MaterialTheme.typography.labelMedium.copy(fontFamily = FontFamily(Font(R.font.jetBrainsMonoRegular))),
                     modifier = Modifier.fillMaxWidth().weight(1f),
                 )

@@ -6,19 +6,15 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.filled.TabletAndroid
-import androidx.compose.material.icons.outlined.Android
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.DpSize
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPosition
@@ -26,6 +22,7 @@ import androidx.compose.ui.window.rememberWindowState
 import com.konyaco.fluent.component.NavigationItemSeparator
 import com.konyaco.fluent.icons.Icons
 import com.konyaco.fluent.icons.regular.*
+import io.appoutlet.karavel.Karavel
 import io.lumstudio.yohub.R
 import io.lumstudio.yohub.common.LocalApplication
 import io.lumstudio.yohub.common.shell.LocalKeepShell
@@ -35,8 +32,6 @@ import io.lumstudio.yohub.theme.MicaTheme
 import io.lumstudio.yohub.ui.component.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.awt.Dimension
@@ -57,46 +52,32 @@ fun MainUI() {
         icon = painterResource(R.icon.logoRound),
         onCloseRequest = {
             CoroutineScope(Dispatchers.IO).launch {
-                applicationScope.exitApplication()
                 keepShellStore cmd adbStore.adbDevice(null, "kill-server")
+                applicationScope.exitApplication()
                 exitProcess(0)
             }
         },
         state = windowState,
     ) {
         window.minimumSize = Dimension(800, 600)
-
+        val navs = PageNav.values().toList().filter { it != PageNav.Settings }
+        val karavel by remember { mutableStateOf(Karavel(navs.first().page)) }
         MicaTheme {
-
             Row(modifier = Modifier.fillMaxSize()) {
                 var expanded by remember { mutableStateOf(true) }
-                val (selectedItem, setSelectedItem) = remember {
-                    mutableStateOf(navs.first())
-                }
-                var selectedItemWithContent by remember {
-                    mutableStateOf(selectedItem)
-                }
-
-                LaunchedEffect(selectedItem) {
-                    if (selectedItem.content != null) {
-                        selectedItemWithContent = selectedItem
-                    }
-                }
-
                 SideNav(
                     modifier = Modifier.fillMaxHeight(),
                     expanded = expanded,
                     onExpandStateChange = { expanded = it },
                     footer = {
-                        NavigationItem(selectedItem, setSelectedItem, settingItem)
+                        NavigationItem(karavel, PageNav.Settings.page, false)
                     }
                 ) {
                     DevicesItem()
                     navs.forEach { navItem ->
-                        NavigationItem(selectedItem, setSelectedItem, navItem)
+                        NavigationItem(karavel, navItem.page)
                     }
                 }
-
                 Column(
                     modifier = Modifier.fillMaxSize()
                 ) {
@@ -119,14 +100,14 @@ fun MainUI() {
                             LocalExpand provides expanded,
                         ) {
                             AnimatedContent(
-                                selectedItemWithContent,
+                                karavel.currentPage(),
                                 Modifier.fillMaxHeight().weight(1f),
                                 transitionSpec = {
                                     fadeIn(tween()) +
                                             slideInVertically(tween()) { it / 6 } with
                                             fadeOut(tween())
                                 }) {
-                                it.content?.invoke()
+                                it.content()
                             }
                         }
                     }
@@ -143,7 +124,6 @@ private fun DevicesItem() {
     val expandedItems = remember {
         mutableStateOf(true)
     }
-
     TooltipArea(
         tooltipPlacement = TooltipPlacement.CursorPoint(
             offset = DpOffset(50.dp, 0.dp),
@@ -248,17 +228,17 @@ private fun DeviceItem(
                         ClientState.DEVICE, ClientState.RECOVERY -> {
                             brand = (keepShellStore cmd adbStore.adbDevice(
                                 navItem.id,
-                                "-d shell getprop ro.product.brand"
+                                "shell getprop ro.product.brand"
                             )).replace("\n", "")
 
                             val marketName =
                                 (keepShellStore cmd adbStore.adbDevice(
                                     navItem.id,
-                                    "-d shell getprop ro.product.marketname"
+                                    "shell getprop ro.product.marketname"
                                 )).replace("\n", "")
                             val model = (keepShellStore cmd adbStore.adbDevice(
                                 navItem.id,
-                                "-d shell ro.product.model"
+                                "shell ro.product.model"
                             )).replace("\n", "")
 
                             val name = if (model.contains("inaccessible or not found")) {
@@ -316,14 +296,10 @@ private fun DeviceItem(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun NavigationItem(
-    selectedItem: NavItem,
-    onSelectedItemChanged: (NavItem) -> Unit,
-    navItem: NavItem
+    karavel: Karavel,
+    navItem: NavPage,
+    hasItems: Boolean = true
 ) {
-    val expandedItems = remember {
-        mutableStateOf(false)
-    }
-
     TooltipArea(
         tooltipPlacement = TooltipPlacement.CursorPoint(
             offset = DpOffset(50.dp, 0.dp),
@@ -338,45 +314,25 @@ private fun NavigationItem(
         }
     ) {
         SideNavItem(
-            selectedItem == navItem,
+            karavel.currentPage() == navItem,
             onClick = {
-                onSelectedItemChanged(navItem)
-                expandedItems.value = !expandedItems.value
+                navItem.karavel?.navigate(navItem)
+                karavel.navigate(navItem)
             },
             icon = navItem.icon?.let { { Icon(it, navItem.label) } },
             content = { Text(navItem.label, style = MaterialTheme.typography.labelLarge, softWrap = false) },
-            expandItems = expandedItems.value,
-            items = navItem.nestedItems?.let {
-                {
-                    it.forEach { nestedItem ->
-                        NavigationItem(
-                            selectedItem = selectedItem,
-                            onSelectedItemChanged = onSelectedItemChanged,
-                            navItem = nestedItem
-                        )
+            expandItems = karavel.currentPage() == navItem,
+            items = if (hasItems) {
+                navItem.nestedItems?.let {
+                    {
+                        it.forEach { nestedItem ->
+                            NavigationItem(
+                                karavel, nestedItem
+                            )
+                        }
                     }
                 }
-            }
+            }else null
         )
     }
 }
-
-private data class NavItem(
-    val label: String,
-    val icon: ImageVector? = null,
-    val nestedItems: List<NavItem>? = null,
-    val content: (@Composable () -> Unit)? = null,
-)
-
-private val navs = listOf(
-    NavItem(
-        label = "首页",
-        icon = Icons.Default.Home,
-    ) { HomeScreen() },
-    NavItem(
-        label = "Payload镜像提取",
-        icon = Icons.Default.FolderZip,
-    ) { PayloadScreen() },
-)
-
-private val settingItem = NavItem("设置", Icons.Default.Settings) { SettingsScreen() }

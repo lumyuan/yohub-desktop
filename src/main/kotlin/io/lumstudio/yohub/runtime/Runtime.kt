@@ -126,7 +126,7 @@ val LocalMagiskPatcherRuntime = compositionLocalOf<MagiskPatcherStore> { error("
 class MagiskPatcherStore(runtimeDir: File) : Runtime() {
 
     val magiskPatcherHostFile: File by lazy {
-        val file = File(runtimeDir, "magisk")
+        val file = File(runtimeDir, "script")
         if (!file.exists()) {
             file.mkdirs()
         }; file

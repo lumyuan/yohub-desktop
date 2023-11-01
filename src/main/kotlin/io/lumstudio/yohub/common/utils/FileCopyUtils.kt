@@ -13,7 +13,6 @@ object FileCopyUtils {
             FileOutputStream(destination).use { outputStream ->
                 val sourceChannel = inputStream.channel
                 val destinationChannel = outputStream.channel
-
                 sourceChannel.transferTo(0, sourceChannel.size(), destinationChannel)
             }
         }

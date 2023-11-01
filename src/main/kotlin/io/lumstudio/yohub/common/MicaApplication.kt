@@ -45,11 +45,7 @@ fun sendNotice(title: String, message: String, onClick: () -> Unit = {}) {
             trayIcon.isImageAutoSize = true
             trayIcon.addMouseListener(object : MouseAdapter() {
                 override fun mouseClicked(e: MouseEvent) {
-                    if (e.button == MouseEvent.BUTTON1) { // ×ó¼üµã»÷
-                        onClick()
-                    } else if (e.button == MouseEvent.BUTTON3) { // ÓÒ¼üµã»÷
-                        println("Tray icon right clicked.")
-                    }
+                    onClick()
                 }
             })
             systemTray.add(trayIcon)

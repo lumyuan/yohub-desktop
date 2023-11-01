@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: io.github.app-outlet:karavel:1.0.2" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="io.github.app-outlet" artifactId="karavel" version="1.0.2" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.github.app-outlet/karavel/1.0.2/6e743e2f40c605c86212b7c2e7fe685d4b262c7f/karavel-1.0.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.github.app-outlet/karavel/1.0.2/29dcd923b856945919d6fba5d422dd482422c30e/karavel-1.0.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

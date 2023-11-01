@@ -54,6 +54,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="yohub-desktop.main" />
     <orderEntry type="module" module-name="yohub-desktop.main" scope="RUNTIME" />
+    <orderEntry type="library" name="Gradle: io.github.app-outlet:karavel:1.0.2" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.20" level="project" />
     <orderEntry type="library" name="Gradle: com.google.code.gson:gson:2.9.1" level="project" />
     <orderEntry type="library" name="Gradle: net.java.dev.jna:jna-platform:5.13.0" level="project" />
@@ -94,6 +95,7 @@
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.compose.material:material-desktop:1.4.1" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: org.jetbrains.skiko:skiko-awt-runtime-windows-x64:0.7.63" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.jetbrains.skiko:skiko-awt-runtime-linux-x64:0.7.16" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: org.jetbrains.compose.ui:ui-util-desktop:1.4.1" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: org.jetbrains.kotlinx:atomicfu-jvm:0.17.0" level="project" />
   </component>

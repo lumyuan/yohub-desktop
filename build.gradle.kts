@@ -50,6 +50,8 @@ dependencies {
     implementation("net.java.dev.jna:jna-platform-jpms:5.13.0")
     implementation("net.java.dev.jna:jna:5.13.0")
     implementation("net.java.dev.jna:jna-jpms:5.13.0")
+
+    implementation("io.github.app-outlet:karavel:1.0.2")
 }
 
 compose.desktop {

@@ -8,11 +8,14 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.platform.Font
 import androidx.compose.ui.window.WindowScope
+import com.google.gson.Gson
 import com.mayakapps.compose.windowstyler.WindowBackdrop
 import com.mayakapps.compose.windowstyler.WindowCornerPreference
 import com.mayakapps.compose.windowstyler.WindowFrameStyle
 import com.mayakapps.compose.windowstyler.WindowStyleManager
 import io.lumstudio.yohub.R
+import io.lumstudio.yohub.common.utils.LocalPreferences
+import io.lumstudio.yohub.common.utils.PreferencesName
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -105,8 +108,8 @@ class TypographyStore(font: Font) {
 }
 
 @Stable
-enum class DarkTheme {
-    SYSTEM, LIGHT, DARK
+enum class DarkTheme(val annotation: String) {
+    SYSTEM("跟随系统"), LIGHT("浅色"), DARK("深色")
 }
 
 @Stable
@@ -123,6 +126,8 @@ val defaultColor by lazy {
         darkColorScheme = DarkColorScheme
     )
 }
+
+private val gson by lazy { Gson() }
 
 @Composable
 fun WindowScope.MicaTheme(
@@ -144,8 +149,13 @@ fun WindowScope.MicaTheme(
         LocalTypography provides typographyStore,
     ) {
 
-        darkStore.darkMode =
-            if (themeStore.theme == DarkTheme.SYSTEM) isSystemInDarkTheme() else themeStore.theme == DarkTheme.DARK
+        val preferencesStore = LocalPreferences.current
+        val map = preferencesStore.preference.toMap()
+        val model = map[PreferencesName.DARK_MODEL.toString()]
+
+        model?.also { themeStore.theme = gson.fromJson(it, DarkTheme::class.java) }
+
+        darkStore.darkMode = if (themeStore.theme == DarkTheme.SYSTEM) isSystemInDarkTheme() else themeStore.theme == DarkTheme.DARK
 
         //检测系统深色模式
         LaunchedEffect(darkStore) {

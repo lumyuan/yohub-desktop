@@ -1,38 +1,40 @@
 package io.lumstudio.yohub.windows
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 
-data class HomeTooltip(
-    val title: String,
-    val subtitle: String? = null,
-)
-
 @Composable
-fun HomeScreen() {
+fun HomeScreen(homePage: HomePage) {
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Column {
-            val tooltips = arrayOf(
-                HomeTooltip("镜像文件提取", "点击右侧【Payload文件提取】")
-            )
-            tooltips.onEach {
+            PageNav.values().toList().filter { it.page.title != null }.onEach {
                 Row(
-                    modifier = Modifier.padding(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    modifier = Modifier.clip(RoundedCornerShape(8.dp))
+                        .clickable {
+                            homePage.karavel?.navigate(it.page)
+                        }
                 ) {
-                    Text(it.title)
-                    it.subtitle?.apply {
-                        Spacer(modifier = Modifier.size(8.dp))
-                        Text(this, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .5f))
+                    Row(
+                        modifier = Modifier.padding(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text("${it.page.title}")
+                        it.page.subtitle?.apply {
+                            Spacer(modifier = Modifier.size(8.dp))
+                            Text(this, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .5f))
+                        }
                     }
                 }
             }
