@@ -332,6 +332,10 @@ fun loadAndroidDevices(
                     e.printStackTrace()
                 }
             }
+        //自动连接设备
+        if (deviceStore.device == null && devicesStore.devices.size == 1) {
+            deviceStore.device = devicesStore.devices.first()
+        }
         //设备更改后检测原先已选择的设备是否被拔出
         if (devicesStore.devices.none { it.id == deviceStore.device?.id }) {
             deviceStore.device = null

@@ -51,7 +51,7 @@ class ContextStore {
                 Desktop.getDesktop().browse(URI(url))
             } catch (e: Exception) {
                 e.printStackTrace()
-
+                sendNotice("浏览器打开失败", e.toString())
             }
         }
     }

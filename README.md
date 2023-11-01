@@ -10,8 +10,8 @@
 - [x] ADB操作
 - [x] FASTBOOT操作
 - [x] Payload提取镜像
-- [ ] Magisk修补Boot.img（待实现）
-- [ ] 刷写镜像（待实现）
+- [x] Magisk修补Boot.img
+- [x] 刷写镜像
 - [ ] 一键Root（待实现）
 - [ ] 安装Apk（待实现）
 - [ ] 提取Apk（待实现）

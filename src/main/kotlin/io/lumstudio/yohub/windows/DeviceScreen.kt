@@ -78,7 +78,7 @@ fun DeviceScreen() {
                     label = "未选中设备"
                     sub = ""
                 } else {
-                    label = "已连接：${device.id}"
+                    label = "已连接：${DeviceName.value}"
                     sub = "设备类型：${device.type}"
                 }
 

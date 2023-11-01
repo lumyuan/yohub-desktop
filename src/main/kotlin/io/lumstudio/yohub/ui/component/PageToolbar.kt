@@ -2,7 +2,9 @@ package io.lumstudio.yohub.ui.component
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,7 +25,10 @@ fun ColumnScope.Toolbar(
     } else {
         0
     }
-    val modifier = Modifier.padding(bottom = 28.dp, start = 48.dp * (count - 1 - offset))
+    if (!enableAnimate) {
+        Spacer(modifier = Modifier.size(28.dp))
+    }
+    val modifier = Modifier.padding(bottom = 16.dp, start = 48.dp * (count - 1 - offset))
     if (enableAnimate) {
         AnimatedVisibility(!expand) {
             Text(

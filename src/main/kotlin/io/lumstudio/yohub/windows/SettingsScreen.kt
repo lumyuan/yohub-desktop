@@ -7,6 +7,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,6 +18,9 @@ import com.konyaco.fluent.component.ScrollbarContainer
 import com.konyaco.fluent.component.rememberScrollbarAdapter
 import com.konyaco.fluent.icons.Icons
 import com.konyaco.fluent.icons.regular.Color
+import com.konyaco.fluent.icons.regular.DrawerArrowDownload
+import com.konyaco.fluent.icons.regular.Open
+import io.lumstudio.yohub.common.LocalContext
 import io.lumstudio.yohub.common.LocalIOCoroutine
 import io.lumstudio.yohub.common.utils.LocalPreferences
 import io.lumstudio.yohub.common.utils.PreferencesName
@@ -88,4 +92,29 @@ class ThemeSetting : NavPage("主题设置") {
             }
         }
     }
+}
+
+class VersionSetting: NavPage("版本") {
+
+    @Composable
+    override fun content() {
+        val contextStore = LocalContext.current
+        Column {
+            Toolbar(label, enableAnimate = false)
+            FluentItem(
+                Icons.Default.Open,
+                "开源地址"
+            ) {
+                TextButton(
+                    onClick = {
+                        contextStore.startBrowse("https://github.com/lumyuan/yohub-desktop")
+                    },
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text("去围观")
+                }
+            }
+        }
+    }
+
 }

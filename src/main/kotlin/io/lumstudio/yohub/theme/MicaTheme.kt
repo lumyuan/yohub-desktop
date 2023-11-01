@@ -193,7 +193,6 @@ fun WindowScope.MicaTheme(
             colorScheme = if (darkStore.darkMode) colorStore.colorStore.darkColorScheme else colorStore.colorStore.lightColorScheme,
             typography = typography,
         ) {
-            println("UI is composable.")
             if (hasSurface) {
                 MaterialWindowStyle(
                     MaterialTheme.colorScheme.background,

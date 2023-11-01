@@ -60,7 +60,8 @@ class SettingsPage : NavPage("…Ë÷√", icon = Icons.Default.Settings,) {
 
     init {
         nestedItems = arrayListOf(
-            ThemeSetting()
+            ThemeSetting(),
+            VersionSetting()
         )
     }
 

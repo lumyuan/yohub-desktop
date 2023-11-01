@@ -187,9 +187,7 @@ private fun DevicesItem() {
                     } else {
                         NavigationItemSeparator(modifier = Modifier.padding(bottom = 4.dp))
                         it.forEach { device ->
-                            DeviceItem(
-                                device
-                            )
+                            DeviceItem(device)
                         }
                         Column(
                             modifier = modifier,
@@ -206,6 +204,10 @@ private fun DevicesItem() {
             }
         )
     }
+}
+
+val DeviceName by lazy(mode = LazyThreadSafetyMode.SYNCHRONIZED) {
+    mutableStateOf("")
 }
 
 @Composable
@@ -236,15 +238,15 @@ private fun DeviceItem(
                                     navItem.id,
                                     "shell getprop ro.product.marketname"
                                 )).replace("\n", "")
+
                             val model = (keepShellStore cmd adbStore.adbDevice(
                                 navItem.id,
-                                "shell ro.product.model"
+                                "shell getprop ro.product.model"
                             )).replace("\n", "")
-
                             val name = if (model.contains("inaccessible or not found")) {
                                 navItem.id
                             } else {
-                                model
+                                model.replace("$brand ", "")
                             }
                             label = (marketName.ifEmpty { "$brand $name" })
                             sub = "设备类型：${navItem.type}"
@@ -280,6 +282,7 @@ private fun DeviceItem(
             } else {
                 deviceStore.device = navItem
             }
+            DeviceName.value = label
         },
         icon = {
             Image(BrandLogoUtil.getLogoPainterByBrand(brand.replace("\n", "")), navItem.id)
