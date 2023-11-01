@@ -18,7 +18,7 @@
 - [ ] 更多特性欢迎您的提案
 
 ## 程序截图（DEV-1.0.0）
-![](resources/md/app_screenshot_1.png)
+![app_screenshot_1.png](resources/md/app_screenshot_1.png)
 
 ## 讨论
 * QQ群：945339560
