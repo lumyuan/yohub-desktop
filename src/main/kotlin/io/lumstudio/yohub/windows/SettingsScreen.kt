@@ -46,6 +46,12 @@ fun SettingsScreen(settingsPage: SettingsPage) {
             settingsPage.nestedItems?.onEach {
                 it.content()
             }
+            Box(
+                modifier = Modifier.fillMaxWidth().padding(32.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("Copyright @ 2023 ÓÅÌ´ÔÆÍøÂç¿Æ¼¼ All Rights Reserved", color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelSmall)
+            }
         }
     }
 }
