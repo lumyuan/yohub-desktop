@@ -2,25 +2,19 @@ package io.lumstudio.yohub.common.utils
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.io.BufferedInputStream
-import java.io.BufferedOutputStream
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.io.InputStream
-import java.io.OutputStream
+import java.io.*
 
 suspend fun readBytes(inputStream: InputStream): ByteArray = withContext(Dispatchers.IO) {
     val bufferedInputStream = BufferedInputStream(inputStream)
     val bytes = bufferedInputStream.readBytes()
     try {
         bufferedInputStream.close()
-    }catch (e: Exception) {
+    } catch (e: Exception) {
         e.printStackTrace()
     }
     try {
         inputStream.close()
-    }catch (e: Exception) {
+    } catch (e: Exception) {
         e.printStackTrace()
     }
     bytes
@@ -32,12 +26,12 @@ suspend fun writeBytes(outputStream: OutputStream, byteArray: ByteArray) = withC
     bufferedOutputStream.flush()
     try {
         bufferedOutputStream.close()
-    }catch (e: Exception) {
+    } catch (e: Exception) {
         e.printStackTrace()
     }
     try {
         outputStream.close()
-    }catch (e: Exception) {
+    } catch (e: Exception) {
         e.printStackTrace()
     }
 }
@@ -54,7 +48,7 @@ suspend fun cut(targetPath: String, outputPath: String) = withContext(Dispatcher
         val outputStream = FileOutputStream(outputPath)
         copy(inputStream, outputStream)
         targetFile.delete()
-    }catch (e: Exception) {
+    } catch (e: Exception) {
         e.printStackTrace()
         false
     }

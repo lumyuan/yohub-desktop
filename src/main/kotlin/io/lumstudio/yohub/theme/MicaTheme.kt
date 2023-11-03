@@ -1,5 +1,9 @@
 package io.lumstudio.yohub.theme
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.TweenSpec
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -21,7 +25,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withContext
 
-private val LightColorScheme = lightColorScheme(
+val LightColorScheme = lightColorScheme(
     primary = md_theme_light_primary,
     onPrimary = md_theme_light_onPrimary,
     primaryContainer = md_theme_light_primaryContainer,
@@ -54,7 +58,7 @@ private val LightColorScheme = lightColorScheme(
 )
 
 
-private val DarkColorScheme = darkColorScheme(
+val DarkColorScheme = darkColorScheme(
     primary = md_theme_dark_primary,
     onPrimary = md_theme_dark_onPrimary,
     primaryContainer = md_theme_dark_primaryContainer,
@@ -88,8 +92,19 @@ private val DarkColorScheme = darkColorScheme(
 
 val LocalTheme = compositionLocalOf<ThemeStore> { error("Not provided.") }
 val LocalDark = compositionLocalOf<DarkStore> { error("Not provided.") }
-val LocalColor = compositionLocalOf<ColorStore> { error("Not provided.") }
 val LocalTypography = compositionLocalOf<TypographyStore> { error("Not provided.") }
+
+val LocalColorTheme = compositionLocalOf<ColorThemeStore> { error("Not provided.") }
+
+class ColorThemeStore(colorTheme: ColorTheme) {
+
+    var colorSchemes by mutableStateOf(colorTheme)
+
+    data class ColorTheme(
+        val lightColorScheme: ColorScheme,
+        val darkColorScheme: ColorScheme
+    )
+}
 
 class ThemeStore(darkTheme: DarkTheme) {
     var theme by mutableStateOf(darkTheme)
@@ -97,10 +112,6 @@ class ThemeStore(darkTheme: DarkTheme) {
 
 class DarkStore(systemDarkMode: Boolean) {
     var darkMode by mutableStateOf(systemDarkMode)
-}
-
-class ColorStore(color: ColorBean) {
-    var colorStore by mutableStateOf(color)
 }
 
 class TypographyStore(font: Font) {
@@ -112,21 +123,6 @@ enum class DarkTheme(val annotation: String) {
     SYSTEM("跟随系统"), LIGHT("浅色"), DARK("深色")
 }
 
-@Stable
-data class ColorBean(
-    val colorName: String,
-    val lightColorScheme: ColorScheme,
-    val darkColorScheme: ColorScheme
-)
-
-val defaultColor by lazy {
-    ColorBean(
-        colorName = "default",
-        lightColorScheme = LightColorScheme,
-        darkColorScheme = DarkColorScheme
-    )
-}
-
 private val gson by lazy { Gson() }
 
 @Composable
@@ -135,29 +131,28 @@ fun WindowScope.MicaTheme(
     content: @Composable () -> Unit
 ) {
 
+    val colorThemeStore = LocalColorTheme.current
     val checkDarkState = remember { mutableStateOf(System.currentTimeMillis()) }
     val themeStore = remember { ThemeStore(DarkTheme.SYSTEM) }
     val systemDarkMode = isSystemInDarkTheme()
-    val darkStore = remember { DarkStore(systemDarkMode) }
-    val colorStore = remember { ColorStore(defaultColor) }
+    val darkStore =
+        remember { DarkStore(if (themeStore.theme == DarkTheme.SYSTEM) systemDarkMode else themeStore.theme == DarkTheme.DARK) }
     val typographyStore = remember { TypographyStore(Font(R.font.miSansVf)) }
+
+    val preferencesStore = LocalPreferences.current
+    val model = preferencesStore.preference[PreferencesName.DARK_MODEL.toString()]
+
+    model?.also { themeStore.theme = gson.fromJson(it, DarkTheme::class.java) }
 
     CompositionLocalProvider(
         LocalTheme provides themeStore,
         LocalDark provides darkStore,
-        LocalColor provides colorStore,
         LocalTypography provides typographyStore,
     ) {
 
-        val preferencesStore = LocalPreferences.current
-        val map = preferencesStore.preference.toMap()
-        val model = map[PreferencesName.DARK_MODEL.toString()]
+        darkStore.darkMode =
+            if (themeStore.theme == DarkTheme.SYSTEM) isSystemInDarkTheme() else themeStore.theme == DarkTheme.DARK
 
-        model?.also { themeStore.theme = gson.fromJson(it, DarkTheme::class.java) }
-
-        darkStore.darkMode = if (themeStore.theme == DarkTheme.SYSTEM) isSystemInDarkTheme() else themeStore.theme == DarkTheme.DARK
-
-        //检测系统深色模式
         LaunchedEffect(darkStore) {
             withContext(Dispatchers.IO) {
                 while (isActive) {
@@ -189,8 +184,56 @@ fun WindowScope.MicaTheme(
             labelSmall = type.labelSmall.copy(fontFamily = FontFamily(typographyStore.typography))
         )
 
+        val targetTheme =
+            if (darkStore.darkMode) colorThemeStore.colorSchemes.darkColorScheme else colorThemeStore.colorSchemes.lightColorScheme
+
+        val durationMillis = 400
+        val animationSpec = TweenSpec<Color>(durationMillis = durationMillis, easing = FastOutSlowInEasing)
+
+        val primary by animateColorAsState(
+            targetValue = targetTheme.primary, animationSpec, label = "primary"
+        )
+        val primaryContainer by animateColorAsState(
+            targetValue = targetTheme.primaryContainer, animationSpec, label = "primaryContainer"
+        )
+        val tertiary by animateColorAsState(
+            targetValue = targetTheme.tertiary, animationSpec, label = "tertiary"
+        )
+        val tertiaryContainer by animateColorAsState(
+            targetValue = targetTheme.tertiaryContainer, animationSpec, label = "tertiaryContainer"
+        )
+        val background by animateColorAsState(
+            targetValue = targetTheme.background, animationSpec, label = "background"
+        )
+        val onBackground by animateColorAsState(
+            targetValue = targetTheme.onBackground, animationSpec, label = "onBackground"
+        )
+        val outline by animateColorAsState(
+            targetValue = targetTheme.outline, animationSpec, label = "outline"
+        )
+        val outlineVariant by animateColorAsState(
+            targetValue = targetTheme.outlineVariant, animationSpec, label = "outlineVariant"
+        )
+        val surface by animateColorAsState(
+            targetValue = targetTheme.surface, animationSpec, label = "surface"
+        )
+        val surfaceVariant by animateColorAsState(
+            targetValue = targetTheme.surfaceVariant, animationSpec, label = "surfaceVariant"
+        )
+
         MaterialTheme(
-            colorScheme = if (darkStore.darkMode) colorStore.colorStore.darkColorScheme else colorStore.colorStore.lightColorScheme,
+            colorScheme = targetTheme.copy(
+                primary = primary,
+                primaryContainer = primaryContainer,
+                tertiary = tertiary,
+                tertiaryContainer = tertiaryContainer,
+                background = background,
+                onBackground = onBackground,
+                outline = outline,
+                outlineVariant = outlineVariant,
+                surface = surface,
+                surfaceVariant = surfaceVariant,
+            ),
             typography = typography,
         ) {
             if (hasSurface) {

@@ -72,7 +72,7 @@ compose.desktop {
 
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "YoHubDesktop"
-            packageVersion = "1.0.1"
+            packageVersion = "1.0.2"
 
             description = "YoHubTool For Desktop"
             copyright = "Copyright 2023 YoTanYun. All rights reserved."

@@ -5,6 +5,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.window.WindowDraggableArea
 import androidx.compose.material.icons.filled.TabletAndroid
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -18,6 +19,7 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPosition
+import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.rememberWindowState
 import com.konyaco.fluent.component.NavigationItemSeparator
 import com.konyaco.fluent.icons.Icons
@@ -25,6 +27,7 @@ import com.konyaco.fluent.icons.regular.*
 import io.appoutlet.karavel.Karavel
 import io.lumstudio.yohub.R
 import io.lumstudio.yohub.common.LocalApplication
+import io.lumstudio.yohub.common.LocalIOCoroutine
 import io.lumstudio.yohub.common.shell.LocalKeepShell
 import io.lumstudio.yohub.common.utils.BrandLogoUtil
 import io.lumstudio.yohub.runtime.*
@@ -43,6 +46,7 @@ fun MainUI() {
     val applicationScope = LocalApplication.current
     val adbStore = LocalAdbRuntime.current
     val keepShellStore = LocalKeepShell.current
+    val ioCoroutine = LocalIOCoroutine.current
     val windowState = rememberWindowState(
         position = WindowPosition(Alignment.Center),
         size = DpSize(1000.dp, 750.dp)
@@ -51,7 +55,7 @@ fun MainUI() {
         title = "优画工具箱桌面版",
         icon = painterResource(R.icon.logoRound),
         onCloseRequest = {
-            CoroutineScope(Dispatchers.IO).launch {
+            ioCoroutine.ioScope.launch {
                 keepShellStore cmd adbStore.adbDevice(null, "kill-server")
                 applicationScope.exitApplication()
                 exitProcess(0)
@@ -59,55 +63,59 @@ fun MainUI() {
         },
         state = windowState,
     ) {
-        window.minimumSize = Dimension(800, 600)
-        val navs = PageNav.values().toList().filter { it != PageNav.Settings }
-        val karavel by remember { mutableStateOf(Karavel(navs.first().page)) }
-        MicaTheme {
-            Row(modifier = Modifier.fillMaxSize()) {
-                var expanded by remember { mutableStateOf(true) }
-                SideNav(
-                    modifier = Modifier.fillMaxHeight(),
-                    expanded = expanded,
-                    onExpandStateChange = { expanded = it },
-                    footer = {
-                        NavigationItem(karavel, PageNav.Settings.page, false)
-                    }
-                ) {
-                    DevicesItem()
-                    navs.forEach { navItem ->
-                        NavigationItem(karavel, navItem.page)
-                    }
-                }
-                Column(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    OutlinedCard(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(8.dp),
-                        colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.background),
-                        border = BorderStroke(.5.dp, DividerDefaults.color)
+        WindowDraggableArea(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            MicaTheme {
+                window.minimumSize = Dimension(800, 600)
+                val navs = PageNav.values().toList().filter { it != PageNav.Settings }
+                val karavel by remember { mutableStateOf(Karavel(navs.first().page)) }
+                Row(modifier = Modifier.fillMaxSize()) {
+                    var expanded by remember { mutableStateOf(true) }
+                    SideNav(
+                        modifier = Modifier.fillMaxHeight(),
+                        expanded = expanded,
+                        onExpandStateChange = { expanded = it },
+                        footer = {
+                            NavigationItem(karavel, PageNav.Settings.page, false)
+                        }
                     ) {
-                        DeviceScreen()
+                        DevicesItem()
+                        navs.forEach { navItem ->
+                            NavigationItem(karavel, navItem.page)
+                        }
                     }
-                    Spacer(modifier = Modifier.size(16.dp))
-                    OutlinedCard(
-                        modifier = Modifier.fillMaxSize(),
-                        shape = RoundedCornerShape(8.dp),
-                        colors = CardDefaults.elevatedCardColors(),
-                        border = BorderStroke(.5.dp, DividerDefaults.color)
+                    Column(
+                        modifier = Modifier.fillMaxSize()
                     ) {
-                        CompositionLocalProvider(
-                            LocalExpand provides expanded,
+                        OutlinedCard(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(8.dp),
+                            colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.background),
+                            border = BorderStroke(.5.dp, DividerDefaults.color)
                         ) {
-                            AnimatedContent(
-                                karavel.currentPage(),
-                                Modifier.fillMaxHeight().weight(1f),
-                                transitionSpec = {
-                                    fadeIn(tween()) +
-                                            slideInVertically(tween()) { it / 6 } with
-                                            fadeOut(tween())
-                                }) {
-                                it.content()
+                            DeviceScreen()
+                        }
+                        Spacer(modifier = Modifier.size(16.dp))
+                        OutlinedCard(
+                            modifier = Modifier.fillMaxSize(),
+                            shape = RoundedCornerShape(8.dp),
+                            colors = CardDefaults.elevatedCardColors(),
+                            border = BorderStroke(.5.dp, DividerDefaults.color)
+                        ) {
+                            CompositionLocalProvider(
+                                LocalExpand provides expanded,
+                            ) {
+                                AnimatedContent(
+                                    karavel.currentPage(),
+                                    Modifier.fillMaxHeight().weight(1f),
+                                    transitionSpec = {
+                                        fadeIn(tween()) +
+                                                slideInVertically(tween()) { it / 6 } with
+                                                fadeOut(tween())
+                                    }) {
+                                    it.content()
+                                }
                             }
                         }
                     }
@@ -335,7 +343,7 @@ private fun NavigationItem(
                         }
                     }
                 }
-            }else null
+            } else null
         )
     }
 }

@@ -133,7 +133,7 @@ private fun TargetPathEditor(targetPath: MutableState<String>, outPath: MutableS
                 if (fileDialog.file?.endsWith(".img") == true) {
                     targetPath.value = fileDialog.directory + fileDialog.file
                     outPath.value = fileDialog.directory
-                } else {
+                } else if (fileDialog.file != null) {
                     sendNotice("选择失败", "不受支持的文件类型：${fileDialog.file}")
                 }
             },

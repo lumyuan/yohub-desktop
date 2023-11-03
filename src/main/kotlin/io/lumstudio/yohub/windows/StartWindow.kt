@@ -21,14 +21,14 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.rememberWindowState
+import com.google.gson.Gson
 import io.lumstudio.yohub.R
 import io.lumstudio.yohub.common.*
 import io.lumstudio.yohub.common.shell.KeepShellStore
 import io.lumstudio.yohub.common.shell.LocalKeepShell
-import io.lumstudio.yohub.common.utils.LocalPreferences
-import io.lumstudio.yohub.common.utils.PreferencesStore
+import io.lumstudio.yohub.common.utils.*
 import io.lumstudio.yohub.runtime.*
-import io.lumstudio.yohub.theme.MicaTheme
+import io.lumstudio.yohub.theme.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -56,18 +56,20 @@ fun StartWindow() {
 
     val contextStore = remember { ContextStore() }
     val preference = remember { mutableStateMapOf<String, String?>() }
-    val preferencesStore = remember { PreferencesStore(contextStore.fileDir, preference) }
+    val preferencesStore = remember { PreferencesStore(contextStore.rootDir, preference) }
+
+    val colorThemeStore = remember { ColorThemeStore(ColorThemeStore.ColorTheme(LightColorScheme, DarkColorScheme)) }
+    val installThemesPathStore = remember { InstallThemesPathStore(contextStore.fileDir) }
 
     //监听窗口变化
     LaunchedEffect(floatState) {
-        preferencesStore.loadPreference()
         snapshotFlow { floatState.value }
             .onEach { windowState.size = DpSize(400.dp, 300.dp) * it }
             .launchIn(this)
     }
 
     val coroutineScope = remember { IOCoroutine() }
-    val runtimeStore = remember { RuntimeStore(contextStore.fileDir) }
+    val runtimeStore = remember { RuntimeStore(contextStore.rootDir) }
     val deviceStore = remember { DeviceStore() }
     val adbRuntimeStore = remember { AdbStore(runtimeStore.runtimeFile, deviceStore) }
     val pythonStore = remember { PythonStore(runtimeStore.runtimeFile) }
@@ -118,9 +120,11 @@ fun StartWindow() {
         LocalFastbootDriverRuntime provides fastbootDriverStore,
         LocalKeepShell provides keepShellStore,
         LocalDevices provides devicesStore,
-        LocalDriver provides driverStore
+        LocalDriver provides driverStore,
+        LocalColorTheme provides colorThemeStore,
+        LocalInstallThemesPath provides installThemesPathStore
     ) {
-        InitProperties()
+        InitProperties(preferencesStore)
         if (!isFinished) {
             LoadUI(isFinishedAnimatable, windowState)
         } else {
@@ -129,9 +133,37 @@ fun StartWindow() {
     }
 }
 
-@Composable
-private fun InitProperties() {
+private val gson by lazy { Gson() }
 
+/**
+ * 初始化配置信息
+ */
+@Composable
+private fun InitProperties(preferencesStore: PreferencesStore) {
+    val installThemesPathStore = LocalInstallThemesPath.current
+    val colorThemeStore = LocalColorTheme.current
+    val colorLoader = ColorLoader(preferencesStore, installThemesPathStore, colorThemeStore)
+    LaunchedEffect(preferencesStore.preference) {
+        //初始化配置
+        preferencesStore.loadPreference()
+        val localhostColorTheme = preferencesStore.preference[PreferencesName.COLOR_THEME.toString()]
+
+        if (installThemesPathStore.installPathFile.exists() && !localhostColorTheme.isNullOrEmpty() && localhostColorTheme != "YoHub Color") {
+            try {
+                colorThemeStore.colorSchemes = colorLoader.loadInstalledColorTheme(localhostColorTheme)
+            }catch (e: Exception) {
+                e.printStackTrace()
+                sendNotice("主题颜色加载失败！", "${e.message}，已将主题颜色设为默认。")
+                preferencesStore.preference[PreferencesName.COLOR_THEME.toString()] = "YoHub Color"
+                preferencesStore.submit()
+            }
+        } else {
+            //初始化默认主题
+            preferencesStore.preference[PreferencesName.COLOR_THEME.toString()] = "YoHub Color"
+            preferencesStore.submit()
+            colorThemeStore.colorSchemes = ColorThemeStore.ColorTheme(LightColorScheme, DarkColorScheme)
+        }
+    }
 }
 
 /**
@@ -218,7 +250,6 @@ private fun LoadConfigurations(
     LaunchedEffect(isFinishedAnimatable) {
         withContext(
             CoroutineExceptionHandler { _, throwable ->
-                println("异常输出：$throwable")
             } + Dispatchers.IO
         ) {
             tipText.value = "准备中..."
@@ -266,7 +297,7 @@ private fun LoadConfigurations(
 }
 
 fun loadAndroidDevices(
-    delay: Long = 2000,
+    delay: Long = 1500,
     keepShellStore: KeepShellStore,
     adbRuntimeStore: AdbStore,
     deviceStore: DeviceStore,

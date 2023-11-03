@@ -29,7 +29,7 @@ class ContextStore {
     val packageName: String = "YoHubDesktop"
 
     //缓存目录
-    val fileDir by lazy {
+    val rootDir by lazy {
         val path = when {
             hostOs.isWindows -> System.getenv("LOCALAPPDATA") ?: Paths.get(
                 System.getProperty("user.home"),
@@ -42,6 +42,14 @@ class ContextStore {
         }
         val file = File(path, packageName)
         if (!file.exists()) file.mkdirs()
+        file
+    }
+
+    val fileDir by lazy {
+        val file = File(rootDir, "files")
+        if (!file.exists()) {
+            file.mkdirs()
+        }
         file
     }
 

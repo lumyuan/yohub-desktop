@@ -168,3 +168,17 @@ class FastbootDriverStore(runtimeDir: File, private val keepShellStore: KeepShel
         keepShellStore admin path("install")
     }
 }
+
+val LocalInstallThemesPath = compositionLocalOf<InstallThemesPathStore> { error("Not provided.") }
+
+class InstallThemesPathStore(runtimeDir: File) : Runtime() {
+
+    val installPathFile: File by lazy {
+        val file = File(runtimeDir, "themes")
+        if (!file.exists()) {
+            file.mkdirs()
+        }; file
+    }
+
+
+}

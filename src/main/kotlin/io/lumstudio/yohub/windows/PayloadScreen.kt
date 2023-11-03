@@ -20,6 +20,7 @@ import com.konyaco.fluent.icons.Icons
 import com.konyaco.fluent.icons.regular.ArrowDownload
 import com.konyaco.fluent.icons.regular.Search
 import io.lumstudio.yohub.R
+import io.lumstudio.yohub.common.LocalContext
 import io.lumstudio.yohub.common.sendNotice
 import io.lumstudio.yohub.common.shell.KeepShellStore
 import io.lumstudio.yohub.common.shell.LocalKeepShell
@@ -62,6 +63,7 @@ fun PayloadScreen(payloadPage: PayloadPage) {
             modifier = Modifier.fillMaxHeight().verticalScroll(scrollState).padding(16.dp)
         ) {
             Toolbar(payloadPage.label)
+            MiuiDownload()
             TargetPathEditor(targetPath, outPath, fileDialog)
             Spacer(modifier = Modifier.size(8.dp))
             OutputPathEditor(targetPath, outPath)
@@ -90,6 +92,52 @@ fun PayloadScreen(payloadPage: PayloadPage) {
                         modifier = Modifier.padding(16.dp)
                     )
                 }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun MiuiDownload() {
+    val contextStore = LocalContext.current
+    Column(
+        modifier = Modifier.fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        Text("MIUI刷机包下载", style = MaterialTheme.typography.titleMedium)
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+            TextButton(
+                onClick = {
+                    contextStore.startBrowse("https://xiaomirom.com/")
+                },
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Text("XiaomiROM.com")
+            }
+            TextButton(
+                onClick = {
+                    contextStore.startBrowse("https://miuiver.com/")
+                },
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Text("MIUIVer.com")
+            }
+            TextButton(
+                onClick = {
+                    contextStore.startBrowse("https://roms.miuier.com/mobile/zh-cn/")
+                },
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Text("MIUIROMS")
+            }
+            TextButton(
+                onClick = {
+                    contextStore.startBrowse("https://miui.511i.cn/")
+                },
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Text("PureSky ROM")
             }
         }
     }
@@ -128,7 +176,7 @@ private fun TargetPathEditor(targetPath: MutableState<String>, outPath: MutableS
                 if (fileDialog.file?.endsWith(".bin") == true) {
                     targetPath.value = fileDialog.directory + fileDialog.file
                     outPath.value = fileDialog.directory + "images"
-                }else {
+                } else if (fileDialog.file != null) {
                     sendNotice("选择失败", "不受支持的文件类型：${fileDialog.file}")
                 }
             },
@@ -363,14 +411,22 @@ private fun ImageItem(
                         IconButton(
                             onClick = {
                                 CoroutineScope(Dispatchers.IO).launch {
-                                    extractImage(image, extractState, runtimeStore, keepShellStore, payloadDumperStore, targetPath, outPath)
+                                    extractImage(
+                                        image,
+                                        extractState,
+                                        runtimeStore,
+                                        keepShellStore,
+                                        payloadDumperStore,
+                                        targetPath,
+                                        outPath
+                                    )
                                 }
                             }
                         ) {
                             Icon(Icons.Default.ArrowDownload, null)
                         }
                     }
-                }else {
+                } else {
                     CircularProgressIndicator(modifier = Modifier.size(28.dp), strokeWidth = 2.dp)
                 }
             }
@@ -457,11 +513,11 @@ private suspend fun extractImage(
             sendNotice("提取成功", "文件已存放于$outPathString") {
                 Desktop.getDesktop().open(file)
             }
-        }catch (e: Exception) {
+        } catch (e: Exception) {
             e.printStackTrace()
             sendNotice("提取失败", e.toString())
         }
-    }else {
+    } else {
         sendNotice("提取失败", "AssertionError: operation data hash mismatch.")
     }
     File(tempPath).delete()

@@ -51,7 +51,8 @@ fun Dialog(
         popupPositionProvider = rememberCursorPositionProvider(
             windowMargin = 0.dp,
             alignment = Alignment.Center,
-        )
+        ),
+        focusable = true
     ) {
         Box(
             Modifier.fillMaxSize()
@@ -71,7 +72,7 @@ fun Dialog(
                 exit = fadeOut(tween) + scaleOut(tween, targetScale = 1.1f)
             ) {
                 Box(
-                    Modifier.width(400.dp).clip(RoundedCornerShape(8.dp))
+                    Modifier.width(500.dp).clip(RoundedCornerShape(8.dp))
                         .background(MaterialTheme.colorScheme.background)
                 ) {
                     Column(Modifier.background(MaterialTheme.colorScheme.secondaryContainer.copy(alpha = .3f))) {

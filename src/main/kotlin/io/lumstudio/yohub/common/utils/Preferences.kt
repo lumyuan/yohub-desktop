@@ -13,7 +13,7 @@ import java.io.FileOutputStream
 val LocalPreferences = compositionLocalOf<PreferencesStore> { error("Not provided.") }
 
 enum class PreferencesName {
-    DARK_MODEL
+    DARK_MODEL, COLOR_THEME
 }
 
 class PreferencesStore(
@@ -35,14 +35,15 @@ class PreferencesStore(
             config = "{}"
         }
         preference.clear()
-        preference.putAll(gson.fromJson(config, object : TypeToken<Map<String, String?>>() {}.type))
+        val map = gson.fromJson<Map<out String, String?>>(config, object : TypeToken<Map<String, String?>>() {}.type)
+        preference.putAll(map)
     }
 
     /**
      * 持久化数据
      */
     suspend fun submit() = withContext(Dispatchers.IO) {
-        val byteArray = gson.toJson(preference).toByteArray()
+        val byteArray = gson.toJson(preference.toMap()).toByteArray()
         writeBytes(FileOutputStream(preferenceFile), byteArray)
     }
 
