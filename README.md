@@ -7,6 +7,7 @@
 - [x] 自动识别Android设备
 - [x] 多设备操作
 - [x] 主题可跟随系统
+- [x] 强大的主题自定义系统
 - [x] ADB操作
 - [x] FASTBOOT操作
 - [x] Payload提取镜像
@@ -19,6 +20,10 @@
 
 ## 程序截图（DEV-1.0.0）
 ![app_screenshot_1.png](resources/md/app_screenshot_1.png)
+![app_screenshot_1.png](resources/md/app_screenshot_2.png)
+![app_screenshot_1.png](resources/md/app_screenshot_3.png)
+![app_screenshot_1.png](resources/md/app_screenshot_4.png)
+![app_screenshot_1.png](resources/md/app_screenshot_5.png)
 
 ## 讨论
 * QQ群：945339560
@@ -31,6 +36,6 @@
 ## 功能持续开发中，敬请期待
 
 ## Logo版权与许可
-© Copyright @ 2023 优谭云网络科技 All Rights Reserved
+© Copyright @ 2023 优檀云网络科技 All Rights Reserved
 
 LICENSE: [Apache 2.0](LICENSE)
