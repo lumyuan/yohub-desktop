@@ -8,6 +8,7 @@
     <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/common/utils/ZipUtils.kt" charset="GBK" />
     <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/ui/component/Button.kt" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/ui/component/SideNav.kt" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/ui/component/TextField.kt" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/windows/FlashImageScreen.kt" charset="GBK" />
     <file url="PROJECT" charset="GBK" />
   </component>

@@ -56,7 +56,9 @@ fun SettingsScreen(settingsPage: SettingsPage) {
     }
 }
 
-class ThemeSetting : NavPage("主题设置") {
+class ThemeSetting : NavPage("主题设置", isNavigation = false) {
+
+    override fun icon(): () -> Unit = {  }
 
     private val gson by lazy { Gson() }
 
@@ -406,6 +408,7 @@ class ThemeSetting : NavPage("主题设置") {
         ) {
             Card(
                 modifier = Modifier.size(70.dp)
+                    .padding(top = 8.dp)
                     .clip(RoundedCornerShape(4.dp))
                     .clickable {
                         selectTheme.value = "YoHub Color"
@@ -455,6 +458,7 @@ class ThemeSetting : NavPage("主题设置") {
         ) {
             Card(
                 modifier = Modifier.size(70.dp)
+                    .padding(top = 8.dp)
                     .clip(RoundedCornerShape(4.dp))
                     .clickable {}
                     .clickable(
@@ -511,6 +515,7 @@ private fun ColorThemeItemInstall(
     ) {
         OutlinedCard(
             modifier = Modifier.size(70.dp)
+                .padding(top = 8.dp)
                 .clip(RoundedCornerShape(4.dp))
                 .clickable {
                     CoroutineScope(Dispatchers.IO).launch {
@@ -533,7 +538,9 @@ private fun ColorThemeItemInstall(
     }
 }
 
-class VersionSetting : NavPage("版本") {
+class VersionSetting : NavPage("版本", isNavigation = false) {
+
+    override fun icon(): () -> Unit = {  }
 
     @Composable
     override fun content() {
@@ -551,6 +558,97 @@ class VersionSetting : NavPage("版本") {
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Text("去围观")
+                }
+            }
+        }
+    }
+
+}
+
+class OpenSourceLicense: NavPage("开源许可", isNavigation = false) {
+
+    override fun icon(): () -> Unit = {  }
+
+    data class LicenseBean(var title: String, var author: String, var tip: String, var url: String)
+
+    private val oss by lazy {
+        arrayListOf(
+            LicenseBean(
+                title = "Compose for Desktop",
+                author = "JetBrains",
+                tip = "Compose Multiplatform is a declarative framework for sharing UIs across multiple platforms with Kotlin. It is based on Jetpack Compose and developed by JetBrains and open-source contributors.",
+                url = "https://github.com/JetBrains/compose-multiplatform"
+            ),
+            LicenseBean(
+                title = "vtools（Scene 4）",
+                author = "helloklf",
+                tip = "一个集高级重启、应用安装自动点击、CPU调频等多项功能于一体的工具箱。",
+                url = "https://github.com/helloklf/vtools"
+            ),
+            LicenseBean(
+                title = "ComposeWindowStyler",
+                author = "MayakaApps",
+                tip = "Compose Window Styler is a library that lets you style your Compose for Desktop window to have more native and modern UI. This includes styling the window to use acrylic, mica ...etc.",
+                url = "https://github.com/MayakaApps/ComposeWindowStyler"
+            ),
+            LicenseBean(
+                title = "compose-fluent-ui",
+                author = "Konyaco",
+                tip = "Fluent Design UI library for Compose Multiplatform",
+                url = "https://github.com/Konyaco/compose-fluent-ui"
+            ),
+            LicenseBean(
+                title = "gson",
+                author = "google",
+                tip = "A Java serialization/deserialization library to convert Java Objects into JSON and back",
+                url = "https://github.com/google/gson"
+            ),
+            LicenseBean(
+                title = "jna",
+                author = "java-native-access",
+                tip = "Java Native Access (JNA)",
+                url = "https://github.com/java-native-access/jna"
+            ),
+            LicenseBean(
+                title = "karavel",
+                author = "AppOutlet",
+                tip = "Lightweight navigation library for Compose for Desktop",
+                url = "https://github.com/AppOutlet/karavel"
+            ),
+        )
+    }
+
+    @Composable
+    override fun content() {
+        val contextStore = LocalContext.current
+        FluentFold(
+            icon = Icons.Default.Code,
+            title = label
+        ) {
+            NavigationItemSeparator(modifier = Modifier.padding(bottom = 4.dp))
+
+            oss.onEach {
+                Row(
+                    modifier = Modifier.fillMaxWidth().clickable {  },
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth().weight(1f).padding(16.dp)
+                    ) {
+                        Text(it.title, style = MaterialTheme.typography.bodyLarge)
+                        Divider(modifier = Modifier.padding(top = 8.dp, bottom = 8.dp))
+                        Text(it.tip, style = MaterialTheme.typography.bodySmall)
+                    }
+                    Spacer(modifier = Modifier.size(8.dp))
+                    Text(it.author, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .5f))
+                    Spacer(modifier = Modifier.size(8.dp))
+                    IconButton(
+                        onClick = {
+                            contextStore.startBrowse(it.url)
+                        }
+                    ) {
+                        Icon(Icons.Default.ChevronRight, null)
+                    }
                 }
             }
         }

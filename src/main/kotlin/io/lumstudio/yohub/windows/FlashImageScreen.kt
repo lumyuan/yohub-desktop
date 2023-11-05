@@ -77,7 +77,10 @@ private val flashPages by lazy {
     )
 }
 
-class UnlinkPage : NavPage("未连接Fastboot设备", title = "请连接Fastboot设备") {
+class UnlinkPage : NavPage("未连接Fastboot设备", title = "请连接Fastboot设备", isNavigation = false) {
+
+    override fun icon(): () -> Unit = {  }
+
     @Composable
     override fun content() {
         Box(
@@ -99,7 +102,10 @@ data class Partition(
     var name: String
 )
 
-class LinkedPage : NavPage("镜像刷写") {
+class LinkedPage : NavPage("镜像刷写", isNavigation = false) {
+
+    override fun icon(): () -> Unit = {  }
+
     @Composable
     override fun content() {
         val keepShellStore = LocalKeepShell.current

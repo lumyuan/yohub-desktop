@@ -14,6 +14,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
@@ -29,6 +31,7 @@ import com.konyaco.fluent.component.rememberScrollbarAdapter
 import com.konyaco.fluent.icons.Icons
 import com.konyaco.fluent.icons.regular.ChevronDown
 import com.konyaco.fluent.icons.regular.Navigation
+import com.konyaco.fluent.icons.regular.Search
 
 val LocalExpand = compositionLocalOf { false }
 private val LocalNavigationLevel = compositionLocalOf { 0 }
@@ -40,6 +43,7 @@ fun SideNav(
     modifier: Modifier = Modifier,
     expanded: Boolean,
     onExpandStateChange: (Boolean) -> Unit,
+    autoSuggestionBox: (@Composable () -> Unit)? = null,
     footer: @Composable (() -> Unit)? = null,
     content: @Composable () -> Unit
 ) {
@@ -79,6 +83,43 @@ fun SideNav(
             LocalExpand provides expanded,
             LocalNavigationLevel provides 0
         ) {
+            autoSuggestionBox?.let {
+                TooltipArea(
+                    tooltipPlacement = TooltipPlacement.CursorPoint(
+                        offset = DpOffset(50.dp, 0.dp),
+                        alignment = Alignment.Center,
+                    ),
+                    tooltip = {
+                        if (!expanded) {
+                            TooltipText {
+                                Text("搜索功能")
+                            }
+                        }
+                    }
+                ) {
+                    Box(
+                        contentAlignment = Alignment.TopStart,
+                        modifier = Modifier
+                    ) {
+                        if (expanded) {
+                            Box(modifier = Modifier.padding(horizontal = 16.dp).padding(top = 2.dp)) {
+                                it()
+                            }
+                        } else {
+                            SideNavItem(
+                                selected = false,
+                                onClick = {
+                                    onExpandStateChange(true)
+                                },
+                                icon = {
+                                    Icon(Icons.Default.Search, null)
+                                },
+                                content = {}
+                            )
+                        }
+                    }
+                }
+            }
             val scrollState = rememberScrollState()
             ScrollbarContainer(
                 adapter = rememberScrollbarAdapter(scrollState),

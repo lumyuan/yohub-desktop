@@ -42,10 +42,8 @@ fun DeviceScreen() {
             when {
                 hostOs.isWindows -> InfoItem(
                     onClick = {
-                        if (!driverStore.isInstall) {
-                            CoroutineScope(Dispatchers.IO).launch {
-                                fastbootDriverStore.install()
-                            }
+                        CoroutineScope(Dispatchers.IO).launch {
+                            fastbootDriverStore.install()
                         }
                     },
                     icon = {

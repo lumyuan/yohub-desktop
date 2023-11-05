@@ -20,6 +20,7 @@ object R : BaseResource("res") {
         val ktFlutter by path("kt-flutter.svg")
         val logo by path("ic_launcher_logo.png")
         val logoRound by path("ic_launcher_logo_round.png")
+        val icMagisk by path("ic_magisk.svg")
     }
 
     object Raws: ChildResource(resId, "raws") {

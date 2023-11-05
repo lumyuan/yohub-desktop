@@ -7,7 +7,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,7 +25,6 @@ import io.lumstudio.yohub.common.shell.KeepShellStore
 import io.lumstudio.yohub.common.shell.LocalKeepShell
 import io.lumstudio.yohub.common.utils.FileCopyUtils
 import io.lumstudio.yohub.runtime.*
-import io.lumstudio.yohub.ui.component.LocalExpand
 import io.lumstudio.yohub.ui.component.Toolbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -35,6 +37,34 @@ import java.io.FilenameFilter
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.swing.JFrame
+
+@Composable
+fun MagicMaskModulesScreen(magicMaskModulesPage: MagicMaskModulesPage) {
+    val scrollState = rememberScrollState()
+    ScrollbarContainer(
+        adapter = rememberScrollbarAdapter(scrollState),
+    ) {
+        Column(
+            modifier = Modifier.fillMaxHeight().verticalScroll(scrollState).padding(16.dp)
+        ) {
+            magicMaskModulesPage.nestedItems?.onEach {
+                Box(
+                    modifier = Modifier.clip(RoundedCornerShape(8.dp))
+                        .clickable {
+                            magicMaskModulesPage.karavel?.navigate(it)
+                        }
+                ) {
+                    Text(
+                        it.label,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
+            }
+        }
+    }
+}
 
 @Composable
 fun MagiskPatcherScreen(magiskPatcherPage: MagiskPatcherPage) {
@@ -69,7 +99,16 @@ fun MagiskPatcherScreen(magiskPatcherPage: MagiskPatcherPage) {
                         modifier = Modifier.fillMaxWidth(),
                         onClick = {
                             CoroutineScope(Dispatchers.IO).launch {
-                                patcherImage(runtimeStore, keepShellStore, pythonStore, magiskPatcherStore, targetPath, outPath, text, patcherState)
+                                patcherImage(
+                                    runtimeStore,
+                                    keepShellStore,
+                                    pythonStore,
+                                    magiskPatcherStore,
+                                    targetPath,
+                                    outPath,
+                                    text,
+                                    patcherState
+                                )
                             }
                         },
                         shape = RoundedCornerShape(8.dp),
@@ -209,15 +248,15 @@ private suspend fun patcherImage(
             sendNotice("修补成功！", "已将修补好的镜像文件【${outFile.name}】存放于${outFile.parent}路径下") {
                 try {
                     Desktop.getDesktop().open(outFile.parentFile)
-                }catch (e: Exception) {
+                } catch (e: Exception) {
                     e.printStackTrace()
                 }
             }
-        }catch (e: Exception) {
+        } catch (e: Exception) {
             e.printStackTrace()
             sendNotice("修补失败！", e.toString())
         }
-    }else {
+    } else {
         sendNotice("修补失败！", out.split("\n")[0])
     }
     text.value = "开始修补镜像"
