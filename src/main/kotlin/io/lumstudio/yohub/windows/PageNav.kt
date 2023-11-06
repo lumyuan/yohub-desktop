@@ -2,9 +2,6 @@ package io.lumstudio.yohub.windows
 
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.res.painterResource
 import com.konyaco.fluent.icons.Icons
 import com.konyaco.fluent.icons.regular.*
@@ -23,6 +20,9 @@ enum class PageNav(
     ),
     MagiskPatcher(
         page = MagiskPatcherPage().apply { parent = MagicMaskModule.page }
+    ),
+    MagiskRepository(
+      page = MagiskRepositoryPage().apply { parent = MagicMaskModule.page }
     ),
     FlashImage(
         page = FlashImagePage()
@@ -43,7 +43,7 @@ abstract class NavPage(
     abstract fun icon(): @Composable () -> Unit
 }
 
-class HomePage : NavPage("Ê×Ò³") {
+class HomePage : NavPage("é¦–é¡µ") {
 
     override fun icon(): @Composable () -> Unit = { Icon(Icons.Default.Home, null) }
 
@@ -53,7 +53,7 @@ class HomePage : NavPage("Ê×Ò³") {
     }
 }
 
-class PayloadPage : NavPage("Payload¾µÏñÌáÈ¡", "¾µÏñÎÄ¼þÌáÈ¡", "µã»÷ÓÒ²à¡¾PayloadÎÄ¼þÌáÈ¡¡¿") {
+class PayloadPage : NavPage("Payloadé•œåƒæå–", "é•œåƒæ–‡ä»¶æå–", "ç‚¹å‡»å³ä¾§ã€Payloadæ–‡ä»¶æå–ã€‘") {
     override fun icon(): @Composable () -> Unit = { Icon(Icons.Default.FolderZip, null) }
 
 
@@ -63,13 +63,14 @@ class PayloadPage : NavPage("Payload¾µÏñÌáÈ¡", "¾µÏñÎÄ¼þÌáÈ¡", "µã»÷ÓÒ²à¡¾Payloa
     }
 }
 
-class MagicMaskModulesPage: NavPage("Magisk×¨Çø", "MagiskÏà¹Ø¹¦ÄÜ", "µã»÷ÓÒ²à¡¾Magisk×¨Çø¡¿") {
+class MagicMaskModulesPage : NavPage("Magiskä¸“åŒº", "Magiskç›¸å…³åŠŸèƒ½", "ç‚¹å‡»å³ä¾§ã€Magiskä¸“åŒºã€‘") {
 
     override fun icon(): @Composable () -> Unit = { Icon(painter = painterResource(R.icon.icMagisk), null) }
 
     init {
         nestedItems = arrayListOf(
-            MagiskPatcherPage().apply { parent = this@MagicMaskModulesPage }
+            MagiskPatcherPage().apply { parent = this@MagicMaskModulesPage },
+            MagiskRepositoryPage().apply { parent = this@MagicMaskModulesPage }
         )
     }
 
@@ -80,7 +81,8 @@ class MagicMaskModulesPage: NavPage("Magisk×¨Çø", "MagiskÏà¹Ø¹¦ÄÜ", "µã»÷ÓÒ²à¡¾M
 
 }
 
-class MagiskPatcherPage : NavPage("BootÐÞ²¹£¨topjohnwu£©", "ÐÞ²¹Boot¾µÏñ£¨Root£©", "µã»÷ÓÒ²à¡¾BootÐÞ²¹£¨topjohnwu£©¡¿", isNavigation = false) {
+class MagiskPatcherPage :
+    NavPage("Bootä¿®è¡¥ï¼ˆtopjohnwuï¼‰", "ä¿®è¡¥Booté•œåƒï¼ˆRootï¼‰", "ç‚¹å‡»å³ä¾§ã€Bootä¿®è¡¥ï¼ˆtopjohnwuï¼‰ã€‘", isNavigation = false) {
     override fun icon(): @Composable () -> Unit = { Icon(Icons.Default.MobileOptimized, null) }
 
     @Composable
@@ -90,7 +92,20 @@ class MagiskPatcherPage : NavPage("BootÐÞ²¹£¨topjohnwu£©", "ÐÞ²¹Boot¾µÏñ£¨Root£©
 
 }
 
-class SettingsPage : NavPage("ÉèÖÃ", isNavigation = false) {
+class MagiskRepositoryPage: NavPage("Magiskä»“åº“", isNavigation = false) {
+
+    override fun icon(): @Composable () -> Unit = {
+        Icon(Icons.Default.GroupList, null)
+    }
+
+    @Composable
+    override fun content() {
+        MagiskRepositoryScreen(this)
+    }
+
+}
+
+class SettingsPage : NavPage("è®¾ç½®", isNavigation = false) {
     override fun icon(): @Composable () -> Unit = { Icon(Icons.Default.Settings, null) }
 
     init {
@@ -107,7 +122,7 @@ class SettingsPage : NavPage("ÉèÖÃ", isNavigation = false) {
     }
 }
 
-class FlashImagePage : NavPage("Ë¢Ð´¾µÏñ", title = "ÎªÉè±¸Ë¢Èë¾µÏñÎÄ¼þ", "µã»÷ÓÒ²à¡¾Ë¢Ð´¾µÏñ¡¿") {
+class FlashImagePage : NavPage("åˆ·å†™é•œåƒ", title = "ä¸ºè®¾å¤‡åˆ·å…¥é•œåƒæ–‡ä»¶", "ç‚¹å‡»å³ä¾§ã€åˆ·å†™é•œåƒã€‘") {
     override fun icon(): @Composable () -> Unit = { Icon(Icons.Default.Flash, null) }
 
 

@@ -6,11 +6,9 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -23,12 +21,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.rememberCursorPositionProvider
 import com.konyaco.fluent.FluentTheme
-import com.konyaco.fluent.LocalContentColor
-import com.konyaco.fluent.LocalTextStyle
 import com.konyaco.fluent.ProvideTextStyle
 import com.konyaco.fluent.animation.FluentDuration
 import com.konyaco.fluent.animation.FluentEasing
-import com.konyaco.fluent.component.*
+import com.konyaco.fluent.component.AccentButton
+import com.konyaco.fluent.component.Button
+import com.konyaco.fluent.component.ButtonColor
+import com.konyaco.fluent.component.ButtonColors
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable

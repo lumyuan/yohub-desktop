@@ -68,7 +68,7 @@ fun PayloadScreen(payloadPage: PayloadPage) {
             Spacer(modifier = Modifier.size(8.dp))
             OutputPathEditor(targetPath, outPath)
             Spacer(modifier = Modifier.size(28.dp))
-            Text("¾µÏñÁĞ±í", style = MaterialTheme.typography.titleSmall)
+            Text("é•œåƒåˆ—è¡¨", style = MaterialTheme.typography.titleSmall)
             Spacer(modifier = Modifier.size(16.dp))
 
             val searchText = remember { mutableStateOf("") }
@@ -87,7 +87,7 @@ fun PayloadScreen(payloadPage: PayloadPage) {
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        "Î´Ñ¡ÔñPayload.binÎÄ¼ş",
+                        "æœªé€‰æ‹©Payload.binæ–‡ä»¶",
                         style = MaterialTheme.typography.labelLarge,
                         modifier = Modifier.padding(16.dp)
                     )
@@ -105,7 +105,7 @@ private fun MiuiDownload() {
         modifier = Modifier.fillMaxWidth()
             .padding(16.dp)
     ) {
-        Text("MIUIË¢»ú°üÏÂÔØ", style = MaterialTheme.typography.titleMedium)
+        Text("MIUIåˆ·æœºåŒ…ä¸‹è½½", style = MaterialTheme.typography.titleMedium)
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
             TextButton(
                 onClick = {
@@ -161,7 +161,7 @@ private fun TargetPathEditor(targetPath: MutableState<String>, outPath: MutableS
             value = targetPath.value,
             onValueChange = { targetPath.value = it },
             label = {
-                Text("ÊäÈëpayload.binÎÄ¼şÂ·¾¶")
+                Text("è¾“å…¥payload.binæ–‡ä»¶è·¯å¾„")
             },
             singleLine = true,
             textStyle = MaterialTheme.typography.labelMedium.copy(fontFamily = FontFamily(Font(R.font.jetBrainsMonoRegular))),
@@ -177,12 +177,12 @@ private fun TargetPathEditor(targetPath: MutableState<String>, outPath: MutableS
                     targetPath.value = fileDialog.directory + fileDialog.file
                     outPath.value = fileDialog.directory + "images"
                 } else if (fileDialog.file != null) {
-                    sendNotice("Ñ¡ÔñÊ§°Ü", "²»ÊÜÖ§³ÖµÄÎÄ¼şÀàĞÍ£º${fileDialog.file}")
+                    sendNotice("é€‰æ‹©å¤±è´¥", "ä¸å—æ”¯æŒçš„æ–‡ä»¶ç±»å‹ï¼š${fileDialog.file}")
                 }
             },
             shape = RoundedCornerShape(8.dp)
         ) {
-            Text("Ñ¡ÔñÎÄ¼ş")
+            Text("é€‰æ‹©æ–‡ä»¶")
         }
     }
 }
@@ -202,7 +202,7 @@ private fun ColumnScope.OutputPathEditor(targetPath: MutableState<String>, outPa
                     value = outPath.value,
                     onValueChange = {},
                     label = {
-                        Text("¾µÏñÎÄ¼şÌáÈ¡Â·¾¶")
+                        Text("é•œåƒæ–‡ä»¶æå–è·¯å¾„")
                     },
                     singleLine = true,
                     readOnly = true,
@@ -220,7 +220,7 @@ private fun ColumnScope.OutputPathEditor(targetPath: MutableState<String>, outPa
                     },
                     shape = RoundedCornerShape(8.dp)
                 ) {
-                    Text("´ò¿ªÎÄ¼ş¹ÜÀíÆ÷")
+                    Text("æ‰“å¼€æ–‡ä»¶ç®¡ç†å™¨")
                 }
             }
         }
@@ -264,7 +264,7 @@ private fun SearchLayout(
                 }
             },
             label = {
-                Text("ËÑË÷¾µÏñ")
+                Text("æœç´¢é•œåƒ")
             }
         )
 
@@ -276,7 +276,7 @@ private fun SearchLayout(
                 TooltipArea(
                     tooltip = {
                         TooltipText {
-                            Text("Ë¢ĞÂÁĞ±í")
+                            Text("åˆ·æ–°åˆ—è¡¨")
                         }
                     }
                 ) {
@@ -322,7 +322,7 @@ private fun Images(
             ) {
                 CircularProgressIndicator(modifier = Modifier.size(32.dp), strokeWidth = 3.dp)
                 Spacer(modifier = Modifier.size(8.dp))
-                Text("¼ÓÔØÖĞ...", style = MaterialTheme.typography.labelMedium)
+                Text("åŠ è½½ä¸­...", style = MaterialTheme.typography.labelMedium)
             }
         }
 
@@ -331,7 +331,7 @@ private fun Images(
         }
 
         if (imageList.isNotEmpty()) {
-            Text("ÕÒµ½${imageList.size}¸ö¾µÏñÎÄ¼ş", style = MaterialTheme.typography.labelSmall)
+            Text("æ‰¾åˆ°${imageList.size}ä¸ªé•œåƒæ–‡ä»¶", style = MaterialTheme.typography.labelSmall)
             Spacer(modifier = Modifier.size(16.dp))
         }
 
@@ -404,7 +404,7 @@ private fun ImageItem(
                     TooltipArea(
                         tooltip = {
                             TooltipText {
-                                Text("ÌáÈ¡${image.name}.img")
+                                Text("æå–${image.name}.img")
                             }
                         }
                     ) {
@@ -488,7 +488,7 @@ private suspend fun zipPayload(
 }
 
 /**
- * ÌáÈ¡¾µÏñ
+ * æå–é•œåƒ
  */
 private suspend fun extractImage(
     image: Image,
@@ -510,15 +510,15 @@ private suspend fun extractImage(
         try {
             val outPathString = outPath.value + File.separator + image.name + ".img"
             FileCopyUtils.copyFile(File(tempPath), File(outPathString))
-            sendNotice("ÌáÈ¡³É¹¦", "ÎÄ¼şÒÑ´æ·ÅÓÚ$outPathString") {
+            sendNotice("æå–æˆåŠŸ", "æ–‡ä»¶å·²å­˜æ”¾äº$outPathString") {
                 Desktop.getDesktop().open(file)
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            sendNotice("ÌáÈ¡Ê§°Ü", e.toString())
+            sendNotice("æå–å¤±è´¥", e.toString())
         }
     } else {
-        sendNotice("ÌáÈ¡Ê§°Ü", "AssertionError: operation data hash mismatch.")
+        sendNotice("æå–å¤±è´¥", "AssertionError: operation data hash mismatch.")
     }
     File(tempPath).delete()
     extractState.value = true

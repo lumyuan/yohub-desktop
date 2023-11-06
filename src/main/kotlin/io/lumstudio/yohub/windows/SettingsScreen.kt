@@ -50,13 +50,13 @@ fun SettingsScreen(settingsPage: SettingsPage) {
                 modifier = Modifier.fillMaxWidth().padding(32.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Text("Copyright @ 2023 ÓÅÌ´ÔÆÍøÂç¿Æ¼¼ All Rights Reserved", color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelSmall)
+                Text("Copyright @ 2023 ä¼˜æª€äº‘ç½‘ç»œç§‘æŠ€ All Rights Reserved", color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelSmall)
             }
         }
     }
 }
 
-class ThemeSetting : NavPage("Ö÷ÌâÉèÖÃ", isNavigation = false) {
+class ThemeSetting : NavPage("ä¸»é¢˜è®¾ç½®", isNavigation = false) {
 
     override fun icon(): () -> Unit = {  }
 
@@ -74,7 +74,7 @@ class ThemeSetting : NavPage("Ö÷ÌâÉèÖÃ", isNavigation = false) {
             Toolbar(label, enableAnimate = false)
             FluentItem(
                 Icons.Default.DarkTheme,
-                "ÉîÉ«Ä£Ê½"
+                "æ·±è‰²æ¨¡å¼"
             ) {
                 DarkTheme.values().onEach {
                     Row(
@@ -131,7 +131,7 @@ class ThemeSetting : NavPage("Ö÷ÌâÉèÖÃ", isNavigation = false) {
 
             FluentFold(
                 Icons.Default.Color,
-                "Ö÷ÌâÑÕÉ«",
+                "ä¸»é¢˜é¢œè‰²",
                 content = {
                     TextButton(
                         onClick = {
@@ -139,7 +139,7 @@ class ThemeSetting : NavPage("Ö÷ÌâÉèÖÃ", isNavigation = false) {
                         },
                         shape = RoundedCornerShape(8.dp)
                     ) {
-                        Text("ÖÆ×÷Ö÷Ìâ")
+                        Text("åˆ¶ä½œä¸»é¢˜")
                     }
                 }
             ) {
@@ -165,17 +165,17 @@ class ThemeSetting : NavPage("Ö÷ÌâÉèÖÃ", isNavigation = false) {
             }
 
             Dialog(
-                title = "ÌáÊ¾",
+                title = "æç¤º",
                 visible = uninstallState.value,
-                cancelButtonText = "È¡Ïû",
-                confirmButtonText = "È·¶¨",
+                cancelButtonText = "å–æ¶ˆ",
+                confirmButtonText = "ç¡®å®š",
                 onCancel = {
                     uninstallState.value = false
                 },
                 onConfirm = {
                     uninstallState.value = false
                     if (targetThemeFileName.value == selectTheme.value) {
-                        sendNotice("Ğ¶ÔØÊ§°Ü£¡", "ÎŞ·¨Ğ¶ÔØµ±Ç°ÒÑÔÚÊ¹ÓÃµÄÖ÷Ìâ")
+                        sendNotice("å¸è½½å¤±è´¥ï¼", "æ— æ³•å¸è½½å½“å‰å·²åœ¨ä½¿ç”¨çš„ä¸»é¢˜")
                     } else {
                         CoroutineScope(Dispatchers.IO).launch {
                             colorLoader.uninstallColorTheme(targetThemeFileName.value, targetThemeName.value)
@@ -185,24 +185,24 @@ class ThemeSetting : NavPage("Ö÷ÌâÉèÖÃ", isNavigation = false) {
                     }
                 },
                 content = {
-                    Text("ÊÇ·ñĞ¶ÔØÖ÷Ìâ¡¾${targetThemeName.value}¡¿\nÎÄ¼şÃû£º${targetThemeFileName.value}?")
+                    Text("æ˜¯å¦å¸è½½ä¸»é¢˜ã€${targetThemeName.value}ã€‘\næ–‡ä»¶åï¼š${targetThemeFileName.value}?")
                 }
             )
 
             val themeName = remember { mutableStateOf("") }
             val colorPath = remember { mutableStateOf("") }
             Dialog(
-                title = "Ö÷ÌâÖÆ×÷",
+                title = "ä¸»é¢˜åˆ¶ä½œ",
                 visible = generateState.value,
-                cancelButtonText = "È¡Ïû",
-                confirmButtonText = "Éú³ÉÖ÷ÌâÎÄ¼ş",
+                cancelButtonText = "å–æ¶ˆ",
+                confirmButtonText = "ç”Ÿæˆä¸»é¢˜æ–‡ä»¶",
                 onCancel = {
                     generateState.value = false
                 },
                 onConfirm = {
                     generateState.value = false
                     if (colorPath.value.trim().isEmpty()) {
-                        sendNotice("½âÎöÊ§°Ü£¡", "ÇëÊäÈëColorÎÄ¼şÂ·¾¶")
+                        sendNotice("è§£æå¤±è´¥ï¼", "è¯·è¾“å…¥Coloræ–‡ä»¶è·¯å¾„")
                         return@Dialog
                     }
                     CoroutineScope(Dispatchers.IO).launch {
@@ -213,20 +213,20 @@ class ThemeSetting : NavPage("Ö÷ÌâÉèÖÃ", isNavigation = false) {
                             val kt = String(readBytes(FileInputStream(colorFile)))
                             val list = kt.split("\n").toList().filter { it.contains("val md_theme_") }
                             if (list.isEmpty()) {
-                                sendNotice("Ö÷Ìâ½âÎöÊ§°Ü£¡", "²»ÊÇÓĞĞ§µÄColorÎÄ¼ş")
+                                sendNotice("ä¸»é¢˜è§£æå¤±è´¥ï¼", "ä¸æ˜¯æœ‰æ•ˆçš„Coloræ–‡ä»¶")
                             } else if (themeName.value.trim().isEmpty()) {
-                                sendNotice("Ö÷Ìâ´´½¨Ê§°Ü£¡", "Ö÷ÌâÃû³Æ²»ÄÜÎª¿Õ£¡")
+                                sendNotice("ä¸»é¢˜åˆ›å»ºå¤±è´¥ï¼", "ä¸»é¢˜åç§°ä¸èƒ½ä¸ºç©ºï¼")
                             } else {
                                 list.onEach {
-                                        when {
-                                            it.contains("light") -> {
-                                                light[it.name()] = it.argb()
-                                            }
-                                            it.contains("dark") -> {
-                                                dark[it.name()] = it.argb()
-                                            }
+                                    when {
+                                        it.contains("light") -> {
+                                            light[it.name()] = it.argb()
+                                        }
+                                        it.contains("dark") -> {
+                                            dark[it.name()] = it.argb()
                                         }
                                     }
+                                }
                                 try {
                                     val lightColor = light.toColorTheme()
                                     val darkColor = dark.toColorTheme()
@@ -238,16 +238,16 @@ class ThemeSetting : NavPage("Ö÷ÌâÉèÖÃ", isNavigation = false) {
                                     fileDialog.isVisible = true
                                     val path = fileDialog.directory + fileDialog.file
                                     writeBytes(FileOutputStream(path), json.toByteArray())
-                                    sendNotice("Ö÷ÌâÉú³É³É¹¦£¡", "ÒÑ½«ÄúµÄÖ÷Ìâ¡¾${themeName.value}¡¿±£´æÖÁ${fileDialog.directory}Ä¿Â¼ÏÂ")
+                                    sendNotice("ä¸»é¢˜ç”ŸæˆæˆåŠŸï¼", "å·²å°†æ‚¨çš„ä¸»é¢˜ã€${themeName.value}ã€‘ä¿å­˜è‡³${fileDialog.directory}ç›®å½•ä¸‹")
                                     themeName.value = ""
                                     colorPath.value = ""
                                 }catch (e: Exception) {
                                     e.printStackTrace()
-                                    sendNotice("Ö÷Ìâ½âÎö´íÎó£¡", "${e.message}")
+                                    sendNotice("ä¸»é¢˜è§£æé”™è¯¯ï¼", "${e.message}")
                                 }
                             }
                         }else {
-                            sendNotice("Ö÷ÌâÉú³ÉÊ§°Ü£¡", "Ä¿±êÎÄ¼ş¡¾${colorPath.value}¡¿²»´æÔÚ")
+                            sendNotice("ä¸»é¢˜ç”Ÿæˆå¤±è´¥ï¼", "ç›®æ ‡æ–‡ä»¶ã€${colorPath.value}ã€‘ä¸å­˜åœ¨")
                         }
                     }
                 },
@@ -258,10 +258,10 @@ class ThemeSetting : NavPage("Ö÷ÌâÉèÖÃ", isNavigation = false) {
 
             val contextStore = LocalContext.current
             Dialog(
-                title = "°ïÖú",
+                title = "å¸®åŠ©",
                 visible = helpState.value,
-                cancelButtonText = "ÖªµÀÀ²",
-                confirmButtonText = "»ñÈ¡ColorsÎÄ¼ş",
+                cancelButtonText = "çŸ¥é“å•¦",
+                confirmButtonText = "è·å–Colorsæ–‡ä»¶",
                 onCancel = {
                     helpState.value = false
                 },
@@ -270,7 +270,7 @@ class ThemeSetting : NavPage("Ö÷ÌâÉèÖÃ", isNavigation = false) {
                     contextStore.startBrowse("https://m3.material.io/theme-builder")
                 },
                 content = {
-                    Text("±¾Èí¼şÖ÷ÌâÅäÉ«¼Ü¹¹²ÉÓÃMaterial Design 3£¨MD3£©Éè¼Æ¹æ·¶½øĞĞÉè¼Æ£¬ÎªÁË·½±ãÖ÷ÌâÉè¼ÆÕß´´½¨Ö÷ÌâÅäÖÃÎÄ¼ş£¬±¾Èí¼ş½«Ö±½Ó½âÎöÓÉ¡¾Material Theme Builder¡¿Éú³ÉµÄ¡°Color.kt¡±ÎÄ¼ş£¬²¢×Ô¶¯×ª»»³ÉÖ÷ÌâÅäÖÃÎÄ¼ş¡£\n\n»ñÈ¡Color.kt£ºµã»÷ÏÂ·½»ñÈ¡°´Å¥£¬È»ºóÔÚÍøÕ¾ÖĞÉè¼ÆÄãµÄÖ÷ÌâÅäÉ«£¬×îºóµ¼³öÎª¡°Jetpack Compose¡±£¬×îºó½«ÏÂÔØµÄÎÄ¼ş½âÑ¹µ½Ä¿Â¼²¢Ê¹ÓÃ±¾Èí¼şµ¼ÈëColor.ktÎÄ¼ş¼´¿É¡£\n\nĞ¡ÌùÊ¿£ºÔÚ¡¾Figma¡¿ÖĞÊ¹ÓÃ¡°Material Theme Builder¡±²å¼şÉè¼ÆÅäÉ«¸Õ·½±ãÅ¶~")
+                    Text("æœ¬è½¯ä»¶ä¸»é¢˜é…è‰²æ¶æ„é‡‡ç”¨Material Design 3ï¼ˆMD3ï¼‰è®¾è®¡è§„èŒƒè¿›è¡Œè®¾è®¡ï¼Œä¸ºäº†æ–¹ä¾¿ä¸»é¢˜è®¾è®¡è€…åˆ›å»ºä¸»é¢˜é…ç½®æ–‡ä»¶ï¼Œæœ¬è½¯ä»¶å°†ç›´æ¥è§£æç”±ã€Material Theme Builderã€‘ç”Ÿæˆçš„â€œColor.ktâ€æ–‡ä»¶ï¼Œå¹¶è‡ªåŠ¨è½¬æ¢æˆä¸»é¢˜é…ç½®æ–‡ä»¶ã€‚\n\nè·å–Color.ktï¼šç‚¹å‡»ä¸‹æ–¹è·å–æŒ‰é’®ï¼Œç„¶ååœ¨ç½‘ç«™ä¸­è®¾è®¡ä½ çš„ä¸»é¢˜é…è‰²ï¼Œæœ€åå¯¼å‡ºä¸ºâ€œJetpack Composeâ€ï¼Œæœ€åå°†ä¸‹è½½çš„æ–‡ä»¶è§£å‹åˆ°ç›®å½•å¹¶ä½¿ç”¨æœ¬è½¯ä»¶å¯¼å…¥Color.ktæ–‡ä»¶å³å¯ã€‚\n\nå°è´´å£«ï¼šåœ¨ã€Figmaã€‘ä¸­ä½¿ç”¨â€œMaterial Theme Builderâ€æ’ä»¶è®¾è®¡é…è‰²åˆšæ–¹ä¾¿å“¦~")
                 }
             )
         }
@@ -281,35 +281,35 @@ class ThemeSetting : NavPage("Ö÷ÌâÉèÖÃ", isNavigation = false) {
     private fun String.argb(): String = this.substring(this.indexOf("(") + 1, this.indexOf(")")).replace("0x", "#").replace("0X", "#")
 
     private fun HashMap<String, String>.toColorTheme(): CustomColorTheme.LocalhostColorTheme = CustomColorTheme.LocalhostColorTheme(
-        primary = this["primary"] ?: throw NullPointerException("ÑÕÉ«½âÎöÊ§°Ü"),
-        onPrimary = this["onPrimary"] ?: throw NullPointerException("ÑÕÉ«½âÎöÊ§°Ü"),
-        primaryContainer = this["primaryContainer"] ?: throw NullPointerException("ÑÕÉ«½âÎöÊ§°Ü"),
-        onPrimaryContainer = this["onPrimaryContainer"] ?: throw NullPointerException("ÑÕÉ«½âÎöÊ§°Ü"),
-        secondary = this["secondary"] ?: throw NullPointerException("ÑÕÉ«½âÎöÊ§°Ü"),
-        onSecondary = this["onSecondary"] ?: throw NullPointerException("ÑÕÉ«½âÎöÊ§°Ü"),
-        secondaryContainer = this["secondaryContainer"] ?: throw NullPointerException("ÑÕÉ«½âÎöÊ§°Ü"),
-        onSecondaryContainer = this["onSecondaryContainer"] ?: throw NullPointerException("ÑÕÉ«½âÎöÊ§°Ü"),
-        tertiary = this["tertiary"] ?: throw NullPointerException("ÑÕÉ«½âÎöÊ§°Ü"),
-        onTertiary = this["onTertiary"] ?: throw NullPointerException("ÑÕÉ«½âÎöÊ§°Ü"),
-        tertiaryContainer = this["tertiaryContainer"] ?: throw NullPointerException("ÑÕÉ«½âÎöÊ§°Ü"),
-        onTertiaryContainer = this["onTertiaryContainer"] ?: throw NullPointerException("ÑÕÉ«½âÎöÊ§°Ü"),
-        error = this["error"] ?: throw NullPointerException("ÑÕÉ«½âÎöÊ§°Ü"),
-        errorContainer = this["errorContainer"] ?: throw NullPointerException("ÑÕÉ«½âÎöÊ§°Ü"),
-        onError = this["onError"] ?: throw NullPointerException("ÑÕÉ«½âÎöÊ§°Ü"),
-        onErrorContainer = this["onErrorContainer"] ?: throw NullPointerException("ÑÕÉ«½âÎöÊ§°Ü"),
-        background = this["background"] ?: throw NullPointerException("ÑÕÉ«½âÎöÊ§°Ü"),
-        onBackground = this["onBackground"] ?: throw NullPointerException("ÑÕÉ«½âÎöÊ§°Ü"),
-        outline = this["outline"] ?: throw NullPointerException("ÑÕÉ«½âÎöÊ§°Ü"),
-        inverseOnSurface = this["inverseOnSurface"] ?: throw NullPointerException("ÑÕÉ«½âÎöÊ§°Ü"),
-        inverseSurface = this["inverseSurface"] ?: throw NullPointerException("ÑÕÉ«½âÎöÊ§°Ü"),
-        inversePrimary = this["inversePrimary"] ?: throw NullPointerException("ÑÕÉ«½âÎöÊ§°Ü"),
-        surfaceTint = this["surfaceTint"] ?: throw NullPointerException("ÑÕÉ«½âÎöÊ§°Ü"),
-        outlineVariant = this["outlineVariant"] ?: throw NullPointerException("ÑÕÉ«½âÎöÊ§°Ü"),
-        scrim = this["scrim"] ?: throw NullPointerException("ÑÕÉ«½âÎöÊ§°Ü"),
-        surface = this["surface"] ?: throw NullPointerException("ÑÕÉ«½âÎöÊ§°Ü"),
-        onSurface = this["onSurface"] ?: throw NullPointerException("ÑÕÉ«½âÎöÊ§°Ü"),
-        surfaceVariant = this["surfaceVariant"] ?: throw NullPointerException("ÑÕÉ«½âÎöÊ§°Ü"),
-        onSurfaceVariant = this["onSurfaceVariant"] ?: throw NullPointerException("ÑÕÉ«½âÎöÊ§°Ü"),
+        primary = this["primary"] ?: throw NullPointerException("é¢œè‰²è§£æå¤±è´¥"),
+        onPrimary = this["onPrimary"] ?: throw NullPointerException("é¢œè‰²è§£æå¤±è´¥"),
+        primaryContainer = this["primaryContainer"] ?: throw NullPointerException("é¢œè‰²è§£æå¤±è´¥"),
+        onPrimaryContainer = this["onPrimaryContainer"] ?: throw NullPointerException("é¢œè‰²è§£æå¤±è´¥"),
+        secondary = this["secondary"] ?: throw NullPointerException("é¢œè‰²è§£æå¤±è´¥"),
+        onSecondary = this["onSecondary"] ?: throw NullPointerException("é¢œè‰²è§£æå¤±è´¥"),
+        secondaryContainer = this["secondaryContainer"] ?: throw NullPointerException("é¢œè‰²è§£æå¤±è´¥"),
+        onSecondaryContainer = this["onSecondaryContainer"] ?: throw NullPointerException("é¢œè‰²è§£æå¤±è´¥"),
+        tertiary = this["tertiary"] ?: throw NullPointerException("é¢œè‰²è§£æå¤±è´¥"),
+        onTertiary = this["onTertiary"] ?: throw NullPointerException("é¢œè‰²è§£æå¤±è´¥"),
+        tertiaryContainer = this["tertiaryContainer"] ?: throw NullPointerException("é¢œè‰²è§£æå¤±è´¥"),
+        onTertiaryContainer = this["onTertiaryContainer"] ?: throw NullPointerException("é¢œè‰²è§£æå¤±è´¥"),
+        error = this["error"] ?: throw NullPointerException("é¢œè‰²è§£æå¤±è´¥"),
+        errorContainer = this["errorContainer"] ?: throw NullPointerException("é¢œè‰²è§£æå¤±è´¥"),
+        onError = this["onError"] ?: throw NullPointerException("é¢œè‰²è§£æå¤±è´¥"),
+        onErrorContainer = this["onErrorContainer"] ?: throw NullPointerException("é¢œè‰²è§£æå¤±è´¥"),
+        background = this["background"] ?: throw NullPointerException("é¢œè‰²è§£æå¤±è´¥"),
+        onBackground = this["onBackground"] ?: throw NullPointerException("é¢œè‰²è§£æå¤±è´¥"),
+        outline = this["outline"] ?: throw NullPointerException("é¢œè‰²è§£æå¤±è´¥"),
+        inverseOnSurface = this["inverseOnSurface"] ?: throw NullPointerException("é¢œè‰²è§£æå¤±è´¥"),
+        inverseSurface = this["inverseSurface"] ?: throw NullPointerException("é¢œè‰²è§£æå¤±è´¥"),
+        inversePrimary = this["inversePrimary"] ?: throw NullPointerException("é¢œè‰²è§£æå¤±è´¥"),
+        surfaceTint = this["surfaceTint"] ?: throw NullPointerException("é¢œè‰²è§£æå¤±è´¥"),
+        outlineVariant = this["outlineVariant"] ?: throw NullPointerException("é¢œè‰²è§£æå¤±è´¥"),
+        scrim = this["scrim"] ?: throw NullPointerException("é¢œè‰²è§£æå¤±è´¥"),
+        surface = this["surface"] ?: throw NullPointerException("é¢œè‰²è§£æå¤±è´¥"),
+        onSurface = this["onSurface"] ?: throw NullPointerException("é¢œè‰²è§£æå¤±è´¥"),
+        surfaceVariant = this["surfaceVariant"] ?: throw NullPointerException("é¢œè‰²è§£æå¤±è´¥"),
+        onSurfaceVariant = this["onSurfaceVariant"] ?: throw NullPointerException("é¢œè‰²è§£æå¤±è´¥"),
     )
 
     @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -330,7 +330,7 @@ class ThemeSetting : NavPage("Ö÷ÌâÉèÖÃ", isNavigation = false) {
                     value = themeName.value,
                     onValueChange = { themeName.value = it },
                     label = {
-                        Text("*Ö÷ÌâÃû³Æ")
+                        Text("*ä¸»é¢˜åç§°")
                     },
                     textStyle = MaterialTheme.typography.labelMedium,
                     singleLine = true
@@ -343,7 +343,7 @@ class ThemeSetting : NavPage("Ö÷ÌâÉèÖÃ", isNavigation = false) {
                     TooltipArea(
                         tooltip = {
                             TooltipText {
-                                Text("°ïÖú")
+                                Text("å¸®åŠ©")
                             }
                         }
                     ) {
@@ -366,7 +366,7 @@ class ThemeSetting : NavPage("Ö÷ÌâÉèÖÃ", isNavigation = false) {
                     value = colorPath.value,
                     onValueChange = { colorPath.value = it },
                     label = {
-                        Text("*ÊäÈë¡°Color.kt¡±ÎÄ¼şÂ·¾¶")
+                        Text("*è¾“å…¥â€œColor.ktâ€æ–‡ä»¶è·¯å¾„")
                     },
                     textStyle = MaterialTheme.typography.labelMedium,
                     modifier = Modifier.fillMaxWidth().weight(1f),
@@ -385,7 +385,7 @@ class ThemeSetting : NavPage("Ö÷ÌâÉèÖÃ", isNavigation = false) {
                     },
                     shape = RoundedCornerShape(8.dp)
                 ) {
-                    Text("Ñ¡ÔñÎÄ¼ş")
+                    Text("é€‰æ‹©æ–‡ä»¶")
                 }
             }
         }
@@ -402,7 +402,7 @@ class ThemeSetting : NavPage("Ö÷ÌâÉèÖÃ", isNavigation = false) {
         TooltipArea(
             tooltip = {
                 TooltipText {
-                    Text("YoHub Color£¨sRGB£©")
+                    Text("YoHub Colorï¼ˆsRGBï¼‰")
                 }
             }
         ) {
@@ -452,7 +452,7 @@ class ThemeSetting : NavPage("Ö÷ÌâÉèÖÃ", isNavigation = false) {
         TooltipArea(
             tooltip = {
                 TooltipText {
-                    Text("${colorThemeItem.customColorTheme.name}£¨${colorThemeItem.customColorTheme.type}£©")
+                    Text("${colorThemeItem.customColorTheme.name}ï¼ˆ${colorThemeItem.customColorTheme.type}ï¼‰")
                 }
             }
         ) {
@@ -509,7 +509,7 @@ private fun ColorThemeItemInstall(
     TooltipArea(
         tooltip = {
             TooltipText {
-                Text("°²×°Ö÷Ìâ")
+                Text("å®‰è£…ä¸»é¢˜")
             }
         }
     ) {
@@ -538,7 +538,7 @@ private fun ColorThemeItemInstall(
     }
 }
 
-class VersionSetting : NavPage("°æ±¾", isNavigation = false) {
+class VersionSetting : NavPage("ç‰ˆæœ¬", isNavigation = false) {
 
     override fun icon(): () -> Unit = {  }
 
@@ -549,7 +549,7 @@ class VersionSetting : NavPage("°æ±¾", isNavigation = false) {
             Toolbar(label, enableAnimate = false)
             FluentItem(
                 Icons.Default.Open,
-                "¿ªÔ´µØÖ·"
+                "å¼€æºåœ°å€"
             ) {
                 TextButton(
                     onClick = {
@@ -557,7 +557,7 @@ class VersionSetting : NavPage("°æ±¾", isNavigation = false) {
                     },
                     shape = RoundedCornerShape(8.dp)
                 ) {
-                    Text("È¥Î§¹Û")
+                    Text("å»å›´è§‚")
                 }
             }
         }
@@ -565,7 +565,7 @@ class VersionSetting : NavPage("°æ±¾", isNavigation = false) {
 
 }
 
-class OpenSourceLicense: NavPage("¿ªÔ´Ğí¿É", isNavigation = false) {
+class OpenSourceLicense: NavPage("å¼€æºè®¸å¯", isNavigation = false) {
 
     override fun icon(): () -> Unit = {  }
 
@@ -580,9 +580,9 @@ class OpenSourceLicense: NavPage("¿ªÔ´Ğí¿É", isNavigation = false) {
                 url = "https://github.com/JetBrains/compose-multiplatform"
             ),
             LicenseBean(
-                title = "vtools£¨Scene 4£©",
+                title = "vtoolsï¼ˆScene 4ï¼‰",
                 author = "helloklf",
-                tip = "Ò»¸ö¼¯¸ß¼¶ÖØÆô¡¢Ó¦ÓÃ°²×°×Ô¶¯µã»÷¡¢CPUµ÷ÆµµÈ¶àÏî¹¦ÄÜÓÚÒ»ÌåµÄ¹¤¾ßÏä¡£",
+                tip = "ä¸€ä¸ªé›†é«˜çº§é‡å¯ã€åº”ç”¨å®‰è£…è‡ªåŠ¨ç‚¹å‡»ã€CPUè°ƒé¢‘ç­‰å¤šé¡¹åŠŸèƒ½äºä¸€ä½“çš„å·¥å…·ç®±ã€‚",
                 url = "https://github.com/helloklf/vtools"
             ),
             LicenseBean(
@@ -614,6 +614,24 @@ class OpenSourceLicense: NavPage("¿ªÔ´Ğí¿É", isNavigation = false) {
                 author = "AppOutlet",
                 tip = "Lightweight navigation library for Compose for Desktop",
                 url = "https://github.com/AppOutlet/karavel"
+            ),
+            LicenseBean(
+                title = "okhttp",
+                author = "square",
+                tip = "Squareâ€™s meticulous HTTP client for the JVM, Android, and GraalVM.",
+                url = "https://github.com/square/okhttp"
+            ),
+            LicenseBean(
+                title = "retrofit",
+                author = "square",
+                tip = "A type-safe HTTP client for Android and the JVM",
+                url = "https://github.com/square/retrofit"
+            ),
+            LicenseBean(
+                title = "load-the-image",
+                author = "ltttttttttttt",
+                tip = "æ¡Œé¢ç«¯å›¾ç‰‡åŠ è½½æ¡†æ¶, load-the-image Apply to compose-jb(desktop), Used to load network and local pictures, supports caching.",
+                url = "https://github.com/ltttttttttttt/load-the-image"
             ),
         )
     }

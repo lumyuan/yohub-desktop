@@ -1,4 +1,4 @@
-<component name="libraryTable">
+﻿<component name="libraryTable">
   <library name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-common:1.8.20" type="kotlin.common" external-system-id="GRADLE">
     <properties groupId="org.jetbrains.kotlin" artifactId="kotlin-stdlib-common" version="1.8.20" />
     <CLASSES>

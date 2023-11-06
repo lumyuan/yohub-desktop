@@ -50,7 +50,7 @@ class ColorLoader(
                         )
                     }catch (e: Exception) {
                         e.printStackTrace()
-                        sendNotice("Ö÷Ìâ½âÎö´íÎó£¡", "Ö÷ÌâÎÄ¼ş¡¾${it.name}¡¿½âÎöÊ§°Ü£º${e.message}")
+                        sendNotice("ä¸»é¢˜è§£æé”™è¯¯ï¼", "ä¸»é¢˜æ–‡ä»¶ã€${it.name}ã€‘è§£æå¤±è´¥ï¼š${e.message}")
                         it.delete()
                     }
                 }
@@ -72,21 +72,21 @@ class ColorLoader(
                 val colorTheme = gson.fromJson(theme, CustomColorTheme::class.java)
                 colorTheme.getLightColorScheme()
                 FileCopyUtils.copyFile(File(targetPath), File(installThemesPathStore.installPathFile, fileDialog.file))
-                sendNotice("°²×°³É¹¦£¡", "³É¹¦°²×°Ö÷Ìâ¡¾${fileDialog.file}¡¿")
+                sendNotice("å®‰è£…æˆåŠŸï¼", "æˆåŠŸå®‰è£…ä¸»é¢˜ã€${fileDialog.file}ã€‘")
             }catch (e: Exception) {
                 e.printStackTrace()
-                sendNotice("°²×°Ê§°Ü£¡", "Ö÷ÌâÎÄ¼ş¡¾${fileDialog.file}¡¿½âÎöÊ§°Ü£º${e.message}")
+                sendNotice("å®‰è£…å¤±è´¥ï¼", "ä¸»é¢˜æ–‡ä»¶ã€${fileDialog.file}ã€‘è§£æå¤±è´¥ï¼š${e.message}")
             }
         } else if (fileDialog.file != null) {
-            sendNotice("Ñ¡ÔñÊ§°Ü", "²»ÊÜÖ§³ÖµÄÎÄ¼şÀàĞÍ£º${fileDialog.file}")
+            sendNotice("é€‰æ‹©å¤±è´¥", "ä¸å—æ”¯æŒçš„æ–‡ä»¶ç±»å‹ï¼š${fileDialog.file}")
         }
     }
 
     suspend fun uninstallColorTheme(themeFileName: String, themeName: String) = withContext(Dispatchers.IO) {
         if (File(installThemesPathStore.installPathFile, themeFileName).delete()) {
-            sendNotice("Ğ¶ÔØ³É¹¦£¡", "ÒÑ½«Ö÷ÌâÎÄ¼ş¡¾$themeName¡¿Ğ¶ÔØ")
+            sendNotice("å¸è½½æˆåŠŸï¼", "å·²å°†ä¸»é¢˜æ–‡ä»¶ã€$themeNameã€‘å¸è½½")
         }else {
-            sendNotice("Ğ¶ÔØÊ§°Ü£¡", "Ö÷ÌâÎÄ¼ş¡¾$themeFileName¡¿¿ÉÄÜ²»´æÔÚ")
+            sendNotice("å¸è½½å¤±è´¥ï¼", "ä¸»é¢˜æ–‡ä»¶ã€$themeFileNameã€‘å¯èƒ½ä¸å­˜åœ¨")
         }
     }
 }

@@ -26,7 +26,10 @@ import io.lumstudio.yohub.R
 import io.lumstudio.yohub.common.*
 import io.lumstudio.yohub.common.shell.KeepShellStore
 import io.lumstudio.yohub.common.shell.LocalKeepShell
-import io.lumstudio.yohub.common.utils.*
+import io.lumstudio.yohub.common.utils.ColorLoader
+import io.lumstudio.yohub.common.utils.LocalPreferences
+import io.lumstudio.yohub.common.utils.PreferencesName
+import io.lumstudio.yohub.common.utils.PreferencesStore
 import io.lumstudio.yohub.runtime.*
 import io.lumstudio.yohub.theme.*
 import kotlinx.coroutines.*
@@ -122,7 +125,7 @@ fun StartWindow() {
         LocalDevices provides devicesStore,
         LocalDriver provides driverStore,
         LocalColorTheme provides colorThemeStore,
-        LocalInstallThemesPath provides installThemesPathStore
+        LocalInstallThemesPath provides installThemesPathStore,
     ) {
         InitProperties(preferencesStore)
         if (!isFinished) {
@@ -289,7 +292,7 @@ private fun LoadConfigurations(
                     fastbootDriverStore.fastbootDriverHostFile.absolutePath
                 )
             }
-            tipText.value = "加载完成！..."
+            tipText.value = "加载完成！"
             delay(1000)
             isFinishedAnimatable.value = true
         }

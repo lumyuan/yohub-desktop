@@ -73,7 +73,7 @@ class KeepShellStore(
         return doCmdSync(stringBuilder.toString()) != "error"
     }
 
-    //ִ�нű�
+    //执行脚本
     fun doCmdSync(cmd: String): String {
         return getDefaultInstance().doCmdSync(cmd)
     }

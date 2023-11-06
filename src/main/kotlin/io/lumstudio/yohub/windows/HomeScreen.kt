@@ -2,7 +2,9 @@ package io.lumstudio.yohub.windows
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,7 +20,9 @@ fun HomeScreen(homePage: HomePage) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column {
+        Column(
+            modifier = Modifier.verticalScroll(rememberScrollState())
+        ) {
             PageNav.values().toList().filter { it.page.title != null && it.page.isNavigation }.onEach {
                 Row(
                     modifier = Modifier.clip(RoundedCornerShape(8.dp))

@@ -90,7 +90,7 @@ fun MagiskPatcherScreen(magiskPatcherPage: MagiskPatcherPage) {
             OutputPathEditor(targetPath, outPath)
 
             val exists = targetPath.value.endsWith(".img") && File(targetPath.value).exists()
-            val text = remember { mutableStateOf("¿ªÊ¼ĞŞ²¹¾µÏñ") }
+            val text = remember { mutableStateOf("å¼€å§‹ä¿®è¡¥é•œåƒ") }
             val patcherState = remember { mutableStateOf(false) }
             AnimatedVisibility(exists) {
                 Column {
@@ -136,7 +136,7 @@ fun MagiskPatcherScreen(magiskPatcherPage: MagiskPatcherPage) {
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        "Î´Ñ¡ÔñBootÎÄ¼ş",
+                        "æœªé€‰æ‹©Bootæ–‡ä»¶",
                         style = MaterialTheme.typography.labelLarge,
                         modifier = Modifier.padding(16.dp)
                     )
@@ -157,7 +157,7 @@ private fun TargetPathEditor(targetPath: MutableState<String>, outPath: MutableS
             value = targetPath.value,
             onValueChange = { targetPath.value = it },
             label = {
-                Text("ÊäÈë¾µÏñÎÄ¼şÂ·¾¶£¨Ö§³Öboot/init_boot£©")
+                Text("è¾“å…¥é•œåƒæ–‡ä»¶è·¯å¾„ï¼ˆæ”¯æŒboot/init_bootï¼‰")
             },
             singleLine = true,
             textStyle = MaterialTheme.typography.labelMedium.copy(fontFamily = FontFamily(Font(R.font.jetBrainsMonoRegular))),
@@ -173,12 +173,12 @@ private fun TargetPathEditor(targetPath: MutableState<String>, outPath: MutableS
                     targetPath.value = fileDialog.directory + fileDialog.file
                     outPath.value = fileDialog.directory
                 } else if (fileDialog.file != null) {
-                    sendNotice("Ñ¡ÔñÊ§°Ü", "²»ÊÜÖ§³ÖµÄÎÄ¼şÀàĞÍ£º${fileDialog.file}")
+                    sendNotice("é€‰æ‹©å¤±è´¥", "ä¸å—æ”¯æŒçš„æ–‡ä»¶ç±»å‹ï¼š${fileDialog.file}")
                 }
             },
             shape = RoundedCornerShape(8.dp)
         ) {
-            Text("Ñ¡ÔñÎÄ¼ş")
+            Text("é€‰æ‹©æ–‡ä»¶")
         }
     }
 }
@@ -198,7 +198,7 @@ private fun ColumnScope.OutputPathEditor(targetPath: MutableState<String>, outPa
                     value = outPath.value,
                     onValueChange = {},
                     label = {
-                        Text("BootÎÄ¼şÊä³öÂ·¾¶")
+                        Text("Bootæ–‡ä»¶è¾“å‡ºè·¯å¾„")
                     },
                     singleLine = true,
                     readOnly = true,
@@ -216,7 +216,7 @@ private fun ColumnScope.OutputPathEditor(targetPath: MutableState<String>, outPa
                     },
                     shape = RoundedCornerShape(8.dp)
                 ) {
-                    Text("´ò¿ªÎÄ¼ş¹ÜÀíÆ÷")
+                    Text("æ‰“å¼€æ–‡ä»¶ç®¡ç†å™¨")
                 }
             }
         }
@@ -237,7 +237,7 @@ private suspend fun patcherImage(
     text: MutableState<String>,
     patcherState: MutableState<Boolean>
 ) = withContext(Dispatchers.IO) {
-    text.value = "BootĞŞ²¹ÖĞ£¬ÇëÉÔºò..."
+    text.value = "Bootä¿®è¡¥ä¸­ï¼Œè¯·ç¨å€™..."
     patcherState.value = true
     val out = keepShellStore cmd pythonStore.py(magiskPatcherStore.script("boot_patch.py ${targetPath.value}"))
     if (out.contains("- Repacking boot image")) {
@@ -245,7 +245,7 @@ private suspend fun patcherImage(
         val outFile = File(outPath.value, "magisk-patched-${dateFormat.format(Date())}.img")
         try {
             FileCopyUtils.copyFile(tempPath, outFile)
-            sendNotice("ĞŞ²¹³É¹¦£¡", "ÒÑ½«ĞŞ²¹ºÃµÄ¾µÏñÎÄ¼ş¡¾${outFile.name}¡¿´æ·ÅÓÚ${outFile.parent}Â·¾¶ÏÂ") {
+            sendNotice("ä¿®è¡¥æˆåŠŸï¼", "å·²å°†ä¿®è¡¥å¥½çš„é•œåƒæ–‡ä»¶ã€${outFile.name}ã€‘å­˜æ”¾äº${outFile.parent}è·¯å¾„ä¸‹") {
                 try {
                     Desktop.getDesktop().open(outFile.parentFile)
                 } catch (e: Exception) {
@@ -254,11 +254,11 @@ private suspend fun patcherImage(
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            sendNotice("ĞŞ²¹Ê§°Ü£¡", e.toString())
+            sendNotice("ä¿®è¡¥å¤±è´¥ï¼", e.toString())
         }
     } else {
-        sendNotice("ĞŞ²¹Ê§°Ü£¡", out.split("\n")[0])
+        sendNotice("ä¿®è¡¥å¤±è´¥ï¼", out.split("\n")[0])
     }
-    text.value = "¿ªÊ¼ĞŞ²¹¾µÏñ"
+    text.value = "å¼€å§‹ä¿®è¡¥é•œåƒ"
     patcherState.value = false
 }

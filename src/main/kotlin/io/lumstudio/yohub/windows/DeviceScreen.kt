@@ -50,7 +50,7 @@ fun DeviceScreen() {
                         Icon(Icons.Default.DeviceEq, null, modifier = Modifier.fillMaxSize())
                     }
                 ) {
-                    Text("Çı¶¯×´Ì¬£º${if (driverStore.isInstall) "Õı³£" else "Òì³££¨µã»÷ĞŞ¸´£©"}")
+                    Text("é©±åŠ¨çŠ¶æ€ï¼š${if (driverStore.isInstall) "æ­£å¸¸" else "å¼‚å¸¸ï¼ˆç‚¹å‡»ä¿®å¤ï¼‰"}")
                 }
             }
 
@@ -65,19 +65,19 @@ fun DeviceScreen() {
                     )
                 }
             ) {
-                var label by remember { mutableStateOf("Î´Ñ¡ÖĞÉè±¸") }
+                var label by remember { mutableStateOf("æœªé€‰ä¸­è®¾å¤‡") }
                 var sub by remember { mutableStateOf("") }
                 val device = selectDevice
 
                 if (devicesStore.devices.isEmpty()) {
-                    label = "Î´Á¬½ÓÉè±¸"
+                    label = "æœªè¿æ¥è®¾å¤‡"
                     sub = ""
                 } else if (device == null) {
-                    label = "Î´Ñ¡ÖĞÉè±¸"
+                    label = "æœªé€‰ä¸­è®¾å¤‡"
                     sub = ""
                 } else {
-                    label = "ÒÑÁ¬½Ó£º${DeviceName.value}"
-                    sub = "Éè±¸ÀàĞÍ£º${device.type}"
+                    label = "å·²è¿æ¥ï¼š${DeviceName.value}"
+                    sub = "è®¾å¤‡ç±»å‹ï¼š${device.type}"
                 }
 
                 Column {
@@ -102,7 +102,7 @@ fun DeviceScreen() {
                 InfoItem(
                     onClick = {
                         displayDialog = true
-                        contentText = "È·¶¨ÒªÖØÆô¡¾${selectDevice?.id}¡¿Âğ£¿"
+                        contentText = "ç¡®å®šè¦é‡å¯ã€${selectDevice?.id}ã€‘å—ï¼Ÿ"
                         onConfirm = {
                             ioCoroutine.ioScope.launch {
                                 keepShellStore adb "reboot"
@@ -113,7 +113,7 @@ fun DeviceScreen() {
                         Icon(Icons.Default.Power, null)
                     }
                 ) {
-                    Text("ÖØÆôÉè±¸")
+                    Text("é‡å¯è®¾å¤‡")
                 }
             }
 
@@ -127,7 +127,7 @@ fun DeviceScreen() {
                 InfoItem(
                     onClick = {
                         displayDialog = true
-                        contentText = "È·¶¨Òª½«Éè±¸¡¾${selectDevice?.id}¡¿¹Ø»úÂğ£¿"
+                        contentText = "ç¡®å®šè¦å°†è®¾å¤‡ã€${selectDevice?.id}ã€‘å…³æœºå—ï¼Ÿ"
                         onConfirm = {
                             ioCoroutine.ioScope.launch {
                                 keepShellStore adb "reboot p"
@@ -138,7 +138,7 @@ fun DeviceScreen() {
                         Icon(Icons.Default.Power, null)
                     }
                 ) {
-                    Text("Éè±¸¹Ø»ú")
+                    Text("è®¾å¤‡å…³æœº")
                 }
             }
 
@@ -152,7 +152,7 @@ fun DeviceScreen() {
                 InfoItem(
                     onClick = {
                         displayDialog = true
-                        contentText = "È·¶¨Òª½«¡¾${selectDevice?.id}¡¿ÖØÆôµ½BootloaderÂğ£¿"
+                        contentText = "ç¡®å®šè¦å°†ã€${selectDevice?.id}ã€‘é‡å¯åˆ°Bootloaderå—ï¼Ÿ"
                         onConfirm = {
                             ioCoroutine.ioScope.launch {
                                 keepShellStore adb "reboot bootloader"
@@ -163,7 +163,7 @@ fun DeviceScreen() {
                         Icon(Icons.Default.Power, null)
                     }
                 ) {
-                    Text("ÖØÆôÖÁBootloader")
+                    Text("é‡å¯è‡³Bootloader")
                 }
             }
 
@@ -177,7 +177,7 @@ fun DeviceScreen() {
                 InfoItem(
                     onClick = {
                         displayDialog = true
-                        contentText = "È·¶¨Òª½«¡¾${selectDevice?.id}¡¿ÖØÆôµ½RecoveryÂğ£¿"
+                        contentText = "ç¡®å®šè¦å°†ã€${selectDevice?.id}ã€‘é‡å¯åˆ°Recoveryå—ï¼Ÿ"
                         onConfirm = {
                             ioCoroutine.ioScope.launch {
                                 keepShellStore adb "reboot recovery"
@@ -188,7 +188,7 @@ fun DeviceScreen() {
                         Icon(Icons.Default.Power, null)
                     }
                 ) {
-                    Text("ÖØÆôÖÁRecovery")
+                    Text("é‡å¯è‡³Recovery")
                 }
             }
 
@@ -200,7 +200,7 @@ fun DeviceScreen() {
                 InfoItem(
                     onClick = {
                         displayDialog = true
-                        contentText = "È·¶¨ÒªÖØÆô¡¾${selectDevice?.id}¡¿Âğ£¿"
+                        contentText = "ç¡®å®šè¦é‡å¯ã€${selectDevice?.id}ã€‘å—ï¼Ÿ"
                         onConfirm = {
                             ioCoroutine.ioScope.launch {
                                 keepShellStore fastboot "reboot"
@@ -211,7 +211,7 @@ fun DeviceScreen() {
                         Icon(Icons.Default.Power, null)
                     }
                 ) {
-                    Text("ÖØÆôÉè±¸")
+                    Text("é‡å¯è®¾å¤‡")
                 }
             }
 
@@ -223,7 +223,7 @@ fun DeviceScreen() {
                 InfoItem(
                     onClick = {
                         displayDialog = true
-                        contentText = "È·¶¨Òª½«¡¾${selectDevice?.id}¡¿ÖØÆôµ½RecoveryÂğ£¿"
+                        contentText = "ç¡®å®šè¦å°†ã€${selectDevice?.id}ã€‘é‡å¯åˆ°Recoveryå—ï¼Ÿ"
                         onConfirm = {
                             ioCoroutine.ioScope.launch {
                                 keepShellStore fastboot "reboot recovery"
@@ -234,15 +234,15 @@ fun DeviceScreen() {
                         Icon(Icons.Default.Power, null)
                     }
                 ) {
-                    Text("ÖØÆôÖÁRecovery")
+                    Text("é‡å¯è‡³Recovery")
                 }
             }
 
             Dialog(
-                title = "ÌáÊ¾",
+                title = "æç¤º",
                 visible = displayDialog,
-                cancelButtonText = "È¡Ïû",
-                confirmButtonText = "È·¶¨",
+                cancelButtonText = "å–æ¶ˆ",
+                confirmButtonText = "ç¡®å®š",
                 onCancel = {
                     displayDialog = false
                 },

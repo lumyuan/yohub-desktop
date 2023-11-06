@@ -69,6 +69,54 @@ fun FluentItem(
 }
 
 @Composable
+fun FluentItem(
+    icon: (@Composable () -> Unit)? = null,
+    title: String,
+    subtitle: String? = null,
+    leadingIcon: (@Composable RowScope.() -> Unit)? = null
+) {
+    OutlinedCard(
+        modifier = Modifier.fillMaxWidth()
+            .padding(bottom = 8.dp),
+        shape = RoundedCornerShape(8.dp),
+        colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.background),
+        border = BorderStroke(.5.dp, DividerDefaults.color)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth()
+                .height(70.dp)
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (icon != null) {
+                Box(modifier = Modifier.size(24.dp)) { icon() }
+                Spacer(modifier = Modifier.size(16.dp))
+            }
+            Column(
+                modifier = Modifier.fillMaxWidth().weight(1f)
+            ) {
+                Text(title, style = MaterialTheme.typography.bodyLarge, softWrap = false)
+                subtitle?.also {
+                    Spacer(modifier = Modifier.size(4.dp))
+                    Text(
+                        it,
+                        style = MaterialTheme.typography.labelSmall,
+                        softWrap = false,
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = .8f)
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.size(16.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                leadingIcon?.invoke(this)
+            }
+        }
+    }
+}
+
+@Composable
 fun FluentFold(
     icon: ImageVector? = null,
     title: String,

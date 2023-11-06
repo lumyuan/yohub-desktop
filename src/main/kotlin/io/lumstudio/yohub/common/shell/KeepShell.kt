@@ -1,9 +1,5 @@
 package io.lumstudio.yohub.common.shell
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.jetbrains.skiko.hostOs
 import java.io.BufferedReader
 import java.io.BufferedWriter
@@ -18,13 +14,12 @@ class KeepShell(private val workPath: String) {
     private var p: Process? = null
     private var out: BufferedWriter? = null
     private var reader: BufferedReader? = null
-    private var currentIsIdle = true // ???????????
+    private var currentIsIdle = true
     val isIdle: Boolean
         get() {
             return currentIsIdle
         }
 
-    //????????????§Ô???
     fun tryExit() {
         try {
             if (out != null)
@@ -44,7 +39,6 @@ class KeepShell(private val workPath: String) {
         currentIsIdle = true
     }
 
-    //???ROOT??????
     private val GET_ROOT_TIMEOUT = 20000L
     private val mLock = ReentrantLock()
     private val LOCK_TIMEOUT = 10000L
@@ -101,11 +95,10 @@ class KeepShell(private val workPath: String) {
     private val startTagBytes = "ECHO $startTag"
     private val endTagBytes = "ECHO $endTag"
 
-    //??§ß??
     fun doCmdSync(cmd: String): String {
         if (mLock.isLocked && enterLockTime > 0 && System.currentTimeMillis() - enterLockTime > LOCK_TIMEOUT) {
             tryExit()
-            println("doCmdSync-Lock: " + "????????${System.currentTimeMillis()} - $enterLockTime > $LOCK_TIMEOUT")
+            println("doCmdSync-Lock: " + "${System.currentTimeMillis()} - $enterLockTime > $LOCK_TIMEOUT")
         }
         getRuntimeShell()
         try {

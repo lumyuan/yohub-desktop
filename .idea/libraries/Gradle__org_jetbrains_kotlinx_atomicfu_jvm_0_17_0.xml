@@ -1,4 +1,4 @@
-<component name="libraryTable">
+﻿<component name="libraryTable">
   <library name="Gradle: org.jetbrains.kotlinx:atomicfu-jvm:0.17.0" type="java-imported" external-system-id="GRADLE">
     <properties groupId="org.jetbrains.kotlinx" artifactId="atomicfu-jvm" version="0.17.0" />
     <CLASSES>

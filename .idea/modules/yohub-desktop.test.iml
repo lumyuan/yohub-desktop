@@ -56,11 +56,14 @@
     <orderEntry type="module" module-name="yohub-desktop.main" scope="RUNTIME" />
     <orderEntry type="library" name="Gradle: io.github.app-outlet:karavel:1.0.2" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.20" level="project" />
-    <orderEntry type="library" name="Gradle: com.google.code.gson:gson:2.9.1" level="project" />
     <orderEntry type="library" name="Gradle: net.java.dev.jna:jna-platform:5.13.0" level="project" />
     <orderEntry type="library" name="Gradle: net.java.dev.jna:jna-platform-jpms:5.13.0" level="project" />
     <orderEntry type="library" name="Gradle: net.java.dev.jna:jna:5.13.0" level="project" />
     <orderEntry type="library" name="Gradle: net.java.dev.jna:jna-jpms:5.13.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.squareup.retrofit2:converter-gson:2.9.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.squareup.retrofit2:retrofit:2.9.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.code.gson:gson:2.9.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.github.ltttttttttttt:load-the-image:1.0.8" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.compose.components:components-animatedimage-desktop:1.4.1" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.compose.components:components-splitpane-desktop:1.4.1" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.compose.components:components-resources-desktop:1.4.1" level="project" />
@@ -77,9 +80,11 @@
     <orderEntry type="library" name="Gradle: org.jetbrains.compose.runtime:runtime-desktop:1.4.1" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.20" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib:1.8.20" level="project" />
+    <orderEntry type="library" name="Gradle: com.squareup.okhttp3:okhttp:3.14.9" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-common:1.8.20" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.compose.desktop:desktop-jvm:1.4.1" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains:annotations:13.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.squareup.okio:okio:1.17.2" level="project" />
     <orderEntry type="library" name="Gradle: com.konyaco:fluent-icons-core-jvm:0.0.1-dev.6" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.compose.material:material-ripple-desktop:1.4.1" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.compose.material:material-icons-core-desktop:1.4.1" level="project" />

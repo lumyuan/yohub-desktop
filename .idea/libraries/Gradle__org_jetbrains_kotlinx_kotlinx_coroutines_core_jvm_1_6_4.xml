@@ -1,4 +1,4 @@
-<component name="libraryTable">
+﻿<component name="libraryTable">
   <library name="Gradle: org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4" type="java-imported" external-system-id="GRADLE">
     <properties groupId="org.jetbrains.kotlinx" artifactId="kotlinx-coroutines-core-jvm" version="1.6.4" />
     <CLASSES>

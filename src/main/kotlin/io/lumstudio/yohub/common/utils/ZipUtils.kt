@@ -24,7 +24,7 @@ class ZipUtils {
             var zipEntry = zipInputStream.nextEntry
             while (zipEntry != null) {
                 val newFile = File(destDirectory + File.separator + zipEntry.name)
-                // ´´½¨Ä¿±êÎÄ¼ş¼Ğ£¨Èç¹û´æÔÚ×ÓÎÄ¼ş¼Ğ£©
+                // åˆ›å»ºç›®æ ‡æ–‡ä»¶å¤¹ï¼ˆå¦‚æœå­˜åœ¨å­æ–‡ä»¶å¤¹ï¼‰
                 if (zipEntry.isDirectory) {
                     newFile.mkdirs()
                 } else {

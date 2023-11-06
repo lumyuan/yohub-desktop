@@ -6,7 +6,7 @@ import java.io.FileOutputStream
 import java.nio.channels.FileChannel
 
 object FileCopyUtils {
-    private const val BUFFER_SIZE = 4 * 1024 * 1024 // »º³åÇø´óĞ¡Îª4MB
+    private const val BUFFER_SIZE = 4 * 1024 * 1024 // ç¼“å†²åŒºå¤§å°ä¸º4MB
 
     fun copyFile(source: File, destination: File) {
         FileInputStream(source).use { inputStream ->
@@ -18,7 +18,7 @@ object FileCopyUtils {
         }
     }
 
-    // ²¢ĞĞ¸´ÖÆÄ¿Â¼ÏÂµÄËùÓĞÎÄ¼ş
+    // å¹¶è¡Œå¤åˆ¶ç›®å½•ä¸‹çš„æ‰€æœ‰æ–‡ä»¶
     fun copyDirectory(sourceDir: File, destDir: File) {
         if (!destDir.exists()) {
             destDir.mkdirs()

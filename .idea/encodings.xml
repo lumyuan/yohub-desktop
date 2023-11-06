@@ -1,15 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="Encoding" defaultCharsetForPropertiesFiles="GBK">
-    <file url="file://$PROJECT_DIR$/build.gradle.kts" charset="GBK" />
+  <component name="Encoding" native2AsciiForPropertiesFiles="true" defaultCharsetForPropertiesFiles="UTF-8" addBOMForNewFiles="with BOM">
+    <file url="file://$PROJECT_DIR$/build.gradle.kts" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/resources/韵味紫.json" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/common/shell/KeepShell.kt" charset="GBK" />
-    <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/common/shell/KeepShellPublic.kt" charset="GBK" />
-    <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/common/utils/ZipUtils.kt" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/R.kt" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/common/net/api/PrivacyService.kt" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/common/net/api/PublicService.kt" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/common/net/api/impl" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/common/net/converter" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/common/net/factory" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/common/net/interceptor" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/common/net/param/response/SpringBootErrorBean.kt" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/common/net/pojo/ApiException.kt" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/common/net/pojo/MagiskRepo.kt" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/common/net/pojo/RequestBody.kt" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/common/net/pojo/ResponseBody.kt" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/common/shell/KeepShell.kt" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/common/shell/KeepShellPublic.kt" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/common/utils/AesCbcPkcs5Padding.kt" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/common/utils/ColorLoader.kt" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/common/utils/DateDeserializer.kt" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/common/utils/ExceptionUtil.kt" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/common/utils/FileCopyUtils.kt" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/common/utils/IO.kt" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/common/utils/Preferences.kt" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/common/utils/ZipUtils.kt" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/model/GlobalViewModel.kt" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/model/ViewModel.kt" charset="GBK" />
     <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/ui/component/Button.kt" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/ui/component/SideNav.kt" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/ui/component/TextField.kt" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/windows/FlashImageScreen.kt" charset="GBK" />
-    <file url="PROJECT" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/windows/DeviceScreen.kt" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/windows/FlashImageScreen.kt" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/windows/MagicMaskModulesScreen.kt" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/windows/PageNav.kt" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/windows/PayloadScreen.kt" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/windows/SettingsScreen.kt" charset="UTF-8" />
+    <file url="PROJECT" charset="UTF-8" />
   </component>
 </project>

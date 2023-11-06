@@ -12,6 +12,7 @@ repositories {
     mavenCentral()
     maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     google()
+    maven(url = "https://jitpack.io")
 }
 
 dependencies {
@@ -44,14 +45,18 @@ dependencies {
     implementation("com.konyaco:fluent:0.0.1-dev.6")
     implementation("com.konyaco:fluent-icons-extended:0.0.1-dev.6")
 
-    implementation("com.google.code.gson:gson:2.9.1")
-
     implementation("net.java.dev.jna:jna-platform:5.13.0")
     implementation("net.java.dev.jna:jna-platform-jpms:5.13.0")
     implementation("net.java.dev.jna:jna:5.13.0")
     implementation("net.java.dev.jna:jna-jpms:5.13.0")
 
     implementation("io.github.app-outlet:karavel:1.0.2")
+
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.google.code.gson:gson:2.9.0")
+
+    implementation("com.github.ltttttttttttt:load-the-image:1.0.8")
 }
 
 compose.desktop {

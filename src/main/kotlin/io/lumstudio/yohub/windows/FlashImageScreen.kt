@@ -77,7 +77,7 @@ private val flashPages by lazy {
     )
 }
 
-class UnlinkPage : NavPage("Î´Á¬½ÓFastbootÉè±¸", title = "ÇëÁ¬½ÓFastbootÉè±¸", isNavigation = false) {
+class UnlinkPage : NavPage("æœªè¿æ¥Fastbootè®¾å¤‡", title = "è¯·è¿æ¥Fastbootè®¾å¤‡", isNavigation = false) {
 
     override fun icon(): () -> Unit = {  }
 
@@ -102,7 +102,7 @@ data class Partition(
     var name: String
 )
 
-class LinkedPage : NavPage("¾µÏñË¢Ğ´", isNavigation = false) {
+class LinkedPage : NavPage("é•œåƒåˆ·å†™", isNavigation = false) {
 
     override fun icon(): () -> Unit = {  }
 
@@ -115,7 +115,7 @@ class LinkedPage : NavPage("¾µÏñË¢Ğ´", isNavigation = false) {
         val partitionList = remember { mutableStateOf(ArrayList<Partition>()) }
         val flashState = remember { mutableStateOf(false) }
         val fileDialog = remember { FileDialog(JFrame()) }
-        val text = remember { mutableStateOf("ÊäÈë¾µÏñ") }
+        val text = remember { mutableStateOf("è¾“å…¥é•œåƒ") }
         var displayDialog by remember { mutableStateOf(false) }
         TargetPathEditor(bootPath, fileDialog)
         Spacer(modifier = Modifier.size(16.dp))
@@ -148,10 +148,10 @@ class LinkedPage : NavPage("¾µÏñË¢Ğ´", isNavigation = false) {
             }
         }
         Dialog(
-            title = "È·ÈÏË¢Ğ´",
+            title = "ç¡®è®¤åˆ·å†™",
             visible = displayDialog,
-            cancelButtonText = "È¡Ïû",
-            confirmButtonText = "È·¶¨",
+            cancelButtonText = "å–æ¶ˆ",
+            confirmButtonText = "ç¡®å®š",
             onCancel = {
                 displayDialog = false
             },
@@ -162,7 +162,7 @@ class LinkedPage : NavPage("¾µÏñË¢Ğ´", isNavigation = false) {
                 }
             },
             content = {
-                Text("ÊÇ·ñÖ´ĞĞ¾µÏñË¢Ğ´ÈÎÎñ£¿\n\nÒÑÑ¡ÔñÎÄ¼ş£º${File(bootPath.value).name}\nÒÑÑ¡Ôñ·ÖÇø£º${partitionName.value}")
+                Text("æ˜¯å¦æ‰§è¡Œé•œåƒåˆ·å†™ä»»åŠ¡ï¼Ÿ\n\nå·²é€‰æ‹©æ–‡ä»¶ï¼š${File(bootPath.value).name}\nå·²é€‰æ‹©åˆ†åŒºï¼š${partitionName.value}")
             }
         )
     }
@@ -207,16 +207,16 @@ private fun flashTask(
 ) {
     val timeMillis = System.currentTimeMillis()
     flashState.value = true
-    text.value = "Ë¢Ğ´ÈÎÎñÖ´ĞĞÖĞ£¬ÇëÉÔºò..."
+    text.value = "åˆ·å†™ä»»åŠ¡æ‰§è¡Œä¸­ï¼Œè¯·ç¨å€™..."
     val out = keepShellStore fastboot "flash ${partitionName.value} ${bootPath.value}"
     val end = out.split("\n").last { it.trim().isNotEmpty() }
     if (out.uppercase().contains("OKAY") && out.contains("Finished")) {
-        sendNotice("Ë¢Ğ´³É¹¦£¡", "×ÜºÄÊ±£º${String.format("%.2f", (System.currentTimeMillis() - timeMillis).toFloat() / 1000f)}Ãë")
+        sendNotice("åˆ·å†™æˆåŠŸï¼", "æ€»è€—æ—¶ï¼š${String.format("%.2f", (System.currentTimeMillis() - timeMillis).toFloat() / 1000f)}ç§’")
     }else {
-        sendNotice("Ë¢Ğ´Ê§°Ü£¡", end)
+        sendNotice("åˆ·å†™å¤±è´¥ï¼", end)
     }
     flashState.value = false
-    text.value = "ÊäÈë¾µÏñ"
+    text.value = "è¾“å…¥é•œåƒ"
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -230,7 +230,7 @@ private fun TargetPathEditor(targetPath: MutableState<String>, fileDialog: FileD
             value = targetPath.value,
             onValueChange = { targetPath.value = it },
             label = {
-                Text("ÊäÈë¾µÏñÎÄ¼şÂ·¾¶")
+                Text("è¾“å…¥é•œåƒæ–‡ä»¶è·¯å¾„")
             },
             singleLine = true,
             textStyle = MaterialTheme.typography.labelMedium.copy(fontFamily = FontFamily(Font(R.font.jetBrainsMonoRegular))),
@@ -245,12 +245,12 @@ private fun TargetPathEditor(targetPath: MutableState<String>, fileDialog: FileD
                 if (fileDialog.file?.endsWith(".img") == true) {
                     targetPath.value = fileDialog.directory + fileDialog.file
                 } else {
-                    sendNotice("Ñ¡ÔñÊ§°Ü", "²»ÊÜÖ§³ÖµÄÎÄ¼şÀàĞÍ£º${fileDialog.file}")
+                    sendNotice("é€‰æ‹©å¤±è´¥", "ä¸å—æ”¯æŒçš„æ–‡ä»¶ç±»å‹ï¼š${fileDialog.file}")
                 }
             },
             shape = RoundedCornerShape(8.dp)
         ) {
-            Text("Ñ¡ÔñÎÄ¼ş")
+            Text("é€‰æ‹©æ–‡ä»¶")
         }
     }
 }
@@ -266,7 +266,7 @@ private fun PartitionChooser(
     Column {
         FluentItem(
             icon = Icons.Default.Table,
-            title = if (partitionName.value.isBlank()) "Ñ¡ÔñÒªË¢ÈëµÄ·ÖÇø" else "ÒÑÑ¡Ôñ·ÖÇø£º${partitionName.value}"
+            title = if (partitionName.value.isBlank()) "é€‰æ‹©è¦åˆ·å…¥çš„åˆ†åŒº" else "å·²é€‰æ‹©åˆ†åŒºï¼š${partitionName.value}"
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -282,7 +282,7 @@ private fun PartitionChooser(
                     onCheckedChange = null,
                     enabled = false
                 )
-                Text("¹ıÂËA/B·ÖÇø", style = MaterialTheme.typography.labelMedium)
+                Text("è¿‡æ»¤A/Båˆ†åŒº", style = MaterialTheme.typography.labelMedium)
             }
             Spacer(modifier = Modifier.size(28.dp))
             Column {
@@ -292,7 +292,7 @@ private fun PartitionChooser(
                     },
                     shape = RoundedCornerShape(8.dp)
                 ) {
-                    Text("Ñ¡Ôñ·ÖÇø")
+                    Text("é€‰æ‹©åˆ†åŒº")
                 }
                 DropdownMenu(
                     dropdownMenuState,
