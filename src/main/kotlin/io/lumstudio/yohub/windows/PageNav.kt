@@ -1,5 +1,7 @@
 package io.lumstudio.yohub.windows
 
+import androidx.compose.material.icons.filled.Android
+import androidx.compose.material.icons.outlined.Android
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.painterResource
@@ -23,6 +25,9 @@ enum class PageNav(
     ),
     MagiskRepository(
       page = MagiskRepositoryPage().apply { parent = MagicMaskModule.page }
+    ),
+    Adb(
+        page = AdbPage()
     ),
     FlashImage(
         page = FlashImagePage()
@@ -101,6 +106,25 @@ class MagiskRepositoryPage: NavPage("Magisk仓库", isNavigation = false) {
     @Composable
     override fun content() {
         MagiskRepositoryScreen(this)
+    }
+
+}
+
+class AdbPage: NavPage("ADB专区", title = "想要操作手机", subtitle = "点击右侧【ADB专区】") {
+
+    init {
+        nestedItems = arrayListOf(
+
+        )
+    }
+
+    override fun icon(): @Composable () -> Unit = {
+        Icon(androidx.compose.material.icons.Icons.Outlined.Android, null)
+    }
+
+    @Composable
+    override fun content() {
+        AdbScreen(this)
     }
 
 }

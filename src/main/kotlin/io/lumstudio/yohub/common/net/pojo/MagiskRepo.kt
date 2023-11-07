@@ -51,7 +51,7 @@ fun List<Map<String, Any?>>.toMagiskRepos(isTopjohnwu: Boolean = true): List<Mag
             createdAt = createdAt,
             updatedAt = updatedAt,
             size = byte,
-            downloadUrl = downloadUrl, //CDN¼ÓËÙ
+            downloadUrl = downloadUrl, //CDNåŠ é€Ÿ
             downloadUrl2 = browserDownloadUrl //GitHub
         )
     }

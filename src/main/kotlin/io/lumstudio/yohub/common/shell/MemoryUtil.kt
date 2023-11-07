@@ -1,6 +1,8 @@
 package io.lumstudio.yohub.common.shell
 
-object MemoryUtil {
+import org.jetbrains.skiko.hostOs
+
+class MemoryUtil(private val keepShellStore: KeepShellStore) {
 
     data class MemoryInfo(
         val type: MemoryType,
@@ -70,28 +72,94 @@ object MemoryUtil {
         }
     }
 
+    private fun loadInfo(): String = keepShellStore adb "shell cat /proc/meminfo"
 
     private fun analysisLine(line: String): MemoryInfo {
         val type = line.substring(0, line.indexOf(":"))
         val tempInfo = line.substring(line.indexOf(":") + 1, line.lastIndexOf(" ")).replace(" ", "")
         val info = try {
             tempInfo.toLong()
-        }catch (e: Exception) {
+        } catch (e: Exception) {
             e.printStackTrace()
             -1L
         }
         return MemoryInfo(MemoryType.string2type(type), info)
     }
 
-    fun kb2mb(kb: Long): Float = kb * SizeUnit.KB.mp / SizeUnit.MB.mp
+    fun memoryInfo(): Map<MemoryType, MemoryInfo> {
+        val map = mutableMapOf<MemoryType, MemoryInfo>()
+        loadInfo().split("\n").onEach {
+            if (it.isNotEmpty() && it.contains(":")) {
+                val memoryInfo = analysisLine(it)
+                map[memoryInfo.type] = memoryInfo
+            }
+        }
+        return map
+    }
 
-    fun kb2gb(kb: Long): Float =
-        kb * SizeUnit.KB.mp / SizeUnit.GB.mp
+    data class ExternalStorage(
+        val total: Float,
+        val used: Float,
+        val avail: Float,
+        val useAngle: Float
+    )
 
-    fun kb2tb(kb: Long): Float = kb * SizeUnit.KB.mp / SizeUnit.TB.mp
+    fun externalStorageInfo(): ExternalStorage {
+        var total = 0f
+        var used = 0f
+        var avail = 0f
+        var useAngle = 0f
+        try {
+            val line =
+                (keepShellStore adb "shell df -h /storage/emulated/0")
+                    .split("\n")[1]
+            val info = line.split("\\s+".toRegex())
+            try {
+                total = info[1].lowercase().replace("g", "")
+                    .replace("m", "")
+                    .replace("k", "")
+                    .replace("b", "").toFloat()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            try {
+                used = info[2].lowercase().replace("g", "")
+                    .replace("m", "")
+                    .replace("k", "")
+                    .replace("b", "").toFloat()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            try {
+                avail = info[3].lowercase().replace("g", "")
+                    .replace("m", "")
+                    .replace("k", "")
+                    .replace("b", "").toFloat()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            try {
+                useAngle = info[4].replace("%", "").toFloat()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return ExternalStorage(total, used, avail, useAngle)
+    }
 
-    fun b2kb(b: Long): Float = b / SizeUnit.KB.mp
-    fun b2mb(b: Long): Float = b / SizeUnit.MB.mp
-    fun b2gb(b: Long): Float = b / SizeUnit.GB.mp
-    fun b2tb(b: Long): Float = b / SizeUnit.TB.mp
+    companion object {
+        fun kb2mb(kb: Long): Float = kb * SizeUnit.KB.mp / SizeUnit.MB.mp
+
+        fun kb2gb(kb: Long): Float =
+            kb * SizeUnit.KB.mp / SizeUnit.GB.mp
+
+        fun kb2tb(kb: Long): Float = kb * SizeUnit.KB.mp / SizeUnit.TB.mp
+
+        fun b2kb(b: Long): Float = b / SizeUnit.KB.mp
+        fun b2mb(b: Long): Float = b / SizeUnit.MB.mp
+        fun b2gb(b: Long): Float = b / SizeUnit.GB.mp
+        fun b2tb(b: Long): Float = b / SizeUnit.TB.mp
+    }
 }

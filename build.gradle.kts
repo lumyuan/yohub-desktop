@@ -3,6 +3,7 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 plugins {
     kotlin("jvm")
     id("org.jetbrains.compose")
+    id("java")
 }
 
 group = "io.lumstudio"
@@ -77,7 +78,7 @@ compose.desktop {
 
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "YoHubDesktop"
-            packageVersion = "1.0.2"
+            packageVersion = "1.0.3"
 
             description = "YoHubTool For Desktop"
             copyright = "Copyright 2023 YoTanYun. All rights reserved."

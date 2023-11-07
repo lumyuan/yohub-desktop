@@ -26,6 +26,7 @@ import io.appoutlet.karavel.Karavel
 import io.lumstudio.yohub.R
 import io.lumstudio.yohub.common.LocalApplication
 import io.lumstudio.yohub.common.LocalIOCoroutine
+import io.lumstudio.yohub.common.sendNotice
 import io.lumstudio.yohub.common.shell.LocalKeepShell
 import io.lumstudio.yohub.common.utils.BrandLogoUtil
 import io.lumstudio.yohub.runtime.*
@@ -295,6 +296,10 @@ val DeviceName by lazy(mode = LazyThreadSafetyMode.SYNCHRONIZED) {
     mutableStateOf("")
 }
 
+val DeviceBrand by lazy(mode = LazyThreadSafetyMode.SYNCHRONIZED) {
+    mutableStateOf("")
+}
+
 @Composable
 private fun DeviceItem(
     navItem: Device
@@ -368,6 +373,7 @@ private fun DeviceItem(
                 deviceStore.device = navItem
             }
             DeviceName.value = label
+            DeviceBrand.value = brand
         },
         icon = {
             Image(BrandLogoUtil.getLogoPainterByBrand(brand.replace("\n", "")), navItem.id)

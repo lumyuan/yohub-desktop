@@ -119,6 +119,7 @@ class KeepShell(private val workPath: String) {
 
             var line: String?
             while (reader?.readLine().also { line = it } != null) {
+//                println(line)
                 if (line?.contains(workPath) == true)
                     continue
                 if (line?.contains(startTag) == true) {

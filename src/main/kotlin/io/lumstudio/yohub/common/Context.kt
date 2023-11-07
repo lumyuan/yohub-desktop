@@ -27,6 +27,10 @@ class IOCoroutine {
 
 class ContextStore {
     val packageName: String = "YoHubDesktop"
+    val rootPath: String = ".yohub-desktop"
+
+    val version: String = "1.0.3"
+    val versionCode: Long = 2311071146
 
     //缓存目录
     val rootDir by lazy {
@@ -40,7 +44,7 @@ class ContextStore {
             hostOs.isMacOS -> Paths.get(System.getProperty("user.home"), "Library", "Caches").toString()
             else -> Paths.get(System.getProperty("user.home"), ".cache").toString()
         }
-        val file = File(path, packageName)
+        val file = File(path, rootPath)
         if (!file.exists()) file.mkdirs()
         file
     }

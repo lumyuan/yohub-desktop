@@ -1,23 +1,19 @@
-import androidx.compose.material3.ColorScheme
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
-import com.google.gson.Gson
-import io.lumstudio.yohub.theme.*
-import kotlinx.coroutines.*
-import java.lang.RuntimeException
+
+import java.io.BufferedReader
+import java.io.InputStreamReader
+
 
 fun main() {
-    val gson = Gson()
-    val customColorTheme = CustomColorTheme(
-        name = "д╛хо",
-        light = LightColorScheme.color(),
-        dark = DarkColorScheme.color()
-    )
-    val json = gson.toJson(customColorTheme)
-    println(json)
-    val colorTheme = gson.fromJson(json, CustomColorTheme::class.java)
-    println(colorTheme)
-    println(colorTheme.getLightColorScheme())
+    val adbCommand = "C:\\Users\\22059\\AppData\\Local\\.yohub-desktop\\runtime\\adb\\adb shell dumpsys SurfaceFlinger --list-layers"
+
+    val process = Runtime.getRuntime().exec(adbCommand)
+    val reader = BufferedReader(InputStreamReader(process.inputStream))
+
+    var line: String
+    while (reader.readLine().also { line = it } != null) {
+        if (line.contains("GLES")) {
+            println(line)
+        }
+    }
 }
 

@@ -89,4 +89,5 @@ class KeepShellStore(
     infix fun fastboot(cmd: String) = doCmdSync(adbStore fastboot cmd)
     infix fun python(cmd: String) = doCmdSync(pythonStore py cmd)
     infix fun payload(cmd: String) = doCmdSync(payloadDumperStore payload cmd)
+
 }

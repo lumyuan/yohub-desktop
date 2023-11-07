@@ -37,7 +37,7 @@ fun request(
     CoroutineScope(Dispatchers.IO).launch(
         CoroutineExceptionHandler { _, throwable ->
             run {
-                //¥¶¿Ì“Ï≥£
+                //Â§ÑÁêÜÂºÇÂ∏∏
                 ExceptionUtil.catchException(showError, throwable)
                 onError(throwable)
             }
