@@ -442,7 +442,7 @@ private suspend fun zipPayload(
     path: String
 ) = withContext(Dispatchers.IO) {
     loadState.value = false
-    val out = keepShellStore cmd payloadDumperStore.payload("-l $path")
+    val out = keepShellStore cmd payloadDumperStore.payload("-l \"$path\"")
     imageList.clear()
     out.split("\n\n").onEach {
         var name = ""

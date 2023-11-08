@@ -19,6 +19,7 @@ import io.lumstudio.yohub.common.LocalIOCoroutine
 import io.lumstudio.yohub.common.shell.LocalKeepShell
 import io.lumstudio.yohub.runtime.*
 import io.lumstudio.yohub.ui.component.Dialog
+import io.lumstudio.yohub.ui.component.FlowButton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -40,7 +41,7 @@ fun DeviceScreen() {
         val selectDevice = deviceStore.device
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
             when {
-                hostOs.isWindows -> InfoItem(
+                hostOs.isWindows -> FlowButton(
                     onClick = {
                         CoroutineScope(Dispatchers.IO).launch {
                             fastbootDriverStore.install()
@@ -54,7 +55,7 @@ fun DeviceScreen() {
                 }
             }
 
-            InfoItem(
+            FlowButton(
                 onClick = {},
                 icon = {
                     Icon(
@@ -99,7 +100,7 @@ fun DeviceScreen() {
                         || selectDevice.type == ClientType.ADB_AB
                         || selectDevice.type == ClientType.ADB_VAB)
             ) {
-                InfoItem(
+                FlowButton(
                     onClick = {
                         displayDialog = true
                         contentText = "确定要重启【${selectDevice?.id}】吗？"
@@ -124,7 +125,7 @@ fun DeviceScreen() {
                         || selectDevice.type == ClientType.ADB_AB
                         || selectDevice.type == ClientType.ADB_VAB)
             ) {
-                InfoItem(
+                FlowButton(
                     onClick = {
                         displayDialog = true
                         contentText = "确定要将设备【${selectDevice?.id}】关机吗？"
@@ -149,7 +150,7 @@ fun DeviceScreen() {
                         || selectDevice.type == ClientType.ADB_AB
                         || selectDevice.type == ClientType.ADB_VAB)
             ) {
-                InfoItem(
+                FlowButton(
                     onClick = {
                         displayDialog = true
                         contentText = "确定要将【${selectDevice?.id}】重启到Bootloader吗？"
@@ -174,7 +175,7 @@ fun DeviceScreen() {
                         || selectDevice.type == ClientType.ADB_AB
                         || selectDevice.type == ClientType.ADB_VAB)
             ) {
-                InfoItem(
+                FlowButton(
                     onClick = {
                         displayDialog = true
                         contentText = "确定要将【${selectDevice?.id}】重启到Recovery吗？"
@@ -197,7 +198,7 @@ fun DeviceScreen() {
                         && selectDevice.state != ClientState.UNAUTHORIZED
                         && (selectDevice.type == ClientType.FASTBOOT)
             ) {
-                InfoItem(
+                FlowButton(
                     onClick = {
                         displayDialog = true
                         contentText = "确定要重启【${selectDevice?.id}】吗？"
@@ -220,7 +221,7 @@ fun DeviceScreen() {
                         && selectDevice.state != ClientState.UNAUTHORIZED
                         && (selectDevice.type == ClientType.FASTBOOT)
             ) {
-                InfoItem(
+                FlowButton(
                     onClick = {
                         displayDialog = true
                         contentText = "确定要将【${selectDevice?.id}】重启到Recovery吗？"
@@ -254,43 +255,6 @@ fun DeviceScreen() {
                     Text(contentText)
                 }
             )
-        }
-    }
-}
-
-@Composable
-private fun InfoItem(
-    onClick: () -> Unit,
-    icon: (@Composable () -> Unit)? = null,
-    content: @Composable () -> Unit
-) {
-    OutlinedCard(
-        modifier = Modifier.height(65.dp).padding(top = 8.dp)
-            .clip(RoundedCornerShape(8.dp))
-            .clickable {
-                onClick()
-            },
-        shape = RoundedCornerShape(8.dp),
-        colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.background),
-        border = BorderStroke(.5.dp, DividerDefaults.color.copy(alpha = .5f))
-    ) {
-        Row(
-            modifier = Modifier.fillMaxHeight(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            if (icon != null) Box(Modifier.padding(start = 16.dp).size(28.dp), Alignment.Center) {
-                icon()
-            }
-            Row(
-                modifier = Modifier.padding(
-                    start = 12.dp,
-                    end = 16.dp,
-                ),
-                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                content()
-            }
         }
     }
 }

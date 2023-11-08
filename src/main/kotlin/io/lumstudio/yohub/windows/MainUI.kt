@@ -148,6 +148,7 @@ fun MainUI() {
                                                     karavel.navigate(it.page)
                                                     delay(100)
                                                     searchFuns.value = ""
+                                                    selectPage.value = it.page
                                                 }
                                             }
                                         )

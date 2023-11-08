@@ -239,7 +239,7 @@ private suspend fun patcherImage(
 ) = withContext(Dispatchers.IO) {
     text.value = "Boot修补中，请稍候..."
     patcherState.value = true
-    val out = keepShellStore cmd pythonStore.py(magiskPatcherStore.script("boot_patch.py ${targetPath.value}"))
+    val out = keepShellStore cmd pythonStore.py(magiskPatcherStore.script("boot_patch.py \"${targetPath.value}\""))
     if (out.contains("- Repacking boot image")) {
         val tempPath = File(runtimeStore.runtimeFile, "new-boot.img")
         val outFile = File(outPath.value, "magisk-patched-${dateFormat.format(Date())}.img")

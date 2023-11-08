@@ -1,7 +1,10 @@
 package io.lumstudio.yohub.common.utils
 
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import io.lumstudio.yohub.common.shell.KeepShellStore
 import io.lumstudio.yohub.common.shell.KernelProp
+import io.lumstudio.yohub.model.Soc
 
 
 /**
@@ -175,6 +178,14 @@ class CpuLoadUtils(
         private var lastCpuStateMap: HashMap<Int, Double>? = null
         private var lastCpuStateSum = ""
         private var lastCpuStateTime: Long? = null
+
+        private val gson by lazy { Gson() }
+
+
+        fun getSoc(config: String, name: String): Soc {
+            val soc = gson.fromJson<HashMap<String, Soc>>(config, object : TypeToken<HashMap<String, Soc>>(){}.type)
+            return soc[name] ?: Soc()
+        }
     }
 }
 

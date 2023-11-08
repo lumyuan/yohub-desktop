@@ -76,7 +76,8 @@ class MemoryUtil(private val keepShellStore: KeepShellStore) {
 
     private fun analysisLine(line: String): MemoryInfo {
         val type = line.substring(0, line.indexOf(":"))
-        val tempInfo = line.substring(line.indexOf(":") + 1, line.lastIndexOf(" ")).replace(" ", "")
+        val split = line.split("\\s+".toRegex())
+        val tempInfo = split[1]
         val info = try {
             tempInfo.toLong()
         } catch (e: Exception) {
@@ -98,43 +99,34 @@ class MemoryUtil(private val keepShellStore: KeepShellStore) {
     }
 
     data class ExternalStorage(
-        val total: Float,
-        val used: Float,
-        val avail: Float,
+        val total: Long,
+        val used: Long,
+        val avail: Long,
         val useAngle: Float
     )
 
     fun externalStorageInfo(): ExternalStorage {
-        var total = 0f
-        var used = 0f
-        var avail = 0f
+        var total = 0L
+        var used = 0L
+        var avail = 0L
         var useAngle = 0f
         try {
             val line =
-                (keepShellStore adb "shell df -h /storage/emulated/0")
+                (keepShellStore adb "shell df /data")
                     .split("\n")[1]
             val info = line.split("\\s+".toRegex())
             try {
-                total = info[1].lowercase().replace("g", "")
-                    .replace("m", "")
-                    .replace("k", "")
-                    .replace("b", "").toFloat()
+                total = info[1].lowercase().toLong()
             } catch (e: Exception) {
                 e.printStackTrace()
             }
             try {
-                used = info[2].lowercase().replace("g", "")
-                    .replace("m", "")
-                    .replace("k", "")
-                    .replace("b", "").toFloat()
+                used = info[2].lowercase().toLong()
             } catch (e: Exception) {
                 e.printStackTrace()
             }
             try {
-                avail = info[3].lowercase().replace("g", "")
-                    .replace("m", "")
-                    .replace("k", "")
-                    .replace("b", "").toFloat()
+                avail = info[3].lowercase().toLong()
             } catch (e: Exception) {
                 e.printStackTrace()
             }

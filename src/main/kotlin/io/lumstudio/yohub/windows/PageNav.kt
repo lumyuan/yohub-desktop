@@ -1,6 +1,5 @@
 package io.lumstudio.yohub.windows
 
-import androidx.compose.material.icons.filled.Android
 import androidx.compose.material.icons.outlined.Android
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -28,6 +27,12 @@ enum class PageNav(
     ),
     Adb(
         page = AdbPage()
+    ),
+    AdbInstallApk(
+        page = AdbInstallApkPage().apply { parent = Adb.page }
+    ),
+    AdbAppManager(
+        page = AdbAppManagerPage().apply { parent = Adb.page }
     ),
     FlashImage(
         page = FlashImagePage()
@@ -114,7 +119,8 @@ class AdbPage: NavPage("ADB专区", title = "想要操作手机", subtitle = "�
 
     init {
         nestedItems = arrayListOf(
-
+            AdbInstallApkPage().apply { parent = this@AdbPage },
+            AdbAppManagerPage().apply { parent = this@AdbPage },
         )
     }
 
@@ -124,7 +130,37 @@ class AdbPage: NavPage("ADB专区", title = "想要操作手机", subtitle = "�
 
     @Composable
     override fun content() {
-        AdbScreen(this)
+        LinkedScaffold(this) {
+            AdbScreen(this@AdbPage)
+        }
+    }
+
+}
+
+class AdbInstallApkPage: NavPage("Apk安装", isNavigation = false) {
+    override fun icon(): @Composable () -> Unit = {
+        Icon(Icons.Default.AppsAddIn, null)
+    }
+
+    @Composable
+    override fun content() {
+        LinkedScaffold(this) {
+            AdbInstallApkScreen()
+        }
+    }
+
+}
+
+class AdbAppManagerPage: NavPage("应用管理", isNavigation = false) {
+    override fun icon(): @Composable () -> Unit = {
+        Icon(Icons.Default.AppsListDetail, null)
+    }
+
+    @Composable
+    override fun content() {
+        LinkedScaffold(this) {
+
+        }
     }
 
 }

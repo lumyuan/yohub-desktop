@@ -3,7 +3,7 @@
   <component name="Encoding" native2AsciiForPropertiesFiles="true" defaultCharsetForPropertiesFiles="UTF-8" addBOMForNewFiles="with BOM">
     <file url="file://$PROJECT_DIR$/build.gradle.kts" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/resources/韵味紫.json" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/main/java/io/lumstudio/yohub/common/shell/MyJava.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java/io/lumstudio/yohub/model/Soc.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/R.kt" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/common/net/api/PrivacyService.kt" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/common/net/api/PublicService.kt" charset="UTF-8" />
@@ -27,7 +27,6 @@
     <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/common/utils/ExceptionUtil.kt" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/common/utils/FileCopyUtils.kt" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/common/utils/IO.kt" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/common/utils/OpenGLUtil.kt" charset="GBK" />
     <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/common/utils/Preferences.kt" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/common/utils/ZipUtils.kt" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/model/CpuCoreInfo.kt" charset="UTF-8" />
@@ -45,6 +44,6 @@
     <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/windows/PayloadScreen.kt" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/windows/SettingsScreen.kt" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/test/kotlin/MainTest.kt" charset="UTF-8" />
-    <file url="PROJECT" charset="GBK" />
+    <file url="PROJECT" charset="UTF-8" />
   </component>
 </project>

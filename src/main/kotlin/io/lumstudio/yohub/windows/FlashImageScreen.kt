@@ -208,7 +208,7 @@ private fun flashTask(
     val timeMillis = System.currentTimeMillis()
     flashState.value = true
     text.value = "刷写任务执行中，请稍候..."
-    val out = keepShellStore fastboot "flash ${partitionName.value} ${bootPath.value}"
+    val out = keepShellStore fastboot "flash ${partitionName.value} \"${bootPath.value}\""
     val end = out.split("\n").last { it.trim().isNotEmpty() }
     if (out.uppercase().contains("OKAY") && out.contains("Finished")) {
         sendNotice("刷写成功！", "总耗时：${String.format("%.2f", (System.currentTimeMillis() - timeMillis).toFloat() / 1000f)}秒")

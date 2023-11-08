@@ -44,8 +44,8 @@ fun CpuChart(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
             .drawWithContent {
-                val width = drawContext.size.width
-                val height = drawContext.size.height
+                val width = this.drawContext.size.width
+                val height = this.drawContext.size.height
                 val chartCount = (width / chartWeight.toPx()).toInt()
 
                 //居中偏移量
@@ -88,7 +88,7 @@ fun CpuChart(
                         color = chartColor,
                         topLeft = Offset(x = chartWeight.toPx() * index + space, y = top),
                         size = Size(chartWeight.toPx() * .9f, height - top),
-                        cornerRadius = CornerRadius(5f, 5f)
+                        cornerRadius = CornerRadius(3f, 3f)
                     )
                     index++
                 }
