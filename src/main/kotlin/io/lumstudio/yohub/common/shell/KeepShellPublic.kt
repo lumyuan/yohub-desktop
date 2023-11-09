@@ -86,6 +86,7 @@ class KeepShellStore(
     infix fun cmd(cmd: String) = doCmdSync(cmd)
     infix fun admin(cmd: String) = doCmdSync("powershell -Command \"Start-Process -Verb RunAs -FilePath '$cmd'\"")
     infix fun adb(cmd: String) = doCmdSync(adbStore adb cmd)
+    infix fun adbShell(cmd: String) = doCmdSync(adbStore adb "shell \"$cmd\"")
     infix fun fastboot(cmd: String) = doCmdSync(adbStore fastboot cmd)
     infix fun python(cmd: String) = doCmdSync(pythonStore py cmd)
     infix fun payload(cmd: String) = doCmdSync(payloadDumperStore payload cmd)

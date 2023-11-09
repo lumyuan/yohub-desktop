@@ -14,10 +14,10 @@ class PropsUtils(
      * @return 内容
      */
     fun getProp(propName: String): String {
-        return keepShellStore adb "shell getprop \"$propName\""
+        return keepShellStore adbShell "getprop \"$propName\""
     }
 
     fun setProp(propName: String, value: String): Boolean {
-        return keepShellStore adb "shell setprop \"$propName\" \"$value\"" != "error"
+        return keepShellStore adbShell "setprop \"$propName\" \"$value\"" != "error"
     }
 }

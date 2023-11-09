@@ -21,6 +21,8 @@ object R : BaseResource("res") {
         val logo by path("ic_launcher_logo.png")
         val logoRound by path("ic_launcher_logo_round.png")
         val icMagisk by path("ic_magisk.svg")
+        val icShizuku by path("ic_shizuku.png")
+        val icBlackScope by path("ic_black_scope.svg")
     }
 
     object Raws: ChildResource(resId, "raws") {
@@ -41,5 +43,8 @@ object R : BaseResource("res") {
         val payloadDumperLinux by path("linux", "payload_dumper.zip")
         val pythonLinux by path("linux", "py_3.11.5.zip")
         val fastbootDriverLinux by path("windows", "usb_driver.zip")
+
+        val aaptArmPie by path("aapt-arm-pie")
+        val socJson by path("socs.json")
     }
 }

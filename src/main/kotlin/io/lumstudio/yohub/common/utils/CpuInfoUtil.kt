@@ -10,11 +10,11 @@ class CpuInfoUtil(private val keepShellStore: KeepShellStore) {
     fun cpuCoreNum(): Int {
         val head = "/sys/devices/system/cpu"
         var num = 0
-        val listCmd = keepShellStore adb "shell ls $head"
+        val listCmd = keepShellStore adbShell "ls $head"
         val split = listCmd.split("\n")
         split.filter { rootFile.exists("$head/$it/cpufreq/cpuinfo_max_freq") }
             .onEach {
-            val freqCmd = (keepShellStore adb "shell cat $head/$it/cpufreq/cpuinfo_max_freq").replace("\n", "").trim()
+            val freqCmd = (keepShellStore adbShell "cat $head/$it/cpufreq/cpuinfo_max_freq").replace("\n", "").trim()
             try {
                 freqCmd.toLong()
                 num++
@@ -25,10 +25,10 @@ class CpuInfoUtil(private val keepShellStore: KeepShellStore) {
         return num
     }
 
-    fun getCurCpuFreq(number: Int): String = (keepShellStore adb "shell cat /sys/devices/system/cpu/cpu$number/cpufreq/scaling_cur_freq").replace("\n", "").trim()
+    fun getCurCpuFreq(number: Int): String = (keepShellStore adbShell "cat /sys/devices/system/cpu/cpu$number/cpufreq/scaling_cur_freq").replace("\n", "").trim()
 
-    fun getMinCpuFreq(number: Int): String = (keepShellStore adb "shell cat /sys/devices/system/cpu/cpu$number/cpufreq/cpuinfo_min_freq").replace("\n", "").trim()
+    fun getMinCpuFreq(number: Int): String = (keepShellStore adbShell "cat /sys/devices/system/cpu/cpu$number/cpufreq/cpuinfo_min_freq").replace("\n", "").trim()
 
-    fun getMaxCpuFreq(number: Int): String = (keepShellStore adb "shell cat /sys/devices/system/cpu/cpu$number/cpufreq/cpuinfo_max_freq").replace("\n", "").trim()
+    fun getMaxCpuFreq(number: Int): String = (keepShellStore adbShell "cat /sys/devices/system/cpu/cpu$number/cpufreq/cpuinfo_max_freq").replace("\n", "").trim()
 
 }

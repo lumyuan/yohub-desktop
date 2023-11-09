@@ -61,6 +61,7 @@ dependencies {
 }
 
 compose.desktop {
+
     application {
         mainClass = "io.lumstudio.yohub.YoHubApplicationKt"
 
@@ -78,7 +79,7 @@ compose.desktop {
 
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "YoHubDesktop"
-            packageVersion = "1.0.3"
+            packageVersion = "1.0.4"
 
             description = "YoHubTool For Desktop"
             copyright = "Copyright 2023 YoTanYun. All rights reserved."

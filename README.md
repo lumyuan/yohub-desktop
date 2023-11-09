@@ -1,32 +1,39 @@
 # YoHub For Desktop
 [<img src="resources/ic_launcher_logo.png" width="200"/>](https://yohub.cn)
  
-一个基于Jetpack Compose For Desktop实现的Android手机工具箱--桌面版
+你好呀！欢迎使用优画工具箱桌面版。这是一个专为Android设备设计开发的玩机工具箱，具有极具现代化的UI设计和一目了然的功能布局，既能方便发烧级玩家与大佬，又对初入搞机圈的小白非常友好，是2023年玩机不二之选~
 
 ## 特性
+- [x] 安装即用
 - [x] 自动识别Android设备
 - [x] 多设备操作
 - [x] 主题可跟随系统
 - [x] 强大的主题自定义系统
-- [x] ADB操作
-- [x] FASTBOOT操作
-- [x] Payload提取镜像
-- [x] Magisk修补Boot.img
-- [x] 刷写镜像
-- [ ] 一键Root（待实现）
-- [ ] 安装Apk（待实现）
-- [ ] 提取Apk（待实现）
-- [ ] 更多特性欢迎您的提案
 
-## 程序截图（DEV-1.0.0）
-![app_screenshot_1.png](resources/md/app_screenshot_1.png)
-![app_screenshot_1.png](resources/md/app_screenshot_2.png)
-![app_screenshot_1.png](resources/md/app_screenshot_3.png)
-![app_screenshot_1.png](resources/md/app_screenshot_4.png)
-![app_screenshot_1.png](resources/md/app_screenshot_5.png)
+## 功能
+- payload提取镜像
+- Magisk专区
+  - 修补Boot（Root）
+  - Magisk管理器下载（官方版与Delta）
+- ADB专区
+    - 设备状态实时监测
+    - 应用安装
+    - 应用提取
+    - ADB一键激活
+      - Shizuku一键激活
+      - 黑域一键激活
+      - 更多功能开发中...
+- 镜像刷写（自动检测设备分区）
+
+更多新功能敬请期待~~
+
+## 程序部分界面截图（RELEASE-1.0.4）
+![app_screenshot_home.png](resources/md/app_screenshot_home.png)
+![app_screenshot_adb.png](resources/md/app_screenshot_adb.png)
 
 ## 讨论
 * QQ群：945339560
+* QQ频道：<a href="https://pd.qq.com/s/9i3jrgcb1">点击链接加入QQ频道</a>
 
 ## 贡献者
 <a href="https://github.com/lumyuan/yohub-desktop/graphs/contributors">

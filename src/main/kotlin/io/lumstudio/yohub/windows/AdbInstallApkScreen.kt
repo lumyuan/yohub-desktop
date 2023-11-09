@@ -3,7 +3,9 @@
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -12,6 +14,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.platform.Font
 import androidx.compose.ui.unit.dp
+import com.konyaco.fluent.component.ScrollbarContainer
+import com.konyaco.fluent.component.rememberScrollbarAdapter
 import io.lumstudio.yohub.R
 import io.lumstudio.yohub.common.sendNotice
 import io.lumstudio.yohub.common.shell.KeepShellStore
@@ -26,6 +30,21 @@ import javax.swing.JFrame
 
 @Composable
 fun AdbInstallApkScreen() {
+    val scrollState = rememberScrollState()
+    ScrollbarContainer(
+        adapter = rememberScrollbarAdapter(scrollState),
+    ) {
+        Column(
+            modifier = Modifier.fillMaxHeight().verticalScroll(scrollState)
+                .padding(start = 16.dp, bottom = 16.dp, end = 16.dp)
+        ) {
+            InstallLayout()
+        }
+    }
+}
+
+@Composable
+private fun InstallLayout() {
     val keepShellStore = LocalKeepShell.current
     val installState = remember { mutableStateOf(false) }
     val targetPath = remember { mutableStateOf("") }
@@ -95,7 +114,7 @@ private fun TargetPathEditor(targetPath: MutableState<String>, fileDialog: FileD
             value = targetPath.value,
             onValueChange = { targetPath.value = it },
             label = {
-                Text("输入APK文件路径")
+                Text("输入APK文件路径（支持APK/APEX）")
             },
             singleLine = true,
             textStyle = MaterialTheme.typography.labelMedium.copy(fontFamily = FontFamily(Font(R.font.jetBrainsMonoRegular))),

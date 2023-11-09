@@ -72,7 +72,7 @@ class MemoryUtil(private val keepShellStore: KeepShellStore) {
         }
     }
 
-    private fun loadInfo(): String = keepShellStore adb "shell cat /proc/meminfo"
+    private fun loadInfo(): String = keepShellStore adbShell "cat /proc/meminfo"
 
     private fun analysisLine(line: String): MemoryInfo {
         val type = line.substring(0, line.indexOf(":"))
@@ -112,7 +112,7 @@ class MemoryUtil(private val keepShellStore: KeepShellStore) {
         var useAngle = 0f
         try {
             val line =
-                (keepShellStore adb "shell df /data")
+                (keepShellStore adbShell "df /data")
                     .split("\n")[1]
             val info = line.split("\\s+".toRegex())
             try {

@@ -10,12 +10,12 @@ class RootFile(
     private val keepShellStore: KeepShellStore
 ) {
     fun exists(path: String): Boolean {
-        val result = keepShellStore adb "shell ls -d $path"
+        val result = keepShellStore adbShell "ls -d $path"
         return result.contains(path) && !result.contains("No such file")
     }
 
     fun deleteDirOrFile(path: String) {
-        keepShellStore adb "shell rm -rf \"$path\""
+        keepShellStore adbShell "rm -rf \"$path\""
     }
 
     // 处理像 "drwxrwx--x   3 root     root         4096 1970-07-14 17:13 vendor_de/" 这样的数据行
@@ -65,7 +65,7 @@ class RootFile(
         val absPath = if (path.endsWith("/")) path.subSequence(0, path.length - 1).toString() else path
         val files = ArrayList<RootFileInfo>()
         if (exists(absPath)) {
-            val outputInfo = keepShellStore adb "shell ls -1Fs \"$absPath\""
+            val outputInfo = keepShellStore adbShell "ls -1Fs \"$absPath\""
             println(">>>> files$outputInfo")
             if (outputInfo != "error") {
                 val rows = outputInfo.split("\n")
@@ -87,7 +87,7 @@ class RootFile(
 
     fun fileInfo(path: String): RootFileInfo? {
         val absPath = if (path.endsWith("/")) path.subSequence(0, path.length - 1).toString() else path
-        val outputInfo = keepShellStore adb "ls -1dFs \"$absPath\""
+        val outputInfo = keepShellStore adbShell "ls -1dFs \"$absPath\""
         println(">>>> file $outputInfo")
         if (outputInfo != "error") {
             val rows = outputInfo.split("\n")

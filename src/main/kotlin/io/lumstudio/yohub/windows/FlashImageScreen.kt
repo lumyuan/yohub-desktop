@@ -28,9 +28,10 @@ import io.lumstudio.yohub.runtime.LocalDevice
 import io.lumstudio.yohub.ui.component.Dialog
 import io.lumstudio.yohub.ui.component.FluentItem
 import io.lumstudio.yohub.ui.component.Toolbar
+import io.lumstudio.yohub.windows.navigation.FlashImagePage
+import io.lumstudio.yohub.windows.navigation.NavPage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.awt.FileDialog
 import java.io.File

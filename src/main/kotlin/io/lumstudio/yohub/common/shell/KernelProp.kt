@@ -12,13 +12,13 @@ class KernelProp(private val keepShellStore: KeepShellStore) {
      * @return
      */
     fun getProp(propName: String): String {
-        val cmd = "shell cat \"$propName\""
-        return keepShellStore adb cmd
+        val cmd = "cat \"$propName\""
+        return keepShellStore adbShell cmd
     }
 
     fun getProp(propName: String, grep: String): String {
-        val cmd = "shell cat \"$propName\" | ${filter} \"$grep\""
-        return keepShellStore adb cmd
+        val cmd = "cat \"$propName\" | grep \"$grep\""
+        return keepShellStore adbShell cmd
     }
 
     /**
@@ -27,7 +27,7 @@ class KernelProp(private val keepShellStore: KeepShellStore) {
      * @param value    属性值,值尽量是简单的数字或字母，避免出现错误
      */
     fun setProp(propName: String, value: String): Boolean {
-        return keepShellStore adb "shell chmod 664 \"$propName\" 2 > /dev/null ${and}echo \"$value\" > \"$propName\"" != "error"
+        return keepShellStore adbShell "chmod 664 \"$propName\" 2 > /dev/null ${and}echo \"$value\" > \"$propName\"" != "error"
     }
 
     private val and by lazy {
@@ -35,12 +35,5 @@ class KernelProp(private val keepShellStore: KeepShellStore) {
             hostOs.isWindows -> " & "
             else -> "\n"
         }
-    }
-}
-
-val filter by lazy {
-    when {
-        hostOs.isWindows -> "findstr"
-        else -> "grep"
     }
 }

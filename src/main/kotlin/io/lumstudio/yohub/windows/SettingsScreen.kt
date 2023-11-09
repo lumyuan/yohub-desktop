@@ -25,6 +25,8 @@ import io.lumstudio.yohub.common.utils.*
 import io.lumstudio.yohub.runtime.LocalInstallThemesPath
 import io.lumstudio.yohub.theme.*
 import io.lumstudio.yohub.ui.component.*
+import io.lumstudio.yohub.windows.navigation.NavPage
+import io.lumstudio.yohub.windows.navigation.SettingsPage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

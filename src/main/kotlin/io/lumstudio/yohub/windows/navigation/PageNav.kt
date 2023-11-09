@@ -1,6 +1,8 @@
-package io.lumstudio.yohub.windows
+package io.lumstudio.yohub.windows.navigation
 
 import androidx.compose.material.icons.outlined.Android
+import androidx.compose.material.icons.outlined.PlayForWork
+import androidx.compose.material.icons.outlined.Start
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.painterResource
@@ -8,6 +10,7 @@ import com.konyaco.fluent.icons.Icons
 import com.konyaco.fluent.icons.regular.*
 import io.appoutlet.karavel.Page
 import io.lumstudio.yohub.R
+import io.lumstudio.yohub.windows.*
 
 enum class PageNav(
     val page: NavPage,
@@ -31,8 +34,11 @@ enum class PageNav(
     AdbInstallApk(
         page = AdbInstallApkPage().apply { parent = Adb.page }
     ),
-    AdbAppManager(
-        page = AdbAppManagerPage().apply { parent = Adb.page }
+    AdbAppPickup(
+        page = AdbAppPickupPage().apply { parent = Adb.page }
+    ),
+    AdbActivate(
+        page = AdbActivatePage().apply { parent = Adb.page }
     ),
     FlashImage(
         page = FlashImagePage()
@@ -120,7 +126,8 @@ class AdbPage: NavPage("ADB专区", title = "想要操作手机", subtitle = "�
     init {
         nestedItems = arrayListOf(
             AdbInstallApkPage().apply { parent = this@AdbPage },
-            AdbAppManagerPage().apply { parent = this@AdbPage },
+            AdbAppPickupPage().apply { parent = this@AdbPage },
+            AdbActivatePage().apply { parent = this@AdbPage },
         )
     }
 
@@ -151,7 +158,7 @@ class AdbInstallApkPage: NavPage("Apk安装", isNavigation = false) {
 
 }
 
-class AdbAppManagerPage: NavPage("应用管理", isNavigation = false) {
+class AdbAppPickupPage: NavPage("应用提取", isNavigation = false) {
     override fun icon(): @Composable () -> Unit = {
         Icon(Icons.Default.AppsListDetail, null)
     }
@@ -159,10 +166,22 @@ class AdbAppManagerPage: NavPage("应用管理", isNavigation = false) {
     @Composable
     override fun content() {
         LinkedScaffold(this) {
-
+            AdbAppPickupScreen()
         }
     }
+}
 
+class AdbActivatePage: NavPage("一键激活专区", isNavigation = false) {
+    override fun icon(): @Composable () -> Unit = {
+        Icon(Icons.Default.Play, null)
+    }
+
+    @Composable
+    override fun content() {
+        LinkedScaffold(this) {
+            AdbActivateScreen()
+        }
+    }
 }
 
 class SettingsPage : NavPage("设置", isNavigation = false) {

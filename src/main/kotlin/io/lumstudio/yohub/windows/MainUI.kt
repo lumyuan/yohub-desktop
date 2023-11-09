@@ -26,7 +26,6 @@ import io.appoutlet.karavel.Karavel
 import io.lumstudio.yohub.R
 import io.lumstudio.yohub.common.LocalApplication
 import io.lumstudio.yohub.common.LocalIOCoroutine
-import io.lumstudio.yohub.common.sendNotice
 import io.lumstudio.yohub.common.shell.LocalKeepShell
 import io.lumstudio.yohub.common.utils.BrandLogoUtil
 import io.lumstudio.yohub.runtime.*
@@ -35,6 +34,8 @@ import io.lumstudio.yohub.ui.component.LocalExpand
 import io.lumstudio.yohub.ui.component.SideNav
 import io.lumstudio.yohub.ui.component.SideNavItem
 import io.lumstudio.yohub.ui.component.TooltipText
+import io.lumstudio.yohub.windows.navigation.NavPage
+import io.lumstudio.yohub.windows.navigation.PageNav
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -126,6 +127,7 @@ fun MainUI() {
                                 focusable = false
                             ) {
                                 PageNav.values().toList()
+                                    .sortedBy { it.page.label }
                                     .filter { it.page.label.lowercase().contains(searchFuns.value.trim().lowercase()) }
                                     .onEach {
                                         DropdownMenuItem(

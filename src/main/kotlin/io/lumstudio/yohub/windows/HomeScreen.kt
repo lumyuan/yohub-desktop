@@ -12,6 +12,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import io.lumstudio.yohub.windows.navigation.HomePage
+import io.lumstudio.yohub.windows.navigation.PageNav
 
 @Composable
 fun HomeScreen(homePage: HomePage) {

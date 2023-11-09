@@ -24,6 +24,7 @@ import io.lumstudio.yohub.common.shell.MemoryUtil
 import io.lumstudio.yohub.model.request
 import io.lumstudio.yohub.ui.component.FluentItem
 import io.lumstudio.yohub.ui.component.Toolbar
+import io.lumstudio.yohub.windows.navigation.MagiskRepositoryPage
 
 enum class MagiskRepository {
     Topjohnwu, HuskyDG

@@ -26,7 +26,6 @@ import io.lumstudio.yohub.R
 import io.lumstudio.yohub.common.sendNotice
 import io.lumstudio.yohub.common.shell.LocalKeepShell
 import io.lumstudio.yohub.common.shell.MemoryUtil
-import io.lumstudio.yohub.common.shell.filter
 import io.lumstudio.yohub.common.utils.BrandLogoUtil
 import io.lumstudio.yohub.common.utils.CpuInfoUtil
 import io.lumstudio.yohub.common.utils.CpuLoadUtils
@@ -36,6 +35,8 @@ import io.lumstudio.yohub.runtime.DeviceStore
 import io.lumstudio.yohub.runtime.LocalDevice
 import io.lumstudio.yohub.runtime.LocalDevices
 import io.lumstudio.yohub.ui.component.*
+import io.lumstudio.yohub.windows.navigation.AdbPage
+import io.lumstudio.yohub.windows.navigation.NavPage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -46,7 +47,17 @@ import org.jetbrains.compose.resources.resource
 @Composable
 fun AdbScreen(adbPage: AdbPage) {
     val deviceStore = LocalDevice.current
-    LinkedLayout(adbPage, deviceStore)
+    val scrollState = rememberScrollState()
+    ScrollbarContainer(
+        adapter = rememberScrollbarAdapter(scrollState),
+    ) {
+        Column(
+            modifier = Modifier.fillMaxHeight().verticalScroll(scrollState)
+                .padding(start = 16.dp, bottom = 16.dp, end = 16.dp)
+        ) {
+            LinkedLayout(adbPage, deviceStore)
+        }
+    }
 }
 
 @Composable
@@ -62,18 +73,8 @@ fun LinkedScaffold(navPage: NavPage, content: @Composable ColumnScope.() -> Unit
         ) {
             Toolbar(navPage.label)
         }
-        val scrollState = rememberScrollState()
         AnimatedVisibility(deviceStore.device?.state == ClientState.DEVICE) {
-            ScrollbarContainer(
-                adapter = rememberScrollbarAdapter(scrollState),
-            ) {
-                Column(
-                    modifier = Modifier.fillMaxHeight().verticalScroll(scrollState)
-                        .padding(start = 16.dp, bottom = 16.dp, end = 16.dp)
-                ) {
-                    content()
-                }
-            }
+            content()
         }
         AnimatedVisibility(deviceStore.device?.state != ClientState.DEVICE) {
             Box(
@@ -169,10 +170,10 @@ private fun LinkedLayout(adbPage: AdbPage, deviceStore: DeviceStore) {
     LaunchedEffect(deviceStore.device) {
         withContext(Dispatchers.IO) {
             openglText.value =
-                (keepShellStore adb "shell dumpsys SurfaceFlinger | $filter -i GLES").replace("GLES: ", "")
+                (keepShellStore adbShell "dumpsys SurfaceFlinger | grep -i GLES").replace("GLES: ", "")
 
-            val socModel = (keepShellStore adb "shell getprop ro.soc.model").replace("\n", "").trim()
-            val hardware = (keepShellStore adb "shell getprop ro.boot.hardware").replace("\n", "").trim()
+            val socModel = (keepShellStore adbShell "getprop ro.soc.model").replace("\n", "").trim()
+            val hardware = (keepShellStore adbShell "getprop ro.boot.hardware").replace("\n", "").trim()
 
             cpuNameState.value = socModel.ifEmpty { hardware }
 
@@ -262,13 +263,13 @@ private fun LinkedLayout(adbPage: AdbPage, deviceStore: DeviceStore) {
                             socType = stringBuilder.toString()
                         )
 
-                    val release = keepShellStore adb "shell getprop ro.build.version.release"
-                    val sdk = keepShellStore adb "shell getprop ro.build.version.sdk"
+                    val release = keepShellStore adbShell "getprop ro.build.version.release"
+                    val sdk = keepShellStore adbShell "getprop ro.build.version.sdk"
 
                     var level = ""
                     var temperature = ""
 
-                    (keepShellStore adb "shell dumpsys battery").split("\n").onEach {
+                    (keepShellStore adbShell "dumpsys battery").split("\n").onEach {
                         when {
                             it.contains("level:") -> level = it.substring(it.lastIndexOf(" ") + 1) + "%"
                             it.contains("temperature:") -> {
@@ -301,7 +302,7 @@ private fun PhoneLayout(
 ) {
     var socConfig by remember { mutableStateOf("{}") }
     LaunchedEffect(Unit) {
-        socConfig = String(resource("res/raws/socs.json").readBytes())
+        socConfig = String(resource(R.raw.socJson).readBytes())
     }
     Card(
         modifier = Modifier.width(150.dp).height(300.dp),

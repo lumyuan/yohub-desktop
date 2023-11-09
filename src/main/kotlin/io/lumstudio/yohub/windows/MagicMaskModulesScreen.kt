@@ -26,6 +26,8 @@ import io.lumstudio.yohub.common.shell.LocalKeepShell
 import io.lumstudio.yohub.common.utils.FileCopyUtils
 import io.lumstudio.yohub.runtime.*
 import io.lumstudio.yohub.ui.component.Toolbar
+import io.lumstudio.yohub.windows.navigation.MagicMaskModulesPage
+import io.lumstudio.yohub.windows.navigation.MagiskPatcherPage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
