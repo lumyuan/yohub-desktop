@@ -1,7 +1,7 @@
 # YoHub For Desktop
 [<img src="resources/ic_launcher_logo.png" width="200"/>](https://yohub.cn)
  
-你好呀！欢迎使用<font color="#0099FF" size="5">优画工具箱桌面版</font>。这是一个专为Android设备设计开发的玩机工具箱，具有极具现代化的UI设计和一目了然的功能布局，既能方便发烧级玩家与大佬，又对初入搞机圈的小白非常友好，是2023年玩机不二之选~
+你好呀！欢迎使用<span style="color: #0099ff; font-size: 20px;">优画工具箱桌面版</span>。这是一个专为Android设备设计开发的玩机工具箱，具有极具现代化的UI设计和一目了然的功能布局，既能方便发烧级玩家与大佬，又对初入搞机圈的小白非常友好，是2023年玩机不二之选~
 
 # 下载
 <a href="https://github.com/lumyuan/yohub-desktop/releases">GitHub</a>
