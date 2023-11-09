@@ -40,9 +40,9 @@
     <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/windows/DeviceScreen.kt" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/windows/FlashImageScreen.kt" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/windows/MagicMaskModulesScreen.kt" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/windows/PageNav.kt" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/windows/PayloadScreen.kt" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/windows/SettingsScreen.kt" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/windows/navigation/PageNav.kt" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/test/kotlin/MainTest.kt" charset="UTF-8" />
     <file url="PROJECT" charset="UTF-8" />
   </component>
