@@ -26,6 +26,7 @@ import io.lumstudio.yohub.common.shell.KeepShellStore
 import io.lumstudio.yohub.common.shell.LocalKeepShell
 import io.lumstudio.yohub.common.shell.MemoryUtil
 import io.lumstudio.yohub.common.utils.FileCopyUtils
+import io.lumstudio.yohub.lang.LocalLanguageType
 import io.lumstudio.yohub.runtime.LocalPayloadDumperRuntime
 import io.lumstudio.yohub.runtime.LocalRuntime
 import io.lumstudio.yohub.runtime.PayloadDumperStore
@@ -45,6 +46,7 @@ import javax.swing.JFrame
 
 @Composable
 fun PayloadScreen(payloadPage: PayloadPage) {
+    val languageBasic = LocalLanguageType.value.lang
     val keepShellStore = LocalKeepShell.current
     val payloadDumperStore = LocalPayloadDumperRuntime.current
 
@@ -62,13 +64,13 @@ fun PayloadScreen(payloadPage: PayloadPage) {
         Column(
             modifier = Modifier.fillMaxHeight().verticalScroll(scrollState).padding(16.dp)
         ) {
-            Toolbar(payloadPage.label)
+            Toolbar(payloadPage.label())
             MiuiDownload()
             TargetPathEditor(targetPath, outPath, fileDialog)
             Spacer(modifier = Modifier.size(8.dp))
             OutputPathEditor(targetPath, outPath)
             Spacer(modifier = Modifier.size(28.dp))
-            Text("镜像列表", style = MaterialTheme.typography.titleSmall)
+            Text(languageBasic.imageList, style = MaterialTheme.typography.titleSmall)
             Spacer(modifier = Modifier.size(16.dp))
 
             val searchText = remember { mutableStateOf("") }
@@ -87,7 +89,7 @@ fun PayloadScreen(payloadPage: PayloadPage) {
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        "未选择Payload.bin文件",
+                        languageBasic.notChoosePayloadFile,
                         style = MaterialTheme.typography.labelLarge,
                         modifier = Modifier.padding(16.dp)
                     )
@@ -100,12 +102,13 @@ fun PayloadScreen(payloadPage: PayloadPage) {
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun MiuiDownload() {
+    val languageBasic = LocalLanguageType.value.lang
     val contextStore = LocalContext.current
     Column(
         modifier = Modifier.fillMaxWidth()
             .padding(16.dp)
     ) {
-        Text("MIUI刷机包下载", style = MaterialTheme.typography.titleMedium)
+        Text(languageBasic.downloadMIUIRom, style = MaterialTheme.typography.titleMedium)
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
             TextButton(
                 onClick = {
@@ -153,6 +156,7 @@ data class Image(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TargetPathEditor(targetPath: MutableState<String>, outPath: MutableState<String>, fileDialog: FileDialog) {
+    val languageBasic = LocalLanguageType.value.lang
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
@@ -161,7 +165,7 @@ private fun TargetPathEditor(targetPath: MutableState<String>, outPath: MutableS
             value = targetPath.value,
             onValueChange = { targetPath.value = it },
             label = {
-                Text("输入payload.bin文件路径")
+                Text(languageBasic.inputPayloadPath)
             },
             singleLine = true,
             textStyle = MaterialTheme.typography.labelMedium.copy(fontFamily = FontFamily(Font(R.font.jetBrainsMonoRegular))),
@@ -177,12 +181,12 @@ private fun TargetPathEditor(targetPath: MutableState<String>, outPath: MutableS
                     targetPath.value = fileDialog.directory + fileDialog.file
                     outPath.value = fileDialog.directory + "images"
                 } else if (fileDialog.file != null) {
-                    sendNotice("选择失败", "不受支持的文件类型：${fileDialog.file}")
+                    sendNotice(languageBasic.chooseFail, String.format(languageBasic.chooseFailMessage, fileDialog.file))
                 }
             },
             shape = RoundedCornerShape(8.dp)
         ) {
-            Text("选择文件")
+            Text(languageBasic.chooseFile)
         }
     }
 }
@@ -190,6 +194,7 @@ private fun TargetPathEditor(targetPath: MutableState<String>, outPath: MutableS
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ColumnScope.OutputPathEditor(targetPath: MutableState<String>, outPath: MutableState<String>) {
+    val languageBasic = LocalLanguageType.value.lang
     AnimatedVisibility(targetPath.value.endsWith(".bin") && File(targetPath.value).exists()) {
         Column(
             modifier = Modifier.fillMaxSize()
@@ -202,7 +207,7 @@ private fun ColumnScope.OutputPathEditor(targetPath: MutableState<String>, outPa
                     value = outPath.value,
                     onValueChange = {},
                     label = {
-                        Text("镜像文件提取路径")
+                        Text(languageBasic.imageOutputPath)
                     },
                     singleLine = true,
                     readOnly = true,
@@ -220,7 +225,7 @@ private fun ColumnScope.OutputPathEditor(targetPath: MutableState<String>, outPa
                     },
                     shape = RoundedCornerShape(8.dp)
                 ) {
-                    Text("打开文件管理器")
+                    Text(languageBasic.openFileManager)
                 }
             }
         }
@@ -237,6 +242,7 @@ private fun SearchLayout(
     payloadDumperStore: PayloadDumperStore,
     keepShellStore: KeepShellStore
 ) {
+    val languageBasic = LocalLanguageType.value.lang
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
@@ -264,7 +270,7 @@ private fun SearchLayout(
                 }
             },
             label = {
-                Text("搜索镜像")
+                Text(languageBasic.searchImage)
             }
         )
 
@@ -276,7 +282,7 @@ private fun SearchLayout(
                 TooltipArea(
                     tooltip = {
                         TooltipText {
-                            Text("刷新列表")
+                            Text(languageBasic.refreshList)
                         }
                     }
                 ) {
@@ -312,6 +318,7 @@ private fun Images(
     loadState: MutableState<Boolean>,
     imageList: SnapshotStateList<Image>
 ) {
+    val languageBasic = LocalLanguageType.value.lang
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -322,7 +329,7 @@ private fun Images(
             ) {
                 CircularProgressIndicator(modifier = Modifier.size(32.dp), strokeWidth = 3.dp)
                 Spacer(modifier = Modifier.size(8.dp))
-                Text("加载中...", style = MaterialTheme.typography.labelMedium)
+                Text(languageBasic.loading, style = MaterialTheme.typography.labelMedium)
             }
         }
 
@@ -331,7 +338,7 @@ private fun Images(
         }
 
         if (imageList.isNotEmpty()) {
-            Text("找到${imageList.size}个镜像文件", style = MaterialTheme.typography.labelSmall)
+            Text(String.format(languageBasic.findImageCount, imageList.size), style = MaterialTheme.typography.labelSmall)
             Spacer(modifier = Modifier.size(16.dp))
         }
 
@@ -350,6 +357,7 @@ private fun ImageItem(
     keepShellStore: KeepShellStore,
     payloadDumperStore: PayloadDumperStore
 ) {
+    val languageBasic = LocalLanguageType.value.lang
     val runtimeStore = LocalRuntime.current
     OutlinedCard(
         modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
@@ -404,7 +412,7 @@ private fun ImageItem(
                     TooltipArea(
                         tooltip = {
                             TooltipText {
-                                Text("提取${image.name}.img")
+                                Text(String.format(languageBasic.pickImage, image.name))
                             }
                         }
                     ) {
@@ -499,6 +507,7 @@ private suspend fun extractImage(
     targetPath: MutableState<String>,
     outPath: MutableState<String>
 ) = withContext(Dispatchers.IO) {
+    val languageBasic = LocalLanguageType.value.lang
     extractState.value = false
     val out = keepShellStore cmd payloadDumperStore.payload("-p ${image.name} ${targetPath.value}")
     val tempPath = runtimeStore.runtimeFile.absolutePath + File.separator + image.name + ".img"
@@ -510,15 +519,15 @@ private suspend fun extractImage(
         try {
             val outPathString = outPath.value + File.separator + image.name + ".img"
             FileCopyUtils.copyFile(File(tempPath), File(outPathString))
-            sendNotice("提取成功", "文件已存放于$outPathString") {
+            sendNotice(languageBasic.noticePickAppSuccess, String.format(languageBasic.imagePickedSaveAt, outPathString)) {
                 Desktop.getDesktop().open(file)
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            sendNotice("提取失败", e.toString())
+            sendNotice(languageBasic.noticePickAppFail, e.toString())
         }
     } else {
-        sendNotice("提取失败", "AssertionError: operation data hash mismatch.")
+        sendNotice(languageBasic.noticePickAppFail, "AssertionError: operation data hash mismatch.")
     }
     File(tempPath).delete()
     extractState.value = true

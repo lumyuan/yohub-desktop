@@ -23,6 +23,7 @@ import io.lumstudio.yohub.R
 import io.lumstudio.yohub.common.sendNotice
 import io.lumstudio.yohub.common.shell.KeepShellStore
 import io.lumstudio.yohub.common.shell.LocalKeepShell
+import io.lumstudio.yohub.lang.LocalLanguageType
 import io.lumstudio.yohub.runtime.ClientState
 import io.lumstudio.yohub.runtime.LocalDevice
 import io.lumstudio.yohub.ui.component.Dialog
@@ -52,7 +53,7 @@ fun FlashImageScreen(flashImagePage: FlashImagePage) {
             Column(
                 modifier = Modifier.fillMaxSize().padding(16.dp)
             ) {
-                Toolbar(flashImagePage.label)
+                Toolbar(flashImagePage.label())
                 flashPages[0].content()
             }
         }
@@ -63,7 +64,7 @@ fun FlashImageScreen(flashImagePage: FlashImagePage) {
                 Column(
                     modifier = Modifier.fillMaxHeight().verticalScroll(scrollState).padding(16.dp)
                 ) {
-                    Toolbar(flashImagePage.label)
+                    Toolbar(flashImagePage.label())
                     flashPages[1].content()
                 }
             }
@@ -78,9 +79,14 @@ private val flashPages by lazy {
     )
 }
 
-class UnlinkPage : NavPage("未连接Fastboot设备", title = "请连接Fastboot设备", isNavigation = false) {
+class UnlinkPage : NavPage(isNavigation = false) {
 
-    override fun icon(): () -> Unit = {  }
+    override fun icon(): () -> Unit = { }
+    override fun label(): String = LocalLanguageType.value.lang.labelUnlink
+
+    override fun title(): String = LocalLanguageType.value.lang.titleUnlink
+
+    override fun subtitle(): String? = null
 
     @Composable
     override fun content() {
@@ -89,7 +95,7 @@ class UnlinkPage : NavPage("未连接Fastboot设备", title = "请连接Fastboot
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "$title",
+                text = title(),
                 style = MaterialTheme.typography.labelLarge,
                 modifier = Modifier.padding(28.dp)
             )
@@ -103,12 +109,18 @@ data class Partition(
     var name: String
 )
 
-class LinkedPage : NavPage("镜像刷写", isNavigation = false) {
+class LinkedPage : NavPage(isNavigation = false) {
 
-    override fun icon(): () -> Unit = {  }
+    override fun icon(): () -> Unit = { }
+    override fun label(): String = LocalLanguageType.value.lang.labelFlashImageLinked
+
+    override fun title(): String? = null
+
+    override fun subtitle(): String? = null
 
     @Composable
     override fun content() {
+        val languageBasic = LocalLanguageType.value.lang
         val keepShellStore = LocalKeepShell.current
         val bootPath = remember { mutableStateOf("") }
         val filter = remember { mutableStateOf(true) }
@@ -116,7 +128,7 @@ class LinkedPage : NavPage("镜像刷写", isNavigation = false) {
         val partitionList = remember { mutableStateOf(ArrayList<Partition>()) }
         val flashState = remember { mutableStateOf(false) }
         val fileDialog = remember { FileDialog(JFrame()) }
-        val text = remember { mutableStateOf("输入镜像") }
+        val text = remember { mutableStateOf(languageBasic.flashImage) }
         var displayDialog by remember { mutableStateOf(false) }
         TargetPathEditor(bootPath, fileDialog)
         Spacer(modifier = Modifier.size(16.dp))
@@ -149,10 +161,10 @@ class LinkedPage : NavPage("镜像刷写", isNavigation = false) {
             }
         }
         Dialog(
-            title = "确认刷写",
+            title = languageBasic.flashConfirm,
             visible = displayDialog,
-            cancelButtonText = "取消",
-            confirmButtonText = "确定",
+            cancelButtonText = languageBasic.cancel,
+            confirmButtonText = languageBasic.defined,
             onCancel = {
                 displayDialog = false
             },
@@ -163,7 +175,7 @@ class LinkedPage : NavPage("镜像刷写", isNavigation = false) {
                 }
             },
             content = {
-                Text("是否执行镜像刷写任务？\n\n已选择文件：${File(bootPath.value).name}\n已选择分区：${partitionName.value}")
+                Text(String.format(languageBasic.flashMessage, File(bootPath.value).name, partitionName.value))
             }
         )
     }
@@ -206,23 +218,31 @@ private fun flashTask(
     bootPath: MutableState<String>,
     partitionName: MutableState<String>
 ) {
+    val languageBasic = LocalLanguageType.value.lang
     val timeMillis = System.currentTimeMillis()
     flashState.value = true
-    text.value = "刷写任务执行中，请稍候..."
+    text.value = languageBasic.flashing
     val out = keepShellStore fastboot "flash ${partitionName.value} \"${bootPath.value}\""
     val end = out.split("\n").last { it.trim().isNotEmpty() }
     if (out.uppercase().contains("OKAY") && out.contains("Finished")) {
-        sendNotice("刷写成功！", "总耗时：${String.format("%.2f", (System.currentTimeMillis() - timeMillis).toFloat() / 1000f)}秒")
-    }else {
-        sendNotice("刷写失败！", end)
+        sendNotice(
+            languageBasic.flashSuccess,
+            String.format(
+                languageBasic.flashSuccessMessage,
+                String.format("%.2f", (System.currentTimeMillis() - timeMillis).toFloat() / 1000f)
+            )
+        )
+    } else {
+        sendNotice(languageBasic.flashFail, end)
     }
     flashState.value = false
-    text.value = "输入镜像"
+    text.value = languageBasic.flashImage
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TargetPathEditor(targetPath: MutableState<String>, fileDialog: FileDialog) {
+    val languageBasic = LocalLanguageType.value.lang
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
@@ -231,7 +251,7 @@ private fun TargetPathEditor(targetPath: MutableState<String>, fileDialog: FileD
             value = targetPath.value,
             onValueChange = { targetPath.value = it },
             label = {
-                Text("输入镜像文件路径")
+                Text(languageBasic.inputImagePath)
             },
             singleLine = true,
             textStyle = MaterialTheme.typography.labelMedium.copy(fontFamily = FontFamily(Font(R.font.jetBrainsMonoRegular))),
@@ -246,12 +266,12 @@ private fun TargetPathEditor(targetPath: MutableState<String>, fileDialog: FileD
                 if (fileDialog.file?.endsWith(".img") == true) {
                     targetPath.value = fileDialog.directory + fileDialog.file
                 } else {
-                    sendNotice("选择失败", "不受支持的文件类型：${fileDialog.file}")
+                    sendNotice(languageBasic.chooseFail, String.format(languageBasic.chooseFailMessage, fileDialog.file))
                 }
             },
             shape = RoundedCornerShape(8.dp)
         ) {
-            Text("选择文件")
+            Text(languageBasic.chooseFile)
         }
     }
 }
@@ -263,11 +283,16 @@ private fun PartitionChooser(
     partitionList: MutableState<ArrayList<Partition>>,
     keepShellStore: KeepShellStore
 ) {
+    val languageBasic = LocalLanguageType.value.lang
     var dropdownMenuState by remember { mutableStateOf(false) }
     Column {
         FluentItem(
             icon = Icons.Default.Table,
-            title = if (partitionName.value.isBlank()) "选择要刷入的分区" else "已选择分区：${partitionName.value}"
+            title = if (partitionName.value.isBlank()) {
+                languageBasic.choosePartition
+            } else {
+                String.format(languageBasic.partitionSelected, partitionName.value)
+            }
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -283,7 +308,7 @@ private fun PartitionChooser(
                     onCheckedChange = null,
                     enabled = false
                 )
-                Text("过滤A/B分区", style = MaterialTheme.typography.labelMedium)
+                Text(languageBasic.aBSlotFilter, style = MaterialTheme.typography.labelMedium)
             }
             Spacer(modifier = Modifier.size(28.dp))
             Column {
@@ -293,7 +318,7 @@ private fun PartitionChooser(
                     },
                     shape = RoundedCornerShape(8.dp)
                 ) {
-                    Text("选择分区")
+                    Text(languageBasic.textChoosePartition)
                 }
                 DropdownMenu(
                     dropdownMenuState,

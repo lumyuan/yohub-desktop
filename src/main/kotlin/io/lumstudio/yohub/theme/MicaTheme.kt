@@ -119,8 +119,8 @@ class TypographyStore(font: Font) {
 }
 
 @Stable
-enum class DarkTheme(val annotation: String) {
-    SYSTEM("跟随系统"), LIGHT("浅色"), DARK("深色")
+enum class DarkTheme {
+    SYSTEM, LIGHT, DARK
 }
 
 private val gson by lazy { Gson() }

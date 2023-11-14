@@ -44,7 +44,8 @@ object R : BaseResource("res") {
         val pythonLinux by path("linux", "py_3.11.5.zip")
         val fastbootDriverLinux by path("windows", "usb_driver.zip")
 
-        val aaptArmPie by path("aapt-arm-pie")
         val socJson by path("socs.json")
+
+        val androidKit by path("android_toolkit.zip")
     }
 }

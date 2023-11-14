@@ -20,6 +20,7 @@ import io.lumstudio.yohub.R
 import io.lumstudio.yohub.common.sendNotice
 import io.lumstudio.yohub.common.shell.KeepShellStore
 import io.lumstudio.yohub.common.shell.LocalKeepShell
+import io.lumstudio.yohub.lang.LocalLanguageType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -45,6 +46,7 @@ fun AdbInstallApkScreen() {
 
 @Composable
 private fun InstallLayout() {
+    val languageBasic = LocalLanguageType.value.lang
     val keepShellStore = LocalKeepShell.current
     val installState = remember { mutableStateOf(false) }
     val targetPath = remember { mutableStateOf("") }
@@ -54,7 +56,7 @@ private fun InstallLayout() {
     val exists = remember { mutableStateOf(false) }
     val text = remember { mutableStateOf("") }
     LaunchedEffect(targetPath.value) {
-        text.value = "开始安装【${File(targetPath.value).name}】"
+        text.value = String.format(languageBasic.startInstall, File(targetPath.value).name)
         exists.value = (targetPath.value.endsWith(".apk") || targetPath.value.endsWith(".apex")) && File(targetPath.value).exists()
     }
     Column(
@@ -94,7 +96,7 @@ private fun InstallLayout() {
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    "未选择APK文件",
+                    languageBasic.notChooseApk,
                     style = MaterialTheme.typography.labelLarge,
                     modifier = Modifier.padding(16.dp)
                 )
@@ -106,6 +108,7 @@ private fun InstallLayout() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TargetPathEditor(targetPath: MutableState<String>, fileDialog: FileDialog) {
+    val languageBasic = LocalLanguageType.value.lang
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
@@ -114,7 +117,7 @@ private fun TargetPathEditor(targetPath: MutableState<String>, fileDialog: FileD
             value = targetPath.value,
             onValueChange = { targetPath.value = it },
             label = {
-                Text("输入APK文件路径（支持APK/APEX）")
+                Text(languageBasic.inputApkPath)
             },
             singleLine = true,
             textStyle = MaterialTheme.typography.labelMedium.copy(fontFamily = FontFamily(Font(R.font.jetBrainsMonoRegular))),
@@ -129,12 +132,12 @@ private fun TargetPathEditor(targetPath: MutableState<String>, fileDialog: FileD
                 if (fileDialog.file?.endsWith(".apk") == true || fileDialog.file?.endsWith(".apex") == true) {
                     targetPath.value = fileDialog.directory + fileDialog.file
                 } else if (fileDialog.file != null) {
-                    sendNotice("选择失败", "不受支持的文件类型：${fileDialog.file}")
+                    sendNotice(languageBasic.chooseFail, String.format(languageBasic.chooseFailMessage, fileDialog.file))
                 }
             },
             shape = RoundedCornerShape(8.dp)
         ) {
-            Text("选择文件")
+            Text(languageBasic.chooseFile)
         }
     }
 }
@@ -145,14 +148,15 @@ private fun installApk(
     text: MutableState<String>,
     targetPath: MutableState<String>
 ) {
+    val languageBasic = LocalLanguageType.value.lang
     installState.value = true
-    text.value = "应用安装中，请稍候..."
+    text.value = languageBasic.apkInstalling
     val out = keepShellStore adb "install \"${targetPath.value}\""
     if (out.contains("Success")) {
-        sendNotice("安装成功！", "已将【${File(targetPath.value).name}】安装到设备【${DeviceName.value}】中")
+        sendNotice(languageBasic.installSuccess, String.format(languageBasic.installSuccessMessage, File(targetPath.value).name, DeviceName.value))
     }else {
-        sendNotice("安装失败！", out)
+        sendNotice(languageBasic.installFail, out)
     }
-    text.value = "开始安装【${File(targetPath.value).name}】"
+    text.value = String.format(languageBasic.startInstall, File(targetPath.value).name)
     installState.value = false
 }

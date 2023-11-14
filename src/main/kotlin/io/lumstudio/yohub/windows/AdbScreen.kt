@@ -29,18 +29,13 @@ import io.lumstudio.yohub.common.shell.MemoryUtil
 import io.lumstudio.yohub.common.utils.BrandLogoUtil
 import io.lumstudio.yohub.common.utils.CpuInfoUtil
 import io.lumstudio.yohub.common.utils.CpuLoadUtils
+import io.lumstudio.yohub.lang.LocalLanguageType
 import io.lumstudio.yohub.model.CpuCoreInfo
-import io.lumstudio.yohub.runtime.ClientState
-import io.lumstudio.yohub.runtime.DeviceStore
-import io.lumstudio.yohub.runtime.LocalDevice
-import io.lumstudio.yohub.runtime.LocalDevices
+import io.lumstudio.yohub.runtime.*
 import io.lumstudio.yohub.ui.component.*
 import io.lumstudio.yohub.windows.navigation.AdbPage
 import io.lumstudio.yohub.windows.navigation.NavPage
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.resource
 
@@ -64,36 +59,75 @@ fun AdbScreen(adbPage: AdbPage) {
 fun LinkedScaffold(navPage: NavPage, content: @Composable ColumnScope.() -> Unit) {
     val deviceStore = LocalDevice.current
     val devicesStore = LocalDevices.current
+    val keepShellStore = LocalKeepShell.current
+    val androidKitStore = LocalAndroidToolkit.current
+    val languageBasic = LocalLanguageType.value.lang
 
-    Column(
-        modifier = Modifier.fillMaxSize()
+    val loadState = remember { mutableStateOf(false) }
+
+    LaunchedEffect(deviceStore.device?.state) {
+        withContext(Dispatchers.IO) {
+            if (deviceStore.device?.state == ClientState.DEVICE) {
+                androidKitStore.unzipPath.listFiles()?.onEach {
+                    keepShellStore adb "push \"${androidKitStore file it.name}\" \"${androidKitStore.androidToolkitPath}/${it.name}\""
+                    keepShellStore adbShell "chmod 0777 ${androidKitStore.androidToolkitPath}/${it.name}"
+                }
+            }
+            loadState.value = true
+        }
+    }
+
+    AnimatedVisibility(
+        !loadState.value,
+        enter = fadeIn(),
+        exit = fadeOut()
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth().padding(start = 16.dp, top = 16.dp, end = 16.dp)
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Toolbar(navPage.label)
+            CircularProgressIndicator(modifier = Modifier.size(40.dp), strokeWidth = 2.dp)
+            Spacer(modifier = Modifier.size(8.dp))
+            Text(languageBasic.loading)
         }
-        AnimatedVisibility(deviceStore.device?.state == ClientState.DEVICE) {
-            content()
-        }
-        AnimatedVisibility(deviceStore.device?.state != ClientState.DEVICE) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
+    }
+
+    AnimatedVisibility(
+        loadState.value,
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth().padding(start = 16.dp, top = 16.dp, end = 16.dp)
             ) {
-                Text(
-                    if (devicesStore.devices.isEmpty()) {
-                        "请连接设备"
-                    } else if (deviceStore.device == null) {
-                        "请选择设备"
-                    } else if (deviceStore.device?.state == ClientState.UNAUTHORIZED) {
-                        "请重新连接此设备并在手机上授予权限"
-                    } else if (deviceStore.device?.state == ClientState.FASTBOOT || deviceStore.device?.state == ClientState.RECOVERY) {
-                        "请连接一个ADB设备"
-                    } else {
-                        "已连接设备：${DeviceName.value}"
-                    }
-                )
+                Toolbar(navPage.label())
+            }
+            AnimatedVisibility(deviceStore.device?.state == ClientState.DEVICE) {
+                content()
+            }
+            AnimatedVisibility(deviceStore.device?.state != ClientState.DEVICE) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        if (devicesStore.devices.isEmpty()) {
+                            languageBasic.pleaseLinkDevice
+                        } else if (deviceStore.device == null) {
+                            languageBasic.pleaseChooseDevice
+                        } else if (deviceStore.device?.state == ClientState.UNAUTHORIZED) {
+                            languageBasic.pleaseAuthorizeDevice
+                        } else if (deviceStore.device?.state == ClientState.FASTBOOT || deviceStore.device?.state == ClientState.RECOVERY) {
+                            languageBasic.pleaseLinkAdbDevice
+                        } else {
+                            String.format(languageBasic.linkedAdbDevice, DeviceName.value)
+                        }
+                    )
+                }
             }
         }
     }
@@ -102,6 +136,7 @@ fun LinkedScaffold(navPage: NavPage, content: @Composable ColumnScope.() -> Unit
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun LinkedLayout(adbPage: AdbPage, deviceStore: DeviceStore) {
+    val languageBasic = LocalLanguageType.value.lang
 
     val loadState = remember { mutableStateOf(false) }
 
@@ -118,12 +153,16 @@ private fun LinkedLayout(adbPage: AdbPage, deviceStore: DeviceStore) {
     val cpuLoadUtils by remember { mutableStateOf(CpuLoadUtils(keepShellStore)) }
 
     val cpuNameState = remember { mutableStateOf("") }
-    val openglText = remember { mutableStateOf("加载中...") }
+    val openglText = remember { mutableStateOf("") }
+
+    LaunchedEffect(LocalLanguageType.value) {
+        openglText.value = languageBasic.loading
+    }
 
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        Text("设备详情", style = MaterialTheme.typography.bodySmall)
+        Text(languageBasic.deviceInfo, style = MaterialTheme.typography.bodySmall)
         Spacer(modifier = Modifier.size(16.dp))
         Row(
             modifier = Modifier.fillMaxWidth()
@@ -140,7 +179,7 @@ private fun LinkedLayout(adbPage: AdbPage, deviceStore: DeviceStore) {
             }
         }
         Spacer(modifier = Modifier.size(28.dp))
-        Text("ADB专属功能", style = MaterialTheme.typography.bodySmall)
+        Text(languageBasic.adbAreaFunctions, style = MaterialTheme.typography.bodySmall)
         Spacer(modifier = Modifier.size(8.dp))
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
             adbPage.nestedItems?.onEach {
@@ -150,14 +189,14 @@ private fun LinkedLayout(adbPage: AdbPage, deviceStore: DeviceStore) {
                     },
                     onClick = {
                         if (deviceStore.device?.state != ClientState.DEVICE) {
-                            sendNotice("权限不足！", "请连接ADB设备")
-                        }else {
-                            adbPage.karavel?.navigate(it)
+                            sendNotice(languageBasic.insufficientPermissions, languageBasic.pleaseLinkAdbDevice)
+                        } else {
                             selectPage.value = it
+                            adbPage.karavel?.navigate(it)
                         }
                     }
                 ) {
-                    Text(it.label)
+                    Text(it.label())
                 }
             }
         }
@@ -171,21 +210,15 @@ private fun LinkedLayout(adbPage: AdbPage, deviceStore: DeviceStore) {
         withContext(Dispatchers.IO) {
             openglText.value =
                 (keepShellStore adbShell "dumpsys SurfaceFlinger | grep -i GLES").replace("GLES: ", "")
-
             val socModel = (keepShellStore adbShell "getprop ro.soc.model").replace("\n", "").trim()
             val hardware = (keepShellStore adbShell "getprop ro.boot.hardware").replace("\n", "").trim()
-
             cpuNameState.value = socModel.ifEmpty { hardware }
-
             val cpuCoreNum = cpuInfoUtil.cpuCoreNum()
             while (this@LaunchedEffect.isActive && deviceStore.device?.state == ClientState.DEVICE) {
                 val memoryInfo = memoryUtil.memoryInfo()
                 val info = memoryInfo[MemoryUtil.MemoryType.MemTotal]?.info
-
-                val externalStorageInfo = memoryUtil.externalStorageInfo()
-                externalStorageState.value = externalStorageInfo
-
                 if (info != null) {
+                    val externalStorageInfo = memoryUtil.externalStorageInfo()
                     val memoryStateBean = MemoryState(
                         ramTotalSize = MemoryUtil.kb2mb(memoryInfo[MemoryUtil.MemoryType.MemTotal]?.info ?: 0),
                         ramUsedSize = MemoryUtil.kb2mb(
@@ -205,18 +238,11 @@ private fun LinkedLayout(adbPage: AdbPage, deviceStore: DeviceStore) {
                         romTotalSize = 0f,
                         romUsedSize = 0f
                     )
-                    memoryState.value = memoryStateBean
-
-                    ramPercentage.value =
-                        (memoryStateBean.ramTotalSize - memoryStateBean.ramUsedSize) / memoryStateBean.ramTotalSize * 100f
-                    swapPercentage.value =
-                        (memoryStateBean.swapTotalSize - memoryStateBean.swapUsedSize) / memoryStateBean.swapTotalSize * 100f
 
                     /*CPU Freq*/
                     val cores = java.util.ArrayList<CpuCoreInfo>()
                     for (coreIndex in 0 until cpuCoreNum) {
                         val core = CpuCoreInfo(coreIndex)
-
                         core.currentFreq = cpuInfoUtil.getCurCpuFreq(coreIndex)
                         core.maxFreq = cpuInfoUtil.getMaxCpuFreq(coreIndex)
                         core.minFreq = cpuInfoUtil.getMinCpuFreq(coreIndex)
@@ -255,14 +281,6 @@ private fun LinkedLayout(adbPage: AdbPage, deviceStore: DeviceStore) {
                     }
                     stringBuilder.append(")")
 
-                    cpuState.value =
-                        CpuState(
-                            cpuCoreNum,
-                            cores,
-                            loads ?: HashMap(),
-                            socType = stringBuilder.toString()
-                        )
-
                     val release = keepShellStore adbShell "getprop ro.build.version.release"
                     val sdk = keepShellStore adbShell "getprop ro.build.version.sdk"
 
@@ -282,10 +300,17 @@ private fun LinkedLayout(adbPage: AdbPage, deviceStore: DeviceStore) {
                             }
                         }
                     }
+                    memoryState.value = memoryStateBean
+                    ramPercentage.value =
+                        (memoryStateBean.ramTotalSize - memoryStateBean.ramUsedSize) / memoryStateBean.ramTotalSize * 100f
+                    swapPercentage.value =
+                        (memoryStateBean.swapTotalSize - memoryStateBean.swapUsedSize) / memoryStateBean.swapTotalSize * 100f
+                    externalStorageState.value = externalStorageInfo
+                    cpuState.value = CpuState(cpuCoreNum, cores, loads ?: HashMap(), socType = stringBuilder.toString())
                     androidInfo.value = AndroidInfo(release, sdk, level, temperature)
                 }
                 loadState.value = true
-                delay(2000)
+                delay(1000)
             }
         }
     }
@@ -300,6 +325,7 @@ private fun PhoneLayout(
     openglText: MutableState<String>,
     cpuState: MutableState<CpuState>
 ) {
+    val languageBasic = LocalLanguageType.value.lang
     var socConfig by remember { mutableStateOf("{}") }
     LaunchedEffect(Unit) {
         socConfig = String(resource(R.raw.socJson).readBytes())
@@ -360,22 +386,25 @@ private fun PhoneLayout(
                                     if (cpuNameState.value.contains("mt")) cpuNameState.value.uppercase() else cpuNameState.value
                                 )
                                 Text(
-                                    "设备：\n${DeviceName.value}\n" +
-                                            "系统版本：\nAndroid ${
-                                                androidInfo.value.version.replace(
-                                                    "\n",
-                                                    ""
-                                                )
-                                            }（${androidInfo.value.sdk.replace("\n", "")}）\n" +
-                                            "处理器：\n${soc.name ?: cpuNameState.value.uppercase()}\n" +
-                                            "核心数：${cpuState.value.coreCount}核心\n" +
-                                            "电池电量：${androidInfo.value.level}\n" +
-                                            "电池温度：${androidInfo.value.temperature}\n" +
-                                            if (soc.name != null) {
-                                                soc.toString() + "\n"
-                                            } else {
-                                                ""
-                                            } + "GPU：${openglText.value.replace("\n", "")}",
+                                    String.format(
+                                        languageBasic.adbPhoneInfo,
+                                        DeviceName.value,
+                                        androidInfo.value.version.replace(
+                                            "\n",
+                                            ""
+                                        ),
+                                        androidInfo.value.sdk.replace("\n", ""),
+                                        soc.name ?: cpuNameState.value.uppercase(),
+                                        cpuState.value.coreCount,
+                                        androidInfo.value.level,
+                                        androidInfo.value.temperature,
+                                        if (soc.name != null) {
+                                            soc.toString() + "\n"
+                                        } else {
+                                            ""
+                                        },
+                                        openglText.value.replace("\n", "")
+                                    ),
                                     style = MaterialTheme.typography.labelSmall.copy(
                                         fontSize = 10.sp,
                                         fontFamily = FontFamily(Font(R.font.jetBrainsMonoRegular))
@@ -442,6 +471,7 @@ private fun MemoryLayout(
     swapPercentage: MutableState<Float>,
     externalStorageState: MutableState<MemoryUtil.ExternalStorage>
 ) {
+    val languageBasic = LocalLanguageType.value.lang
     OutlinedCard(
         modifier = Modifier.fillMaxWidth().height(142.dp),
         colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.background),
@@ -457,24 +487,12 @@ private fun MemoryLayout(
                     TooltipText {
                         if (loadState.value) {
                             Text(
-                                "总空间：${
-                                    String.format(
-                                        "%.2f",
-                                        MemoryUtil.kb2gb(externalStorageState.value.total)
-                                    )
-                                } GB\n" +
-                                        "已使用：${
-                                            String.format(
-                                                "%.2f",
-                                                MemoryUtil.kb2gb(externalStorageState.value.used)
-                                            )
-                                        } GB\n" +
-                                        "剩余：${
-                                            String.format(
-                                                "%.2f",
-                                                MemoryUtil.kb2gb(externalStorageState.value.avail)
-                                            )
-                                        } GB"
+                                String.format(
+                                    languageBasic.externalStorageInfo,
+                                    String.format("%.2f", MemoryUtil.kb2gb(externalStorageState.value.total)),
+                                    String.format("%.2f", MemoryUtil.kb2gb(externalStorageState.value.used)),
+                                    String.format("%.2f", MemoryUtil.kb2gb(externalStorageState.value.avail))
+                                )
                             )
                         }
                     }
@@ -486,7 +504,7 @@ private fun MemoryLayout(
                     foregroundSweepAngle = (externalStorageState.value.used.toFloat() / externalStorageState.value.total.toFloat()) * 100f,
                     backgroundIndicatorStrokeWidth = 12.dp
                 ) {
-                    Text("存储空间", style = MaterialTheme.typography.bodyMedium)
+                    Text(languageBasic.externalStorageSpace, style = MaterialTheme.typography.bodyMedium)
                 }
             }
             Spacer(modifier = Modifier.size(16.dp))
@@ -502,7 +520,7 @@ private fun MemoryLayout(
                 AnimatedVisibility(loadState.value) {
                     Text(
                         String.format(
-                            "物理内存    %.2f%s（%dGB）",
+                            languageBasic.memorySpace,
                             ramPercentage.value,
                             "%",
                             memoryState.value.ramTotalSize.toInt() / 1024 + 1
@@ -518,7 +536,7 @@ private fun MemoryLayout(
                 AnimatedVisibility(loadState.value) {
                     Text(
                         String.format(
-                            "交换分区    %.2f%s（%dGB）",
+                            languageBasic.swapSpace,
                             swapPercentage.value,
                             "%",
                             memoryState.value.swapTotalSize.toInt() / 1024 + 1
@@ -601,6 +619,7 @@ private fun SocLayout(
 
 @Composable
 private fun ColumnScope.CpuTotalLayout(loadState: MutableState<Boolean>, cpuState: MutableState<CpuState>) {
+    val languageBasic = LocalLanguageType.value.lang
     CpuChart(
         modifier = Modifier
             .fillMaxSize()
@@ -617,7 +636,7 @@ private fun ColumnScope.CpuTotalLayout(loadState: MutableState<Boolean>, cpuStat
     AnimatedVisibility(loadState.value) {
         Text(
             text = String.format(
-                "负载：%.2f%s",
+                languageBasic.coreLoad,
                 cpuState.value.loads[-1]?.toFloat() ?: 0f,
                 "%"
             ),

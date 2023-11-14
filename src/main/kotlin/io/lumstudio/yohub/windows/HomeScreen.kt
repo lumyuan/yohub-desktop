@@ -25,7 +25,7 @@ fun HomeScreen(homePage: HomePage) {
         Column(
             modifier = Modifier.verticalScroll(rememberScrollState())
         ) {
-            PageNav.values().toList().filter { it.page.title != null && it.page.isNavigation }.onEach {
+            PageNav.values().toList().filter { it.page.title() != null && it.page.isNavigation }.onEach {
                 Row(
                     modifier = Modifier.clip(RoundedCornerShape(8.dp))
                         .clickable {
@@ -37,8 +37,8 @@ fun HomeScreen(homePage: HomePage) {
                         modifier = Modifier.padding(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("${it.page.title}")
-                        it.page.subtitle?.apply {
+                        Text("${it.page.title()}")
+                        it.page.subtitle()?.apply {
                             Spacer(modifier = Modifier.size(8.dp))
                             Text(this, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .5f))
                         }

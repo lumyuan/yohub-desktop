@@ -28,6 +28,8 @@ import io.lumstudio.yohub.common.LocalApplication
 import io.lumstudio.yohub.common.LocalIOCoroutine
 import io.lumstudio.yohub.common.shell.LocalKeepShell
 import io.lumstudio.yohub.common.utils.BrandLogoUtil
+import io.lumstudio.yohub.lang.LanguageType
+import io.lumstudio.yohub.lang.LocalLanguageType
 import io.lumstudio.yohub.runtime.*
 import io.lumstudio.yohub.theme.MicaTheme
 import io.lumstudio.yohub.ui.component.LocalExpand
@@ -57,8 +59,9 @@ fun MainUI() {
         position = WindowPosition(Alignment.Center),
         size = DpSize(1000.dp, 750.dp)
     )
+    val lang = LocalLanguageType.value.lang
     Window(
-        title = "优画工具箱桌面版",
+        title = lang.appName,
         icon = painterResource(R.icon.logoRound),
         onCloseRequest = {
             ioCoroutine.ioScope.launch {
@@ -97,7 +100,7 @@ fun MainUI() {
                                     }
                                 },
                                 label = {
-                                    Text("搜索功能项", softWrap = false)
+                                    Text(lang.searchFunctions, softWrap = false)
                                 },
                                 leadingIcon = {
                                     Icon(Icons.Default.Search, null)
@@ -127,8 +130,8 @@ fun MainUI() {
                                 focusable = false
                             ) {
                                 PageNav.values().toList()
-                                    .sortedBy { it.page.label }
-                                    .filter { it.page.label.lowercase().contains(searchFuns.value.trim().lowercase()) }
+                                    .sortedBy { it.page.label() }
+                                    .filter { it.page.label().lowercase().contains(searchFuns.value.trim().lowercase()) }
                                     .onEach {
                                         DropdownMenuItem(
                                             modifier = Modifier.width(280.dp),
@@ -141,7 +144,7 @@ fun MainUI() {
                                                 }
                                             },
                                             text = {
-                                                Text(it.page.label, style = MaterialTheme.typography.labelMedium)
+                                                Text(it.page.label(), style = MaterialTheme.typography.labelMedium)
                                             },
                                             onClick = {
                                                 CoroutineScope(Dispatchers.IO).launch {
@@ -209,6 +212,7 @@ fun MainUI() {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun DevicesItem() {
+    val lang = LocalLanguageType.value.lang
     val devicesStore = LocalDevices.current
     val expandedItems = remember {
         mutableStateOf(true)
@@ -221,7 +225,7 @@ private fun DevicesItem() {
         tooltip = {
             if (!LocalExpand.current) {
                 TooltipText {
-                    Text("设备")
+                    Text(lang.tooltipTextDevice)
                 }
             }
         }
@@ -235,8 +239,8 @@ private fun DevicesItem() {
             onClick = {
                 expandedItems.value = !expandedItems.value
             },
-            icon = { Icon(androidx.compose.material.icons.Icons.Default.TabletAndroid, "设备") },
-            content = { Text("设备", style = MaterialTheme.typography.labelLarge, softWrap = false) },
+            icon = { Icon(androidx.compose.material.icons.Icons.Default.TabletAndroid, null) },
+            content = { Text(lang.tooltipTextDevice, style = MaterialTheme.typography.labelLarge, softWrap = false) },
             expandItems = expandedItems.value,
             items = devicesStore.devices.let {
                 {
@@ -265,11 +269,11 @@ private fun DevicesItem() {
                             verticalArrangement = Arrangement.Center
                         ) {
                             Text(
-                                "未连接设备",
+                                lang.unlinkDevice,
                                 style = MaterialTheme.typography.labelMedium
                             )
                             Text(
-                                "点击刷新设备列表",
+                                lang.refreshDeviceList,
                                 style = MaterialTheme.typography.labelSmall
                             )
                         }
@@ -284,7 +288,7 @@ private fun DevicesItem() {
                             verticalArrangement = Arrangement.Center
                         ) {
                             Text(
-                                "点击刷新设备列表",
+                                lang.refreshDeviceList,
                                 style = MaterialTheme.typography.labelSmall
                             )
                         }
@@ -310,10 +314,11 @@ private fun DeviceItem(
     val deviceStore = LocalDevice.current
     val keepShellStore = LocalKeepShell.current
     val adbStore = LocalAdbRuntime.current
+    val lang = LocalLanguageType.value.lang
 
-    var brand by remember { mutableStateOf("检测中...") }
-    var label by remember { mutableStateOf("检测中...") }
-    var sub by remember { mutableStateOf("检测中...") }
+    var brand by remember { mutableStateOf(lang.checkIndexDevice) }
+    var label by remember { mutableStateOf(lang.checkIndexDevice) }
+    var sub by remember { mutableStateOf(lang.checkIndexDevice) }
 
     LaunchedEffect(label) {
         withContext(Dispatchers.IO) {
@@ -342,12 +347,12 @@ private fun DeviceItem(
                                 model.replace("$brand ", "")
                             }
                             label = (marketName.ifEmpty { "$brand $name" })
-                            sub = "设备类型：${navItem.type}"
+                            sub = String.format(lang.deviceType, navItem.type)
                         }
 
                         ClientState.UNAUTHORIZED -> {
-                            label = "${navItem.id}（未授权）"
-                            sub = "设备类型：${navItem.type}"
+                            label = String.format(lang.deviceTypeUnAuthorization, navItem.id)
+                            sub = String.format(lang.deviceType, navItem.type)
                         }
 
                         ClientState.FASTBOOT -> {}
@@ -356,12 +361,12 @@ private fun DeviceItem(
 
                 ClientType.FASTBOOT -> {
                     label = navItem.id
-                    sub = "设备类型：${navItem.type}"
+                    sub = String.format(lang.deviceType, navItem.type)
                 }
 
                 ClientType.UNKNOWN -> {
-                    label = "未知设备"
-                    sub = "设备类型：未知"
+                    label = lang.unknownDevice
+                    sub = String.format(lang.deviceType, lang.unknown)
                 }
             }
         }
@@ -405,7 +410,7 @@ private fun NavigationItem(
     LaunchedEffect(selectPage) {
         snapshotFlow { selectPage.value }
             .onEach {
-                if (it == navItem) expandedItems.value = true
+                if (it?.label() == navItem.label()) expandedItems.value = true
             }.launchIn(this)
     }
 
@@ -417,13 +422,13 @@ private fun NavigationItem(
         tooltip = {
             if (!LocalExpand.current) {
                 TooltipText {
-                    Text(navItem.label)
+                    Text(navItem.label())
                 }
             }
         }
     ) {
         SideNavItem(
-            (karavel.currentPage() as NavPage).label == navItem.label,
+            (karavel.currentPage() as NavPage).label() == navItem.label(),
             onClick = {
                 selectPage.value = navItem
                 if (karavel.currentPage() == navItem) {
@@ -435,7 +440,7 @@ private fun NavigationItem(
                 karavel.navigate(navItem)
             },
             icon = navItem.icon(),
-            content = { Text(navItem.label, style = MaterialTheme.typography.labelLarge, softWrap = false) },
+            content = { Text(navItem.label(), style = MaterialTheme.typography.labelLarge, softWrap = false) },
             expandItems = expandedItems.value,
             items = if (hasItems) {
                 navItem.nestedItems?.let {

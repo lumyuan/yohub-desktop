@@ -10,6 +10,7 @@ import com.konyaco.fluent.icons.Icons
 import com.konyaco.fluent.icons.regular.*
 import io.appoutlet.karavel.Page
 import io.lumstudio.yohub.R
+import io.lumstudio.yohub.lang.LocalLanguageType
 import io.lumstudio.yohub.windows.*
 
 enum class PageNav(
@@ -26,7 +27,7 @@ enum class PageNav(
         page = MagiskPatcherPage().apply { parent = MagicMaskModule.page }
     ),
     MagiskRepository(
-      page = MagiskRepositoryPage().apply { parent = MagicMaskModule.page }
+        page = MagiskRepositoryPage().apply { parent = MagicMaskModule.page }
     ),
     Adb(
         page = AdbPage()
@@ -49,19 +50,27 @@ enum class PageNav(
 }
 
 abstract class NavPage(
-    val label: String,
-    val title: String? = null,
-    val subtitle: String? = null,
-    val isNavigation: Boolean = true
+    var parent: NavPage? = null,
+    var isNavigation: Boolean = true
 ) : Page() {
     var nestedItems: List<NavPage>? = null
-    var parent: NavPage? = null
+    var label: String = ""
+    var title: String? = null
+    var subtitle: String? = null
     abstract fun icon(): @Composable () -> Unit
+    abstract fun label(): String
+    abstract fun title(): String?
+    abstract fun subtitle(): String?
 }
 
-class HomePage : NavPage("首页") {
+class HomePage : NavPage() {
 
     override fun icon(): @Composable () -> Unit = { Icon(Icons.Default.Home, null) }
+    override fun label(): String = LocalLanguageType.value.lang.labelHome
+
+    override fun title(): String? = null
+
+    override fun subtitle(): String? = null
 
     @Composable
     override fun content() {
@@ -69,9 +78,13 @@ class HomePage : NavPage("首页") {
     }
 }
 
-class PayloadPage : NavPage("Payload镜像提取", "镜像文件提取", "点击右侧【Payload文件提取】") {
+class PayloadPage : NavPage() {
     override fun icon(): @Composable () -> Unit = { Icon(Icons.Default.FolderZip, null) }
+    override fun label(): String = LocalLanguageType.value.lang.labelPayload
 
+    override fun title(): String = LocalLanguageType.value.lang.titlePayload
+
+    override fun subtitle(): String = LocalLanguageType.value.lang.subtitlePayload
 
     @Composable
     override fun content() {
@@ -79,9 +92,14 @@ class PayloadPage : NavPage("Payload镜像提取", "镜像文件提取", "点击
     }
 }
 
-class MagicMaskModulesPage : NavPage("Magisk专区", "Magisk相关功能", "点击右侧【Magisk专区】") {
+class MagicMaskModulesPage : NavPage() {
 
     override fun icon(): @Composable () -> Unit = { Icon(painter = painterResource(R.icon.icMagisk), null) }
+    override fun label(): String = LocalLanguageType.value.lang.labelMagiskArea
+
+    override fun title(): String = LocalLanguageType.value.lang.titleMagiskArea
+
+    override fun subtitle(): String = LocalLanguageType.value.lang.subtitleMagiskArea
 
     init {
         nestedItems = arrayListOf(
@@ -94,12 +112,15 @@ class MagicMaskModulesPage : NavPage("Magisk专区", "Magisk相关功能", "点�
     override fun content() {
         MagicMaskModulesScreen(this)
     }
-
 }
 
-class MagiskPatcherPage :
-    NavPage("Boot修补（topjohnwu）", "修补Boot镜像（Root）", "点击右侧【Boot修补（topjohnwu）】", isNavigation = false) {
+class MagiskPatcherPage : NavPage(isNavigation = false) {
     override fun icon(): @Composable () -> Unit = { Icon(Icons.Default.MobileOptimized, null) }
+    override fun label(): String = LocalLanguageType.value.lang.labelMagiskPatcher
+
+    override fun title(): String = LocalLanguageType.value.lang.titleMagiskPatcher
+
+    override fun subtitle(): String = LocalLanguageType.value.lang.subtitleMagiskPatcher
 
     @Composable
     override fun content() {
@@ -108,11 +129,17 @@ class MagiskPatcherPage :
 
 }
 
-class MagiskRepositoryPage: NavPage("Magisk仓库", isNavigation = false) {
+class MagiskRepositoryPage : NavPage(isNavigation = false) {
 
     override fun icon(): @Composable () -> Unit = {
         Icon(Icons.Default.GroupList, null)
     }
+
+    override fun label(): String = LocalLanguageType.value.lang.labelMagiskRepository
+
+    override fun title(): String? = null
+
+    override fun subtitle(): String? = null
 
     @Composable
     override fun content() {
@@ -121,7 +148,7 @@ class MagiskRepositoryPage: NavPage("Magisk仓库", isNavigation = false) {
 
 }
 
-class AdbPage: NavPage("ADB专区", title = "想要操作手机", subtitle = "点击右侧【ADB专区】") {
+class AdbPage : NavPage() {
 
     init {
         nestedItems = arrayListOf(
@@ -135,6 +162,12 @@ class AdbPage: NavPage("ADB专区", title = "想要操作手机", subtitle = "�
         Icon(androidx.compose.material.icons.Icons.Outlined.Android, null)
     }
 
+    override fun label(): String = LocalLanguageType.value.lang.labelAdbArea
+
+    override fun title(): String = LocalLanguageType.value.lang.titleAdbArea
+
+    override fun subtitle(): String = LocalLanguageType.value.lang.subtitleAdbArea
+
     @Composable
     override fun content() {
         LinkedScaffold(this) {
@@ -144,10 +177,16 @@ class AdbPage: NavPage("ADB专区", title = "想要操作手机", subtitle = "�
 
 }
 
-class AdbInstallApkPage: NavPage("Apk安装", isNavigation = false) {
+class AdbInstallApkPage : NavPage(isNavigation = false) {
     override fun icon(): @Composable () -> Unit = {
         Icon(Icons.Default.AppsAddIn, null)
     }
+
+    override fun label(): String = LocalLanguageType.value.lang.labelAdbInstaller
+
+    override fun title(): String? = null
+
+    override fun subtitle(): String? = null
 
     @Composable
     override fun content() {
@@ -158,10 +197,16 @@ class AdbInstallApkPage: NavPage("Apk安装", isNavigation = false) {
 
 }
 
-class AdbAppPickupPage: NavPage("应用提取", isNavigation = false) {
+class AdbAppPickupPage : NavPage(isNavigation = false) {
     override fun icon(): @Composable () -> Unit = {
         Icon(Icons.Default.AppsListDetail, null)
     }
+
+    override fun label(): String = LocalLanguageType.value.lang.labelAdbPicker
+
+    override fun title(): String? = null
+
+    override fun subtitle(): String? = null
 
     @Composable
     override fun content() {
@@ -171,10 +216,16 @@ class AdbAppPickupPage: NavPage("应用提取", isNavigation = false) {
     }
 }
 
-class AdbActivatePage: NavPage("一键激活专区", isNavigation = false) {
+class AdbActivatePage : NavPage(isNavigation = false) {
     override fun icon(): @Composable () -> Unit = {
         Icon(Icons.Default.Play, null)
     }
+
+    override fun label(): String = LocalLanguageType.value.lang.labelAdbActiveArea
+
+    override fun title(): String? = null
+
+    override fun subtitle(): String? = null
 
     @Composable
     override fun content() {
@@ -184,14 +235,20 @@ class AdbActivatePage: NavPage("一键激活专区", isNavigation = false) {
     }
 }
 
-class SettingsPage : NavPage("设置", isNavigation = false) {
+class SettingsPage : NavPage(isNavigation = false) {
     override fun icon(): @Composable () -> Unit = { Icon(Icons.Default.Settings, null) }
+    override fun label(): String = LocalLanguageType.value.lang.labelSettings
+
+    override fun title(): String? = null
+
+    override fun subtitle(): String? = null
 
     init {
         nestedItems = arrayListOf(
+            LanguagePage(),
             ThemeSetting(),
             VersionSetting(),
-            OpenSourceLicense()
+            OpenSourceLicense(),
         )
     }
 
@@ -201,8 +258,13 @@ class SettingsPage : NavPage("设置", isNavigation = false) {
     }
 }
 
-class FlashImagePage : NavPage("刷写镜像", title = "为设备刷入镜像文件", "点击右侧【刷写镜像】") {
+class FlashImagePage : NavPage() {
     override fun icon(): @Composable () -> Unit = { Icon(Icons.Default.Flash, null) }
+    override fun label(): String = LocalLanguageType.value.lang.labelFlashImage
+
+    override fun title(): String = LocalLanguageType.value.lang.titleFlashImage
+
+    override fun subtitle(): String = LocalLanguageType.value.lang.subtitleFlashImage
 
 
     @Composable

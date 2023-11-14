@@ -60,7 +60,7 @@ class KeepShell(private val workPath: String) {
                     processBuilder.start()
                 }
                 out = p?.outputWriter()
-                reader = p?.inputReader()
+                reader = p?.inputReader(Charsets.UTF_8)
                 Thread {
                     try {
                         var line: String?

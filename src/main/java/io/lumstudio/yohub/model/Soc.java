@@ -81,11 +81,11 @@ public class Soc {
 
     @Override
     public String toString() {
-        return  "Soc制造商：" + VENDOR + "\n" +
-                "制程：" + FAB + "\n" +
-                "架构：\n" + CPU + "\n"
-                + (MEMORY == null || MEMORY.isEmpty() ? "" : "内存规格：" + MEMORY)
-                +(CHANNELS == null || CHANNELS.isEmpty() ? "" : "\n通道：" + CHANNELS)
-                + (BANDWIDTH == null || BANDWIDTH.isEmpty() ? "" : "\n带宽：" + BANDWIDTH);
+        return  "Vendor: " + VENDOR + "\n" +
+                "FAB: " + FAB + "\n" +
+                "CPU: \n" + CPU + "\n"
+                + (MEMORY == null || MEMORY.isEmpty() ? "" : "Memory: " + MEMORY)
+                +(CHANNELS == null || CHANNELS.isEmpty() ? "" : "\nChannels: " + CHANNELS)
+                + (BANDWIDTH == null || BANDWIDTH.isEmpty() ? "" : "\nBandwidth: " + BANDWIDTH);
     }
 }

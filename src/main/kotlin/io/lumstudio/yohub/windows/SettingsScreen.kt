@@ -22,6 +22,8 @@ import io.lumstudio.yohub.common.LocalContext
 import io.lumstudio.yohub.common.LocalIOCoroutine
 import io.lumstudio.yohub.common.sendNotice
 import io.lumstudio.yohub.common.utils.*
+import io.lumstudio.yohub.lang.LanguageType
+import io.lumstudio.yohub.lang.LocalLanguageType
 import io.lumstudio.yohub.runtime.LocalInstallThemesPath
 import io.lumstudio.yohub.theme.*
 import io.lumstudio.yohub.ui.component.*
@@ -38,6 +40,7 @@ import javax.swing.JFrame
 
 @Composable
 fun SettingsScreen(settingsPage: SettingsPage) {
+    val languageBasic = LocalLanguageType.value.lang
     val scrollState = rememberScrollState()
     ScrollbarContainer(
         adapter = rememberScrollbarAdapter(scrollState),
@@ -52,31 +55,41 @@ fun SettingsScreen(settingsPage: SettingsPage) {
                 modifier = Modifier.fillMaxWidth().padding(32.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Text("Copyright @ 2023 优檀云网络科技 All Rights Reserved", color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelSmall)
+                Text(
+                    languageBasic.appCopyright,
+                    color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.labelSmall
+                )
             }
         }
     }
 }
 
-class ThemeSetting : NavPage("主题设置", isNavigation = false) {
+class ThemeSetting : NavPage(isNavigation = false) {
 
-    override fun icon(): () -> Unit = {  }
+    override fun icon(): () -> Unit = { }
+    override fun label(): String = LocalLanguageType.value.lang.labelTheme
+
+    override fun title(): String? = null
+
+    override fun subtitle(): String? = null
 
     private val gson by lazy { Gson() }
 
-    @OptIn(ExperimentalLayoutApi::class, ExperimentalComposeUiApi::class)
+    @OptIn(ExperimentalLayoutApi::class)
     @Composable
     override fun content() {
+        val languageBasic = LocalLanguageType.value.lang
         val themeStore = LocalTheme.current
         val preferencesStore = LocalPreferences.current
         val ioCoroutine = LocalIOCoroutine.current
         Column(
             modifier = Modifier.fillMaxWidth()
         ) {
-            Toolbar(label, enableAnimate = false)
+            Toolbar(label(), enableAnimate = false)
             FluentItem(
                 Icons.Default.DarkTheme,
-                "深色模式"
+                languageBasic.darkMode
             ) {
                 DarkTheme.values().onEach {
                     Row(
@@ -100,7 +113,13 @@ class ThemeSetting : NavPage("主题设置", isNavigation = false) {
                                 enabled = false
                             )
                             Spacer(modifier = Modifier.size(8.dp))
-                            Text(it.annotation)
+                            Text(
+                                when (it) {
+                                    DarkTheme.SYSTEM -> languageBasic.darkModeSystem
+                                    DarkTheme.LIGHT -> languageBasic.darkModeLight
+                                    DarkTheme.DARK -> languageBasic.darkModeDark
+                                }
+                            )
                         }
                     }
                 }
@@ -133,7 +152,7 @@ class ThemeSetting : NavPage("主题设置", isNavigation = false) {
 
             FluentFold(
                 Icons.Default.Color,
-                "主题颜色",
+                languageBasic.themeColor,
                 content = {
                     TextButton(
                         onClick = {
@@ -141,7 +160,7 @@ class ThemeSetting : NavPage("主题设置", isNavigation = false) {
                         },
                         shape = RoundedCornerShape(8.dp)
                     ) {
-                        Text("制作主题")
+                        Text(languageBasic.generateTheme)
                     }
                 }
             ) {
@@ -167,17 +186,17 @@ class ThemeSetting : NavPage("主题设置", isNavigation = false) {
             }
 
             Dialog(
-                title = "提示",
+                title = languageBasic.tips,
                 visible = uninstallState.value,
-                cancelButtonText = "取消",
-                confirmButtonText = "确定",
+                cancelButtonText = languageBasic.cancel,
+                confirmButtonText = languageBasic.defined,
                 onCancel = {
                     uninstallState.value = false
                 },
                 onConfirm = {
                     uninstallState.value = false
                     if (targetThemeFileName.value == selectTheme.value) {
-                        sendNotice("卸载失败！", "无法卸载当前已在使用的主题")
+                        sendNotice(languageBasic.uninstallFail, languageBasic.uninstallFailMessage)
                     } else {
                         CoroutineScope(Dispatchers.IO).launch {
                             colorLoader.uninstallColorTheme(targetThemeFileName.value, targetThemeName.value)
@@ -187,24 +206,30 @@ class ThemeSetting : NavPage("主题设置", isNavigation = false) {
                     }
                 },
                 content = {
-                    Text("是否卸载主题【${targetThemeName.value}】\n文件名：${targetThemeFileName.value}?")
+                    Text(
+                        String.format(
+                            languageBasic.uninstallThemeTip,
+                            targetThemeName.value,
+                            targetThemeFileName.value
+                        )
+                    )
                 }
             )
 
             val themeName = remember { mutableStateOf("") }
             val colorPath = remember { mutableStateOf("") }
             Dialog(
-                title = "主题制作",
+                title = languageBasic.generateTheme,
                 visible = generateState.value,
-                cancelButtonText = "取消",
-                confirmButtonText = "生成主题文件",
+                cancelButtonText = languageBasic.cancel,
+                confirmButtonText = languageBasic.generateThemeFile,
                 onCancel = {
                     generateState.value = false
                 },
                 onConfirm = {
                     generateState.value = false
                     if (colorPath.value.trim().isEmpty()) {
-                        sendNotice("解析失败！", "请输入Color文件路径")
+                        sendNotice(languageBasic.analysisFail, languageBasic.pleaseInputColorFilePath)
                         return@Dialog
                     }
                     CoroutineScope(Dispatchers.IO).launch {
@@ -215,15 +240,16 @@ class ThemeSetting : NavPage("主题设置", isNavigation = false) {
                             val kt = String(readBytes(FileInputStream(colorFile)))
                             val list = kt.split("\n").toList().filter { it.contains("val md_theme_") }
                             if (list.isEmpty()) {
-                                sendNotice("主题解析失败！", "不是有效的Color文件")
+                                sendNotice(languageBasic.themeAnalysisFail, languageBasic.isNotEffectiveColorFile)
                             } else if (themeName.value.trim().isEmpty()) {
-                                sendNotice("主题创建失败！", "主题名称不能为空！")
+                                sendNotice(languageBasic.themeCreateFail, languageBasic.themeNameCannotEmpty)
                             } else {
                                 list.onEach {
                                     when {
                                         it.contains("light") -> {
                                             light[it.name()] = it.argb()
                                         }
+
                                         it.contains("dark") -> {
                                             dark[it.name()] = it.argb()
                                         }
@@ -232,7 +258,8 @@ class ThemeSetting : NavPage("主题设置", isNavigation = false) {
                                 try {
                                     val lightColor = light.toColorTheme()
                                     val darkColor = dark.toColorTheme()
-                                    val customColorTheme = CustomColorTheme(name = themeName.value, light = lightColor, dark = darkColor)
+                                    val customColorTheme =
+                                        CustomColorTheme(name = themeName.value, light = lightColor, dark = darkColor)
                                     val json = gson.toJson(customColorTheme)
                                     val fileDialog = FileDialog(JFrame())
                                     fileDialog.file = "${themeName.value}.json"
@@ -240,16 +267,26 @@ class ThemeSetting : NavPage("主题设置", isNavigation = false) {
                                     fileDialog.isVisible = true
                                     val path = fileDialog.directory + fileDialog.file
                                     writeBytes(FileOutputStream(path), json.toByteArray())
-                                    sendNotice("主题生成成功！", "已将您的主题【${themeName.value}】保存至${fileDialog.directory}目录下")
+                                    sendNotice(
+                                        languageBasic.themeGenerateSuccess,
+                                        String.format(
+                                            languageBasic.themeGenerateSuccessMessage,
+                                            themeName.value,
+                                            fileDialog.directory
+                                        )
+                                    )
                                     themeName.value = ""
                                     colorPath.value = ""
-                                }catch (e: Exception) {
+                                } catch (e: Exception) {
                                     e.printStackTrace()
-                                    sendNotice("主题解析错误！", "${e.message}")
+                                    sendNotice(languageBasic.themeGenerateError, "${e.message}")
                                 }
                             }
-                        }else {
-                            sendNotice("主题生成失败！", "目标文件【${colorPath.value}】不存在")
+                        } else {
+                            sendNotice(
+                                languageBasic.themeGenerateFail,
+                                String.format(languageBasic.targetFileIsNotExists, colorPath.value)
+                            )
                         }
                     }
                 },
@@ -260,10 +297,10 @@ class ThemeSetting : NavPage("主题设置", isNavigation = false) {
 
             val contextStore = LocalContext.current
             Dialog(
-                title = "帮助",
+                title = languageBasic.help,
                 visible = helpState.value,
-                cancelButtonText = "知道啦",
-                confirmButtonText = "获取Colors文件",
+                cancelButtonText = languageBasic.iKnown,
+                confirmButtonText = languageBasic.getColorFile,
                 onCancel = {
                     helpState.value = false
                 },
@@ -272,7 +309,7 @@ class ThemeSetting : NavPage("主题设置", isNavigation = false) {
                     contextStore.startBrowse("https://m3.material.io/theme-builder")
                 },
                 content = {
-                    Text("本软件主题配色架构采用Material Design 3（MD3）设计规范进行设计，为了方便主题设计者创建主题配置文件，本软件将直接解析由【Material Theme Builder】生成的“Color.kt”文件，并自动转换成主题配置文件。\n\n获取Color.kt：点击下方获取按钮，然后在网站中设计你的主题配色，最后导出为“Jetpack Compose”，最后将下载的文件解压到目录并使用本软件导入Color.kt文件即可。\n\n小贴士：在【Figma】中使用“Material Theme Builder”插件设计配色刚方便哦~")
+                    Text(languageBasic.generateColorThemeMessage)
                 }
             )
         }
@@ -280,39 +317,41 @@ class ThemeSetting : NavPage("主题设置", isNavigation = false) {
 
     private fun String.name(): String = this.substring(this.lastIndexOf("_") + 1, this.indexOf("=")).trim()
 
-    private fun String.argb(): String = this.substring(this.indexOf("(") + 1, this.indexOf(")")).replace("0x", "#").replace("0X", "#")
+    private fun String.argb(): String =
+        this.substring(this.indexOf("(") + 1, this.indexOf(")")).replace("0x", "#").replace("0X", "#")
 
-    private fun HashMap<String, String>.toColorTheme(): CustomColorTheme.LocalhostColorTheme = CustomColorTheme.LocalhostColorTheme(
-        primary = this["primary"] ?: throw NullPointerException("颜色解析失败"),
-        onPrimary = this["onPrimary"] ?: throw NullPointerException("颜色解析失败"),
-        primaryContainer = this["primaryContainer"] ?: throw NullPointerException("颜色解析失败"),
-        onPrimaryContainer = this["onPrimaryContainer"] ?: throw NullPointerException("颜色解析失败"),
-        secondary = this["secondary"] ?: throw NullPointerException("颜色解析失败"),
-        onSecondary = this["onSecondary"] ?: throw NullPointerException("颜色解析失败"),
-        secondaryContainer = this["secondaryContainer"] ?: throw NullPointerException("颜色解析失败"),
-        onSecondaryContainer = this["onSecondaryContainer"] ?: throw NullPointerException("颜色解析失败"),
-        tertiary = this["tertiary"] ?: throw NullPointerException("颜色解析失败"),
-        onTertiary = this["onTertiary"] ?: throw NullPointerException("颜色解析失败"),
-        tertiaryContainer = this["tertiaryContainer"] ?: throw NullPointerException("颜色解析失败"),
-        onTertiaryContainer = this["onTertiaryContainer"] ?: throw NullPointerException("颜色解析失败"),
-        error = this["error"] ?: throw NullPointerException("颜色解析失败"),
-        errorContainer = this["errorContainer"] ?: throw NullPointerException("颜色解析失败"),
-        onError = this["onError"] ?: throw NullPointerException("颜色解析失败"),
-        onErrorContainer = this["onErrorContainer"] ?: throw NullPointerException("颜色解析失败"),
-        background = this["background"] ?: throw NullPointerException("颜色解析失败"),
-        onBackground = this["onBackground"] ?: throw NullPointerException("颜色解析失败"),
-        outline = this["outline"] ?: throw NullPointerException("颜色解析失败"),
-        inverseOnSurface = this["inverseOnSurface"] ?: throw NullPointerException("颜色解析失败"),
-        inverseSurface = this["inverseSurface"] ?: throw NullPointerException("颜色解析失败"),
-        inversePrimary = this["inversePrimary"] ?: throw NullPointerException("颜色解析失败"),
-        surfaceTint = this["surfaceTint"] ?: throw NullPointerException("颜色解析失败"),
-        outlineVariant = this["outlineVariant"] ?: throw NullPointerException("颜色解析失败"),
-        scrim = this["scrim"] ?: throw NullPointerException("颜色解析失败"),
-        surface = this["surface"] ?: throw NullPointerException("颜色解析失败"),
-        onSurface = this["onSurface"] ?: throw NullPointerException("颜色解析失败"),
-        surfaceVariant = this["surfaceVariant"] ?: throw NullPointerException("颜色解析失败"),
-        onSurfaceVariant = this["onSurfaceVariant"] ?: throw NullPointerException("颜色解析失败"),
-    )
+    private fun HashMap<String, String>.toColorTheme(): CustomColorTheme.LocalhostColorTheme =
+        CustomColorTheme.LocalhostColorTheme(
+            primary = this["primary"] ?: throw NullPointerException("颜色解析失败"),
+            onPrimary = this["onPrimary"] ?: throw NullPointerException("颜色解析失败"),
+            primaryContainer = this["primaryContainer"] ?: throw NullPointerException("颜色解析失败"),
+            onPrimaryContainer = this["onPrimaryContainer"] ?: throw NullPointerException("颜色解析失败"),
+            secondary = this["secondary"] ?: throw NullPointerException("颜色解析失败"),
+            onSecondary = this["onSecondary"] ?: throw NullPointerException("颜色解析失败"),
+            secondaryContainer = this["secondaryContainer"] ?: throw NullPointerException("颜色解析失败"),
+            onSecondaryContainer = this["onSecondaryContainer"] ?: throw NullPointerException("颜色解析失败"),
+            tertiary = this["tertiary"] ?: throw NullPointerException("颜色解析失败"),
+            onTertiary = this["onTertiary"] ?: throw NullPointerException("颜色解析失败"),
+            tertiaryContainer = this["tertiaryContainer"] ?: throw NullPointerException("颜色解析失败"),
+            onTertiaryContainer = this["onTertiaryContainer"] ?: throw NullPointerException("颜色解析失败"),
+            error = this["error"] ?: throw NullPointerException("颜色解析失败"),
+            errorContainer = this["errorContainer"] ?: throw NullPointerException("颜色解析失败"),
+            onError = this["onError"] ?: throw NullPointerException("颜色解析失败"),
+            onErrorContainer = this["onErrorContainer"] ?: throw NullPointerException("颜色解析失败"),
+            background = this["background"] ?: throw NullPointerException("颜色解析失败"),
+            onBackground = this["onBackground"] ?: throw NullPointerException("颜色解析失败"),
+            outline = this["outline"] ?: throw NullPointerException("颜色解析失败"),
+            inverseOnSurface = this["inverseOnSurface"] ?: throw NullPointerException("颜色解析失败"),
+            inverseSurface = this["inverseSurface"] ?: throw NullPointerException("颜色解析失败"),
+            inversePrimary = this["inversePrimary"] ?: throw NullPointerException("颜色解析失败"),
+            surfaceTint = this["surfaceTint"] ?: throw NullPointerException("颜色解析失败"),
+            outlineVariant = this["outlineVariant"] ?: throw NullPointerException("颜色解析失败"),
+            scrim = this["scrim"] ?: throw NullPointerException("颜色解析失败"),
+            surface = this["surface"] ?: throw NullPointerException("颜色解析失败"),
+            onSurface = this["onSurface"] ?: throw NullPointerException("颜色解析失败"),
+            surfaceVariant = this["surfaceVariant"] ?: throw NullPointerException("颜色解析失败"),
+            onSurfaceVariant = this["onSurfaceVariant"] ?: throw NullPointerException("颜色解析失败"),
+        )
 
     @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
     @Composable
@@ -321,6 +360,7 @@ class ThemeSetting : NavPage("主题设置", isNavigation = false) {
         themeName: MutableState<String>,
         colorPath: MutableState<String>
     ) {
+        val languageBasic = LocalLanguageType.value.lang
         Column(
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -332,7 +372,7 @@ class ThemeSetting : NavPage("主题设置", isNavigation = false) {
                     value = themeName.value,
                     onValueChange = { themeName.value = it },
                     label = {
-                        Text("*主题名称")
+                        Text(languageBasic.themeName)
                     },
                     textStyle = MaterialTheme.typography.labelMedium,
                     singleLine = true
@@ -345,7 +385,7 @@ class ThemeSetting : NavPage("主题设置", isNavigation = false) {
                     TooltipArea(
                         tooltip = {
                             TooltipText {
-                                Text("帮助")
+                                Text(languageBasic.help)
                             }
                         }
                     ) {
@@ -368,7 +408,7 @@ class ThemeSetting : NavPage("主题设置", isNavigation = false) {
                     value = colorPath.value,
                     onValueChange = { colorPath.value = it },
                     label = {
-                        Text("*输入“Color.kt”文件路径")
+                        Text(languageBasic.colorFilePath)
                     },
                     textStyle = MaterialTheme.typography.labelMedium,
                     modifier = Modifier.fillMaxWidth().weight(1f),
@@ -387,7 +427,7 @@ class ThemeSetting : NavPage("主题设置", isNavigation = false) {
                     },
                     shape = RoundedCornerShape(8.dp)
                 ) {
-                    Text("选择文件")
+                    Text(languageBasic.chooseFile)
                 }
             }
         }
@@ -508,10 +548,11 @@ private fun ColorThemeItemInstall(
     colorLoader: ColorLoader,
     colorThemeItems: SnapshotStateList<ColorLoader.ColorThemeItem>
 ) {
+    val languageBasic = LocalLanguageType.value.lang
     TooltipArea(
         tooltip = {
             TooltipText {
-                Text("安装主题")
+                Text(languageBasic.installTheme)
             }
         }
     ) {
@@ -540,18 +581,24 @@ private fun ColorThemeItemInstall(
     }
 }
 
-class VersionSetting : NavPage("版本", isNavigation = false) {
+class VersionSetting : NavPage(isNavigation = false) {
 
-    override fun icon(): () -> Unit = {  }
+    override fun icon(): () -> Unit = { }
+    override fun label(): String = LocalLanguageType.value.lang.labelVersion
+
+    override fun title(): String? = null
+
+    override fun subtitle(): String? = null
 
     @Composable
     override fun content() {
         val contextStore = LocalContext.current
+        val languageBasic = LocalLanguageType.value.lang
         Column {
-            Toolbar(label, enableAnimate = false)
+            Toolbar(label(), enableAnimate = false)
             FluentItem(
                 Icons.Default.Open,
-                "开源地址"
+                languageBasic.openSourceLicenseUrl
             ) {
                 TextButton(
                     onClick = {
@@ -559,7 +606,7 @@ class VersionSetting : NavPage("版本", isNavigation = false) {
                     },
                     shape = RoundedCornerShape(8.dp)
                 ) {
-                    Text("去围观")
+                    Text(languageBasic.gotoUrl)
                 }
             }
         }
@@ -567,9 +614,14 @@ class VersionSetting : NavPage("版本", isNavigation = false) {
 
 }
 
-class OpenSourceLicense: NavPage("开源许可", isNavigation = false) {
+class OpenSourceLicense : NavPage(isNavigation = false) {
 
-    override fun icon(): () -> Unit = {  }
+    override fun icon(): () -> Unit = { }
+    override fun label(): String = LocalLanguageType.value.lang.labelOpenSourceLicense
+
+    override fun title(): String? = null
+
+    override fun subtitle(): String? = null
 
     data class LicenseBean(var title: String, var author: String, var tip: String, var url: String)
 
@@ -643,13 +695,13 @@ class OpenSourceLicense: NavPage("开源许可", isNavigation = false) {
         val contextStore = LocalContext.current
         FluentFold(
             icon = Icons.Default.Code,
-            title = label
+            title = label()
         ) {
             NavigationItemSeparator(modifier = Modifier.padding(bottom = 4.dp))
 
             oss.onEach {
                 Row(
-                    modifier = Modifier.fillMaxWidth().clickable {  },
+                    modifier = Modifier.fillMaxWidth().clickable { },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column(
@@ -660,7 +712,11 @@ class OpenSourceLicense: NavPage("开源许可", isNavigation = false) {
                         Text(it.tip, style = MaterialTheme.typography.bodySmall)
                     }
                     Spacer(modifier = Modifier.size(8.dp))
-                    Text(it.author, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .5f))
+                    Text(
+                        it.author,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = .5f)
+                    )
                     Spacer(modifier = Modifier.size(8.dp))
                     IconButton(
                         onClick = {
@@ -673,5 +729,79 @@ class OpenSourceLicense: NavPage("开源许可", isNavigation = false) {
             }
         }
     }
+}
 
+class LanguagePage : NavPage(isNavigation = false) {
+    override fun icon(): @Composable () -> Unit = { }
+
+    override fun label(): String = LocalLanguageType.value.lang.language
+
+    override fun title(): String? = null
+
+    override fun subtitle(): String? = null
+
+    @Composable
+    override fun content() {
+        val languageType = LocalLanguageType.value
+        val preferencesStore = LocalPreferences.current
+        Column(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Toolbar(label(), enableAnimate = false)
+            FluentItem(
+                icon = {
+                    Icon(Icons.Default.LocalLanguage, null, modifier = Modifier.fillMaxSize())
+                },
+                title = languageType.lang.languageSetting
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.End
+                ) {
+                    var dropdownMenuState by remember { mutableStateOf(false) }
+                    TextButton(
+                        onClick = {
+                            dropdownMenuState = true
+                        },
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text(
+                            when (languageType) {
+                                LanguageType.DEFAULT -> languageType.lang.defaultLanguage
+                                else -> languageType.languageName
+                            }
+                        )
+                    }
+                    DropdownMenu(
+                        dropdownMenuState,
+                        onDismissRequest = {
+                            dropdownMenuState = false
+                        },
+                        focusable = false
+                    ) {
+                        LanguageType.values().toList()
+                            .onEach {
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            when (it) {
+                                                LanguageType.DEFAULT -> languageType.lang.defaultLanguage
+                                                else -> it.languageName
+                                            }
+                                        )
+                                    },
+                                    onClick = {
+                                        LocalLanguageType.value = it
+                                        CoroutineScope(Dispatchers.IO).launch {
+                                            preferencesStore.preference[PreferencesName.LANGUAGE.toString()] = it.toString()
+                                            preferencesStore.submit()
+                                        }
+                                        dropdownMenuState = false
+                                    }
+                                )
+                            }
+                    }
+                }
+            }
+        }
+    }
 }

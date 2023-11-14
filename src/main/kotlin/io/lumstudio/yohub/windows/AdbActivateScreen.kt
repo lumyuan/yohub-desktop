@@ -19,6 +19,7 @@ import io.lumstudio.yohub.R
 import io.lumstudio.yohub.common.sendNotice
 import io.lumstudio.yohub.common.shell.KeepShellStore
 import io.lumstudio.yohub.common.shell.LocalKeepShell
+import io.lumstudio.yohub.lang.LocalLanguageType
 import io.lumstudio.yohub.ui.component.FlowButton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -44,6 +45,7 @@ fun AdbActivateScreen() {
 
 @Composable
 private fun ActivateShizuku(keepShellStore: KeepShellStore) {
+    val lang = LocalLanguageType.value.lang
     var state by remember { mutableStateOf(true) }
     FlowButton(
         onClick = {
@@ -53,9 +55,9 @@ private fun ActivateShizuku(keepShellStore: KeepShellStore) {
                     val out =
                         keepShellStore adbShell "sh '/storage/emulated/0/Android/data/moe.shizuku.privileged.api/start.sh'"
                     if (out.contains("shizuku_starter exit with 0")) {
-                        sendNotice("激活成功！", "【Shizuku】ADB激活成功！退出代码：0")
+                        sendNotice(lang.noticeTitleActiveSuccess, lang.noticeMessageActiveSuccess)
                     }else {
-                        sendNotice("激活异常！", out)
+                        sendNotice(lang.noticeTitleActiveFail, out)
                     }
                     state = true
                 }
@@ -82,12 +84,13 @@ private fun ActivateShizuku(keepShellStore: KeepShellStore) {
             }
         }
     ) {
-        Text("激活Shizuku")
+        Text(lang.activeShizuku)
     }
 }
 
 @Composable
 private fun ActivateBlackScope(keepShellStore: KeepShellStore) {
+    val lang = LocalLanguageType.value.lang
     var state by remember { mutableStateOf(true) }
     FlowButton(
         onClick = {
@@ -97,9 +100,9 @@ private fun ActivateBlackScope(keepShellStore: KeepShellStore) {
                     val out =
                         keepShellStore adbShell "sh '/data/data/me.piebridge.brevent/brevent.sh'"
                     if (out.contains("for brevent log: logcat -b main -d -s BreventLoader BreventServer")) {
-                        sendNotice("激活成功！", "【黑域】ADB激活成功！再次启动黑域APP即可使用")
+                        sendNotice(lang.noticeTitleActiveSuccess, lang.noticeTitleSuccessBlackScope)
                     }else {
-                        sendNotice("激活异常！", out)
+                        sendNotice(lang.noticeTitleActiveFail, out)
                     }
                     state = true
                 }
@@ -126,6 +129,6 @@ private fun ActivateBlackScope(keepShellStore: KeepShellStore) {
             }
         }
     ) {
-        Text("激活黑域")
+        Text(lang.activeBlackScope)
     }
 }

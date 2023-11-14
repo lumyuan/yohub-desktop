@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 
 /**
- * ×Ô¶¨ÒåÖ÷ÌâÑÕÉ«
+ * è‡ªå®šä¹‰ä¸»é¢˜é¢œè‰²
  */
 data class CustomColorTheme(
     val name: String,

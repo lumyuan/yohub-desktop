@@ -180,5 +180,21 @@ class InstallThemesPathStore(runtimeDir: File) : Runtime() {
         }; file
     }
 
+}
+
+val LocalAndroidToolkit = compositionLocalOf<AndroidKitStore> { error("Not provided.") }
+
+class AndroidKitStore(runtimeDir: File): Runtime() {
+
+    val unzipPath: File by lazy {
+        val file = File(runtimeDir, "toolkit")
+        if (!file.exists()) {
+            file.mkdirs()
+        }; file
+    }
+
+    val androidToolkitPath = "/data/local/tmp/.yohub-desktop"
+
+    infix fun file(name: String): String = "$unzipPath${File.separator}$name"
 
 }

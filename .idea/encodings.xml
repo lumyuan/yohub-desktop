@@ -31,6 +31,7 @@
     <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/common/utils/ZipUtils.kt" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/model/CpuCoreInfo.kt" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/model/ViewModel.kt" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/theme/CustomColorTheme.kt" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/ui/component/Button.kt" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/ui/component/CpuChart.kt" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/ui/component/IndicatorBar.kt" charset="UTF-8" />

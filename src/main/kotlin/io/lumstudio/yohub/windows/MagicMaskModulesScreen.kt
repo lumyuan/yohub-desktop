@@ -24,6 +24,7 @@ import io.lumstudio.yohub.common.sendNotice
 import io.lumstudio.yohub.common.shell.KeepShellStore
 import io.lumstudio.yohub.common.shell.LocalKeepShell
 import io.lumstudio.yohub.common.utils.FileCopyUtils
+import io.lumstudio.yohub.lang.LocalLanguageType
 import io.lumstudio.yohub.runtime.*
 import io.lumstudio.yohub.ui.component.Toolbar
 import io.lumstudio.yohub.windows.navigation.MagicMaskModulesPage
@@ -57,7 +58,7 @@ fun MagicMaskModulesScreen(magicMaskModulesPage: MagicMaskModulesPage) {
                         }
                 ) {
                     Text(
-                        it.label,
+                        it.label(),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.padding(16.dp)
@@ -70,6 +71,7 @@ fun MagicMaskModulesScreen(magicMaskModulesPage: MagicMaskModulesPage) {
 
 @Composable
 fun MagiskPatcherScreen(magiskPatcherPage: MagiskPatcherPage) {
+    val languageBasic = LocalLanguageType.value.lang
     val keepShellStore = LocalKeepShell.current
     val runtimeStore = LocalRuntime.current
     val pythonStore = LocalPythonRuntime.current
@@ -86,13 +88,13 @@ fun MagiskPatcherScreen(magiskPatcherPage: MagiskPatcherPage) {
         Column(
             modifier = Modifier.fillMaxHeight().verticalScroll(scrollState).padding(16.dp)
         ) {
-            Toolbar(magiskPatcherPage.label)
+            Toolbar(magiskPatcherPage.label())
             TargetPathEditor(targetPath, outPath, fileDialog)
             Spacer(modifier = Modifier.size(8.dp))
             OutputPathEditor(targetPath, outPath)
 
             val exists = targetPath.value.endsWith(".img") && File(targetPath.value).exists()
-            val text = remember { mutableStateOf("开始修补镜像") }
+            val text = remember { mutableStateOf(languageBasic.startPatcherImage) }
             val patcherState = remember { mutableStateOf(false) }
             AnimatedVisibility(exists) {
                 Column {
@@ -138,7 +140,7 @@ fun MagiskPatcherScreen(magiskPatcherPage: MagiskPatcherPage) {
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        "未选择Boot文件",
+                        languageBasic.notChooseBoot,
                         style = MaterialTheme.typography.labelLarge,
                         modifier = Modifier.padding(16.dp)
                     )
@@ -151,6 +153,7 @@ fun MagiskPatcherScreen(magiskPatcherPage: MagiskPatcherPage) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TargetPathEditor(targetPath: MutableState<String>, outPath: MutableState<String>, fileDialog: FileDialog) {
+    val languageBasic = LocalLanguageType.value.lang
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
@@ -159,7 +162,7 @@ private fun TargetPathEditor(targetPath: MutableState<String>, outPath: MutableS
             value = targetPath.value,
             onValueChange = { targetPath.value = it },
             label = {
-                Text("输入镜像文件路径（支持boot/init_boot）")
+                Text(languageBasic.inputBootPath)
             },
             singleLine = true,
             textStyle = MaterialTheme.typography.labelMedium.copy(fontFamily = FontFamily(Font(R.font.jetBrainsMonoRegular))),
@@ -175,12 +178,12 @@ private fun TargetPathEditor(targetPath: MutableState<String>, outPath: MutableS
                     targetPath.value = fileDialog.directory + fileDialog.file
                     outPath.value = fileDialog.directory
                 } else if (fileDialog.file != null) {
-                    sendNotice("选择失败", "不受支持的文件类型：${fileDialog.file}")
+                    sendNotice(languageBasic.chooseFail, String.format(languageBasic.chooseFailMessage, fileDialog.file))
                 }
             },
             shape = RoundedCornerShape(8.dp)
         ) {
-            Text("选择文件")
+            Text(languageBasic.chooseFile)
         }
     }
 }
@@ -188,6 +191,7 @@ private fun TargetPathEditor(targetPath: MutableState<String>, outPath: MutableS
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ColumnScope.OutputPathEditor(targetPath: MutableState<String>, outPath: MutableState<String>) {
+    val languageBasic = LocalLanguageType.value.lang
     AnimatedVisibility(targetPath.value.endsWith(".img") && File(targetPath.value).exists()) {
         Column(
             modifier = Modifier.fillMaxSize()
@@ -200,7 +204,7 @@ private fun ColumnScope.OutputPathEditor(targetPath: MutableState<String>, outPa
                     value = outPath.value,
                     onValueChange = {},
                     label = {
-                        Text("Boot文件输出路径")
+                        Text(languageBasic.bootOutputPath)
                     },
                     singleLine = true,
                     readOnly = true,
@@ -218,7 +222,7 @@ private fun ColumnScope.OutputPathEditor(targetPath: MutableState<String>, outPa
                     },
                     shape = RoundedCornerShape(8.dp)
                 ) {
-                    Text("打开文件管理器")
+                    Text(languageBasic.openFileManager)
                 }
             }
         }
@@ -239,7 +243,8 @@ private suspend fun patcherImage(
     text: MutableState<String>,
     patcherState: MutableState<Boolean>
 ) = withContext(Dispatchers.IO) {
-    text.value = "Boot修补中，请稍候..."
+    val languageBasic = LocalLanguageType.value.lang
+    text.value = languageBasic.bootPatching
     patcherState.value = true
     val out = keepShellStore cmd pythonStore.py(magiskPatcherStore.script("boot_patch.py \"${targetPath.value}\""))
     if (out.contains("- Repacking boot image")) {
@@ -247,7 +252,7 @@ private suspend fun patcherImage(
         val outFile = File(outPath.value, "magisk-patched-${dateFormat.format(Date())}.img")
         try {
             FileCopyUtils.copyFile(tempPath, outFile)
-            sendNotice("修补成功！", "已将修补好的镜像文件【${outFile.name}】存放于${outFile.parent}路径下") {
+            sendNotice(languageBasic.patchSuccess, String.format(languageBasic.patchSuccessMessage, outFile.name, outFile.parent)) {
                 try {
                     Desktop.getDesktop().open(outFile.parentFile)
                 } catch (e: Exception) {
@@ -256,11 +261,11 @@ private suspend fun patcherImage(
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            sendNotice("修补失败！", e.toString())
+            sendNotice(languageBasic.patchFail, e.toString())
         }
     } else {
-        sendNotice("修补失败！", out.split("\n")[0])
+        sendNotice(languageBasic.patchFail, out.split("\n")[0])
     }
-    text.value = "开始修补镜像"
+    text.value = languageBasic.startPatcherImage
     patcherState.value = false
 }

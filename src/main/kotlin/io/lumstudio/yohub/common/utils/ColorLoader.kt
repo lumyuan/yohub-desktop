@@ -2,6 +2,7 @@ package io.lumstudio.yohub.common.utils
 
 import com.google.gson.Gson
 import io.lumstudio.yohub.common.sendNotice
+import io.lumstudio.yohub.lang.LocalLanguageType
 import io.lumstudio.yohub.runtime.InstallThemesPathStore
 import io.lumstudio.yohub.theme.ColorThemeStore
 import io.lumstudio.yohub.theme.CustomColorTheme
@@ -18,7 +19,6 @@ class ColorLoader(
     private val installThemesPathStore: InstallThemesPathStore,
     private val colorThemeStore: ColorThemeStore
 ) {
-
     private val gson by lazy { Gson() }
 
     suspend fun loadInstalledColorTheme(themeName: String) : ColorThemeStore.ColorTheme = withContext(Dispatchers.IO) {
@@ -34,6 +34,7 @@ class ColorLoader(
 
     suspend fun loadInstalledColorThemes(): List<ColorThemeItem> = withContext(Dispatchers.IO) {
         val customColorThemes = ArrayList<ColorThemeItem>()
+        val languageBasic = LocalLanguageType.value.lang
         try {
             (installThemesPathStore.installPathFile.listFiles() ?: arrayOf<File>())
                 .filter { it.name.lowercase().endsWith(".json") }
@@ -50,7 +51,7 @@ class ColorLoader(
                         )
                     }catch (e: Exception) {
                         e.printStackTrace()
-                        sendNotice("主题解析错误！", "主题文件【${it.name}】解析失败：${e.message}")
+                        sendNotice(languageBasic.themeAnalysisError, String.format(languageBasic.themeAnalysisMessage, it.name, e.message))
                         it.delete()
                     }
                 }
@@ -62,6 +63,7 @@ class ColorLoader(
 
     suspend fun installColorTheme() = withContext(Dispatchers.IO) {
         val fileDialog = FileDialog(JFrame())
+        val languageBasic = LocalLanguageType.value.lang
         fileDialog.filenameFilter = FilenameFilter { _, name -> name.endsWith(".json") }
         fileDialog.mode = FileDialog.LOAD
         fileDialog.isVisible = true
@@ -72,21 +74,22 @@ class ColorLoader(
                 val colorTheme = gson.fromJson(theme, CustomColorTheme::class.java)
                 colorTheme.getLightColorScheme()
                 FileCopyUtils.copyFile(File(targetPath), File(installThemesPathStore.installPathFile, fileDialog.file))
-                sendNotice("安装成功！", "成功安装主题【${fileDialog.file}】")
+                sendNotice(languageBasic.installSuccess, String.format(languageBasic.installThemeSuccess, fileDialog.file))
             }catch (e: Exception) {
                 e.printStackTrace()
-                sendNotice("安装失败！", "主题文件【${fileDialog.file}】解析失败：${e.message}")
+                sendNotice(languageBasic.installFail, String.format(languageBasic.themeAnalysisFailMessage, fileDialog.file, e.message))
             }
         } else if (fileDialog.file != null) {
-            sendNotice("选择失败", "不受支持的文件类型：${fileDialog.file}")
+            sendNotice(languageBasic.chooseFail, String.format(languageBasic.chooseFailMessage, fileDialog.file))
         }
     }
 
     suspend fun uninstallColorTheme(themeFileName: String, themeName: String) = withContext(Dispatchers.IO) {
+        val languageBasic = LocalLanguageType.value.lang
         if (File(installThemesPathStore.installPathFile, themeFileName).delete()) {
-            sendNotice("卸载成功！", "已将主题文件【$themeName】卸载")
+            sendNotice(languageBasic.uninstallSuccess, String.format(languageBasic.uninstallSuccessMessage, themeName))
         }else {
-            sendNotice("卸载失败！", "主题文件【$themeFileName】可能不存在")
+            sendNotice(languageBasic.uninstallFail, String.format(languageBasic.themeFileIsNotExists, themeFileName))
         }
     }
 }

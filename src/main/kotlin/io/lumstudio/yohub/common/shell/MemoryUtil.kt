@@ -153,5 +153,18 @@ class MemoryUtil(private val keepShellStore: KeepShellStore) {
         fun b2mb(b: Long): Float = b / SizeUnit.MB.mp
         fun b2gb(b: Long): Float = b / SizeUnit.GB.mp
         fun b2tb(b: Long): Float = b / SizeUnit.TB.mp
+
+        fun format(b: Long): String =
+            if (b < SizeUnit.KB.mp) {
+                String.format("%dB", b)
+            } else if (b > SizeUnit.KB.mp && b < SizeUnit.MB.mp) {
+                String.format("%.2fKB", b / SizeUnit.KB.mp)
+            } else if (b > SizeUnit.MB.mp && b < SizeUnit.GB.mp) {
+                String.format("%.2fMB", b / SizeUnit.MB.mp)
+            }else if (b > SizeUnit.GB.mp && b < SizeUnit.TB.mp) {
+                String.format("%.2fGB", b / SizeUnit.GB.mp)
+            } else {
+                String.format("%.2fTB", b / SizeUnit.TB.mp)
+            }
     }
 }

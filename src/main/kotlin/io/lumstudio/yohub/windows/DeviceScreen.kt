@@ -1,22 +1,20 @@
 package io.lumstudio.yohub.windows
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.filled.Android
-import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.konyaco.fluent.icons.Icons
 import com.konyaco.fluent.icons.regular.DeviceEq
 import com.konyaco.fluent.icons.regular.Power
 import io.lumstudio.yohub.common.LocalIOCoroutine
 import io.lumstudio.yohub.common.shell.LocalKeepShell
+import io.lumstudio.yohub.lang.LocalLanguageType
 import io.lumstudio.yohub.runtime.*
 import io.lumstudio.yohub.ui.component.Dialog
 import io.lumstudio.yohub.ui.component.FlowButton
@@ -28,6 +26,7 @@ import org.jetbrains.skiko.hostOs
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun DeviceScreen() {
+    val lang = LocalLanguageType.value.lang
     val driverStore = LocalDriver.current
     val fastbootDriverStore = LocalFastbootDriverRuntime.current
     val deviceStore = LocalDevice.current
@@ -51,7 +50,7 @@ fun DeviceScreen() {
                         Icon(Icons.Default.DeviceEq, null, modifier = Modifier.fillMaxSize())
                     }
                 ) {
-                    Text("驱动状态：${if (driverStore.isInstall) "正常" else "异常（点击修复）"}")
+                    Text(String.format(lang.driverState, if (driverStore.isInstall) lang.normal else lang.exception))
                 }
             }
 
@@ -66,19 +65,19 @@ fun DeviceScreen() {
                     )
                 }
             ) {
-                var label by remember { mutableStateOf("未选中设备") }
+                var label by remember { mutableStateOf(lang.notChooseDevice) }
                 var sub by remember { mutableStateOf("") }
                 val device = selectDevice
 
                 if (devicesStore.devices.isEmpty()) {
-                    label = "未连接设备"
+                    label = lang.unlinkDevice
                     sub = ""
                 } else if (device == null) {
-                    label = "未选中设备"
+                    label = lang.notChooseDevice
                     sub = ""
                 } else {
-                    label = "已连接：${DeviceName.value}"
-                    sub = "设备类型：${device.type}"
+                    label = String.format(lang.linkedDevice, DeviceName.value)
+                    sub = String.format(lang.deviceType, device.type)
                 }
 
                 Column {
@@ -103,10 +102,10 @@ fun DeviceScreen() {
                 FlowButton(
                     onClick = {
                         displayDialog = true
-                        contentText = "确定要重启【${selectDevice?.id}】吗？"
+                        contentText = String.format(lang.dialogRebootDevice, selectDevice?.id)
                         onConfirm = {
                             ioCoroutine.ioScope.launch {
-                                keepShellStore adb "reboot"
+                                keepShellStore adbShell "\"/system/bin/svc power reboot || /system/bin/reboot\""
                             }
                         }
                     },
@@ -114,7 +113,7 @@ fun DeviceScreen() {
                         Icon(Icons.Default.Power, null)
                     }
                 ) {
-                    Text("重启设备")
+                    Text(lang.rebootDevice)
                 }
             }
 
@@ -128,10 +127,10 @@ fun DeviceScreen() {
                 FlowButton(
                     onClick = {
                         displayDialog = true
-                        contentText = "确定要将设备【${selectDevice?.id}】关机吗？"
+                        contentText = String.format(lang.dialogShutdownDevice, selectDevice?.id)
                         onConfirm = {
                             ioCoroutine.ioScope.launch {
-                                keepShellStore adb "reboot p"
+                                keepShellStore adbShell "\"/system/bin/svc power reboot p || /system/bin/reboot p\""
                             }
                         }
                     },
@@ -139,7 +138,7 @@ fun DeviceScreen() {
                         Icon(Icons.Default.Power, null)
                     }
                 ) {
-                    Text("设备关机")
+                    Text(lang.shutdownDevice)
                 }
             }
 
@@ -153,10 +152,10 @@ fun DeviceScreen() {
                 FlowButton(
                     onClick = {
                         displayDialog = true
-                        contentText = "确定要将【${selectDevice?.id}】重启到Bootloader吗？"
+                        contentText = String.format(lang.dialogRebootBootloaderDevice, selectDevice?.id)
                         onConfirm = {
                             ioCoroutine.ioScope.launch {
-                                keepShellStore adb "reboot bootloader"
+                                keepShellStore adbShell "\"/system/bin/svc power reboot bootloader || /system/bin/reboot bootloader\""
                             }
                         }
                     },
@@ -164,7 +163,7 @@ fun DeviceScreen() {
                         Icon(Icons.Default.Power, null)
                     }
                 ) {
-                    Text("重启至Bootloader")
+                    Text(lang.rebootBootloaderDevice)
                 }
             }
 
@@ -178,10 +177,10 @@ fun DeviceScreen() {
                 FlowButton(
                     onClick = {
                         displayDialog = true
-                        contentText = "确定要将【${selectDevice?.id}】重启到Recovery吗？"
+                        contentText = String.format(lang.dialogRebootRecoveryDevide, selectDevice?.id)
                         onConfirm = {
                             ioCoroutine.ioScope.launch {
-                                keepShellStore adb "reboot recovery"
+                                keepShellStore adbShell "\"/system/bin/svc power reboot recovery || /system/bin/reboot recovery\""
                             }
                         }
                     },
@@ -189,7 +188,7 @@ fun DeviceScreen() {
                         Icon(Icons.Default.Power, null)
                     }
                 ) {
-                    Text("重启至Recovery")
+                    Text(lang.rebootRecoveryDevide)
                 }
             }
 
@@ -201,7 +200,7 @@ fun DeviceScreen() {
                 FlowButton(
                     onClick = {
                         displayDialog = true
-                        contentText = "确定要重启【${selectDevice?.id}】吗？"
+                        contentText = String.format(lang.dialogRebootDevice, selectDevice?.id)
                         onConfirm = {
                             ioCoroutine.ioScope.launch {
                                 keepShellStore fastboot "reboot"
@@ -212,7 +211,7 @@ fun DeviceScreen() {
                         Icon(Icons.Default.Power, null)
                     }
                 ) {
-                    Text("重启设备")
+                    Text(lang.rebootDevice)
                 }
             }
 
@@ -224,7 +223,7 @@ fun DeviceScreen() {
                 FlowButton(
                     onClick = {
                         displayDialog = true
-                        contentText = "确定要将【${selectDevice?.id}】重启到Recovery吗？"
+                        contentText = String.format(lang.dialogRebootRecoveryDevide, selectDevice?.id)
                         onConfirm = {
                             ioCoroutine.ioScope.launch {
                                 keepShellStore fastboot "reboot recovery"
@@ -235,15 +234,15 @@ fun DeviceScreen() {
                         Icon(Icons.Default.Power, null)
                     }
                 ) {
-                    Text("重启至Recovery")
+                    Text(lang.rebootRecoveryDevide)
                 }
             }
 
             Dialog(
-                title = "提示",
+                title = lang.tips,
                 visible = displayDialog,
-                cancelButtonText = "取消",
-                confirmButtonText = "确定",
+                cancelButtonText = lang.cancel,
+                confirmButtonText = lang.defined,
                 onCancel = {
                     displayDialog = false
                 },

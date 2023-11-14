@@ -21,6 +21,7 @@ import io.lumstudio.yohub.common.net.LoadState
 import io.lumstudio.yohub.common.net.api.impl.Repository
 import io.lumstudio.yohub.common.net.pojo.MagiskRepo
 import io.lumstudio.yohub.common.shell.MemoryUtil
+import io.lumstudio.yohub.lang.LocalLanguageType
 import io.lumstudio.yohub.model.request
 import io.lumstudio.yohub.ui.component.FluentItem
 import io.lumstudio.yohub.ui.component.Toolbar
@@ -34,6 +35,7 @@ enum class MagiskRepository {
 @Composable
 fun MagiskRepositoryScreen(magiskRepositoryPage: MagiskRepositoryPage) {
 
+    val languageBasic = LocalLanguageType.value.lang
     val repos = remember { mutableStateOf<List<MagiskRepo>>(arrayListOf()) }
     val search = remember { mutableStateOf("") }
     val loadState = remember { mutableStateOf(LoadState.Loading) }
@@ -48,12 +50,12 @@ fun MagiskRepositoryScreen(magiskRepositoryPage: MagiskRepositoryPage) {
             modifier = Modifier.fillMaxWidth()
                 .padding(start = 16.dp, top = 16.dp, end = 16.dp)
         ) {
-            Toolbar(magiskRepositoryPage.label)
+            Toolbar(magiskRepositoryPage.label())
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = search.value,
                 onValueChange = { search.value = it },
-                label = { Text("搜索Magisk版本") },
+                label = { Text(languageBasic.searchMagiskVersion) },
                 leadingIcon = {
                     Icon(Icons.Default.Search, null)
                 },
@@ -74,7 +76,7 @@ fun MagiskRepositoryScreen(magiskRepositoryPage: MagiskRepositoryPage) {
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Magisk历史版本", style = MaterialTheme.typography.labelSmall)
+                Text(languageBasic.magiskList, style = MaterialTheme.typography.labelSmall)
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(start = 16.dp),
                     horizontalArrangement = Arrangement.End,
@@ -136,7 +138,6 @@ private fun loadRepos(
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ReposLayout(
     repos: MutableState<List<MagiskRepo>>,
@@ -144,6 +145,7 @@ private fun ReposLayout(
     search: MutableState<String>,
     reposUrl: MutableState<MagiskRepository>
 ) {
+    val languageBasic = LocalLanguageType.value.lang
     val contextStore = LocalContext.current
     when (loadState.value) {
         LoadState.Loading -> {
@@ -154,7 +156,7 @@ private fun ReposLayout(
             ) {
                 CircularProgressIndicator(modifier = Modifier.size(40.dp))
                 Spacer(modifier = Modifier.size(16.dp))
-                Text("拼命加载中...", style = MaterialTheme.typography.labelLarge)
+                Text(languageBasic.fastLoading, style = MaterialTheme.typography.labelLarge)
             }
         }
 
@@ -174,7 +176,7 @@ private fun ReposLayout(
                                     Image(painter, null, modifier = Modifier.clip(RoundedCornerShape(12.dp)))
                                 },
                                 title = it.name.toString(),
-                                subtitle = "版本：${it.tagName}  大小：${String.format("%.2f", MemoryUtil.b2mb(it.size?:0))}MB  下载次数：${it.downloadCount}"
+                                subtitle = String.format(languageBasic.magiskVersionSubtitle, it.tagName, String.format("%.2f", MemoryUtil.b2mb(it.size?:0)), it.downloadCount)
                             ) {
                                 Text(
                                     it.authorName.toString(),
@@ -190,7 +192,7 @@ private fun ReposLayout(
                                         },
                                         shape = RoundedCornerShape(8.dp)
                                     ) {
-                                        Text("下载APK")
+                                        Text(languageBasic.downloadApk)
                                     }
                                     DropdownMenu(
                                         open,
@@ -200,10 +202,11 @@ private fun ReposLayout(
                                     ) {
                                         DropdownMenuItem(
                                             text = {
-                                                Text("线路1")
+                                                Text(languageBasic.lineOne)
                                             },
                                             onClick = {
                                                 contextStore.startBrowse(it.downloadUrl.toString())
+                                                open = false
                                             },
                                             leadingIcon = {
                                                 Icon(Icons.Default.Link, null)
@@ -212,10 +215,11 @@ private fun ReposLayout(
                                         if (reposUrl.value == MagiskRepository.Topjohnwu) {
                                             DropdownMenuItem(
                                                 text = {
-                                                    Text("线路2")
+                                                    Text(languageBasic.lineTwo)
                                                 },
                                                 onClick = {
                                                     contextStore.startBrowse(it.downloadUrl2.toString())
+                                                    open = false
                                                 },
                                                 leadingIcon = {
                                                     Icon(Icons.Default.Link, null)
@@ -239,7 +243,7 @@ private fun ReposLayout(
                 shape = RoundedCornerShape(8.dp)
             ) {
                 Text(
-                    "加载失败，点击重试",
+                    languageBasic.loadFailAndRetry,
                 )
             }
         }

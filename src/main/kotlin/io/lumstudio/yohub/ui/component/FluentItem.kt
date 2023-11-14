@@ -70,6 +70,7 @@ fun FluentItem(
 
 @Composable
 fun FluentItem(
+    softWrap: Boolean = false,
     icon: (@Composable () -> Unit)? = null,
     title: String,
     subtitle: String? = null,
@@ -83,9 +84,14 @@ fun FluentItem(
         border = BorderStroke(.5.dp, DividerDefaults.color)
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth()
-                .height(70.dp)
-                .padding(12.dp),
+            modifier = if (softWrap) {
+                Modifier.fillMaxWidth()
+                    .padding(12.dp)
+            } else {
+                Modifier.fillMaxWidth()
+                    .height(70.dp)
+                    .padding(12.dp)
+            },
             verticalAlignment = Alignment.CenterVertically
         ) {
             if (icon != null) {
@@ -101,7 +107,7 @@ fun FluentItem(
                     Text(
                         it,
                         style = MaterialTheme.typography.labelSmall,
-                        softWrap = false,
+                        softWrap = softWrap,
                         color = MaterialTheme.colorScheme.onBackground.copy(alpha = .8f)
                     )
                 }

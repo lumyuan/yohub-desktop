@@ -21,7 +21,6 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.rememberWindowState
-import com.google.gson.Gson
 import io.lumstudio.yohub.R
 import io.lumstudio.yohub.common.*
 import io.lumstudio.yohub.common.shell.KeepShellStore
@@ -30,6 +29,8 @@ import io.lumstudio.yohub.common.utils.ColorLoader
 import io.lumstudio.yohub.common.utils.LocalPreferences
 import io.lumstudio.yohub.common.utils.PreferencesName
 import io.lumstudio.yohub.common.utils.PreferencesStore
+import io.lumstudio.yohub.lang.LanguageType
+import io.lumstudio.yohub.lang.LocalLanguageType
 import io.lumstudio.yohub.runtime.*
 import io.lumstudio.yohub.theme.*
 import kotlinx.coroutines.*
@@ -38,6 +39,8 @@ import kotlinx.coroutines.flow.onEach
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.resource
 import org.jetbrains.skiko.hostOs
+import java.lang.RuntimeException
+import java.util.*
 
 @Composable
 fun StartWindow() {
@@ -78,6 +81,7 @@ fun StartWindow() {
     val pythonStore = remember { PythonStore(runtimeStore.runtimeFile) }
     val payloadDumperStore = remember { PayloadDumperStore(runtimeStore.runtimeFile) }
     val magiskPatcherStore = remember { MagiskPatcherStore(pythonStore.pythonHostFile) }
+    val androidKitStore = remember { AndroidKitStore(runtimeStore.runtimeFile) }
 
     val driverStore = remember { DriverStore() }
 
@@ -126,45 +130,74 @@ fun StartWindow() {
         LocalDriver provides driverStore,
         LocalColorTheme provides colorThemeStore,
         LocalInstallThemesPath provides installThemesPathStore,
+        LocalAndroidToolkit provides androidKitStore,
     ) {
-        InitProperties(preferencesStore)
-        if (!isFinished) {
-            LoadUI(isFinishedAnimatable, windowState)
-        } else {
-            MainUI()
+        val propertyLoadState = remember { mutableStateOf(false) }
+        //初始化全局配置
+        InitProperties(preferencesStore, propertyLoadState)
+        if (propertyLoadState.value) {
+            //显示GUI
+            if (!isFinished) {
+                LoadUI(isFinishedAnimatable, windowState)
+            } else {
+                MainUI()
+            }
         }
     }
 }
-
-private val gson by lazy { Gson() }
 
 /**
  * 初始化配置信息
  */
 @Composable
-private fun InitProperties(preferencesStore: PreferencesStore) {
+private fun InitProperties(preferencesStore: PreferencesStore, propertyLoadState: MutableState<Boolean>) {
     val installThemesPathStore = LocalInstallThemesPath.current
     val colorThemeStore = LocalColorTheme.current
     val colorLoader = ColorLoader(preferencesStore, installThemesPathStore, colorThemeStore)
-    LaunchedEffect(preferencesStore.preference) {
+    val lang = LocalLanguageType.value.lang
+    var initState by remember { mutableStateOf(true) }
+    LaunchedEffect(initState) {
         //初始化配置
-        preferencesStore.loadPreference()
-        val localhostColorTheme = preferencesStore.preference[PreferencesName.COLOR_THEME.toString()]
-
-        if (installThemesPathStore.installPathFile.exists() && !localhostColorTheme.isNullOrEmpty() && localhostColorTheme != "YoHub Color") {
-            try {
-                colorThemeStore.colorSchemes = colorLoader.loadInstalledColorTheme(localhostColorTheme)
-            }catch (e: Exception) {
-                e.printStackTrace()
-                sendNotice("主题颜色加载失败！", "${e.message}，已将主题颜色设为默认。")
-                preferencesStore.preference[PreferencesName.COLOR_THEME.toString()] = "YoHub Color"
+        if (initState) {
+            preferencesStore.loadPreference()
+            val localhostColorTheme = preferencesStore.preference[PreferencesName.COLOR_THEME.toString()]
+            val defaultThemeName = "YoHub Color"
+            if (installThemesPathStore.installPathFile.exists() && !localhostColorTheme.isNullOrEmpty() && localhostColorTheme != defaultThemeName) {
+                try {
+                    colorThemeStore.colorSchemes = colorLoader.loadInstalledColorTheme(localhostColorTheme)
+                }catch (e: Exception) {
+                    e.printStackTrace()
+                    sendNotice(lang.themeColorLoadFailedTitle, String.format(lang.themeColorLoadFailedMessage, e.toString()))
+                    preferencesStore.preference[PreferencesName.COLOR_THEME.toString()] = defaultThemeName
+                    preferencesStore.submit()
+                }
+            } else {
+                //初始化默认主题
+                preferencesStore.preference[PreferencesName.COLOR_THEME.toString()] = defaultThemeName
                 preferencesStore.submit()
+                colorThemeStore.colorSchemes = ColorThemeStore.ColorTheme(LightColorScheme, DarkColorScheme)
             }
-        } else {
-            //初始化默认主题
-            preferencesStore.preference[PreferencesName.COLOR_THEME.toString()] = "YoHub Color"
-            preferencesStore.submit()
-            colorThemeStore.colorSchemes = ColorThemeStore.ColorTheme(LightColorScheme, DarkColorScheme)
+
+            //检测系统语言更改
+            val langType = preferencesStore.preference[PreferencesName.LANGUAGE.toString()]
+            try {
+                val languageType = LanguageType.valueOf(langType ?: "")
+                when (languageType) {
+                    LanguageType.DEFAULT -> throw RuntimeException("语言跟随系统。")
+                    else -> {
+                        LocalLanguageType.value = languageType
+                    }
+                }
+            }catch (e: Exception) {
+                //自动切换语言设置
+                val language = Locale.getDefault().language.lowercase()
+                LocalLanguageType.value = when {
+                    language.contains("en") -> LanguageType.EN
+                    else -> LanguageType.ZH_CN
+                }
+            }
+            initState = false
+            propertyLoadState.value = true
         }
     }
 }
@@ -175,8 +208,9 @@ private fun InitProperties(preferencesStore: PreferencesStore) {
 @Composable
 private fun LoadUI(isFinishedAnimatable: MutableState<Boolean>, windowState: WindowState) {
     val applicationScope = LocalApplication.current
+    val lang = LocalLanguageType.value.lang
     Window(
-        title = "优画工具箱桌面版",
+        title = lang.appName,
         icon = painterResource(R.icon.logoRound),
         onCloseRequest = applicationScope::exitApplication,
         state = windowState,
@@ -249,50 +283,63 @@ private fun LoadConfigurations(
     val payloadDumperStore = LocalPayloadDumperRuntime.current
     val magiskPatcherStore = LocalMagiskPatcherRuntime.current
     val fastbootDriverStore = LocalFastbootDriverRuntime.current
+    val androidKitStore = LocalAndroidToolkit.current
 
+    val languageBasic = LocalLanguageType.value.lang
     LaunchedEffect(isFinishedAnimatable) {
         withContext(
-            CoroutineExceptionHandler { _, throwable ->
+            CoroutineExceptionHandler { _, _ ->
             } + Dispatchers.IO
         ) {
-            tipText.value = "准备中..."
+            tipText.value = languageBasic.inPreparation
             delay(1000)
             run {
-                tipText.value = "开始初始化ADB环境..."
+                tipText.value = languageBasic.initAdbRuntime
                 adbStore.installRuntime(
                     resource(adbStore.resourceName).readBytes(),
                     adbStore.adbHostFile.absolutePath
                 )
             }
             run {
-                tipText.value = "开始初始化Python环境..."
+                tipText.value = languageBasic.initPythonRuntime
                 pythonStore.installRuntime(
                     resource(pythonStore.resourceName).readBytes(),
                     pythonStore.pythonHostFile.absolutePath
                 )
             }
             run {
-                tipText.value = "开始初始化Payload Dumper环境..."
+                tipText.value = languageBasic.initPayloadDumper
                 payloadDumperStore.installRuntime(
                     resource(payloadDumperStore.resourceName).readBytes(),
                     payloadDumperStore.payloadHostFile.absolutePath
                 )
             }
             run {
-                tipText.value = "开始初始化Magisk Patcher环境..."
+                tipText.value = languageBasic.initMagiskPatcher
                 magiskPatcherStore.installRuntime(
                     resource(magiskPatcherStore.resourceName).readBytes(),
                     magiskPatcherStore.magiskPatcherHostFile.absolutePath
                 )
             }
             run {
-                tipText.value = "开始初始化Android驱动..."
+                tipText.value = languageBasic.initAdbDriver
                 fastbootDriverStore.installRuntime(
                     resource(fastbootDriverStore.resourceName).readBytes(),
                     fastbootDriverStore.fastbootDriverHostFile.absolutePath
                 )
             }
-            tipText.value = "加载完成！"
+            run {
+                //清空缓存
+                androidKitStore.unzipPath.listFiles()?.onEach {
+                    it.delete()
+                }
+                tipText.value = languageBasic.initAndroidToolkit
+                androidKitStore.installRuntime(
+                    resource(R.raw.androidKit).readBytes(),
+                    androidKitStore.unzipPath.absolutePath
+                )
+            }
+            tipText.value = languageBasic.finished
             delay(1000)
             isFinishedAnimatable.value = true
         }
@@ -388,7 +435,6 @@ fun checkFastbootDriver(keepShellStore: KeepShellStore, driverStore: DriverStore
                 keepShellStore cmd "reg query HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services"
             driverStore.isInstall = drivers.split("\n").any { it.uppercase().contains("WINUSB".uppercase()) }
         }
-
         else -> {}
     }
 }
