@@ -594,4 +594,5 @@ private suspend fun backupTask(
     taskLog.add("")
     backupState.value = false
     actionState.value = false
+    taskLog.clear()
 }
