@@ -1,14 +1,16 @@
 package io.lumstudio.yohub.windows
 
-import androidx.compose.foundation.*
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.TooltipArea
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
@@ -792,7 +794,8 @@ class LanguagePage : NavPage(isNavigation = false) {
                                     onClick = {
                                         LocalLanguageType.value = it
                                         CoroutineScope(Dispatchers.IO).launch {
-                                            preferencesStore.preference[PreferencesName.LANGUAGE.toString()] = it.toString()
+                                            preferencesStore.preference[PreferencesName.LANGUAGE.toString()] =
+                                                it.toString()
                                             preferencesStore.submit()
                                         }
                                         dropdownMenuState = false
@@ -804,4 +807,78 @@ class LanguagePage : NavPage(isNavigation = false) {
             }
         }
     }
+}
+
+
+enum class RootCode(val value: String) {
+    SU("su"), KSU("su"), SUU("suu")
+}
+
+class AdvancedSettingPage : NavPage(isNavigation = false) {
+    override fun icon(): @Composable () -> Unit = { }
+
+    override fun label(): String = LocalLanguageType.value.lang.labelAdvancedSetting
+
+    override fun title(): String? = null
+
+    override fun subtitle(): String? = null
+
+    @Composable
+    override fun content() {
+        val languageBasic = LocalLanguageType.value.lang
+        val preferencesStore = LocalPreferences.current
+        Column(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Toolbar(label(), enableAnimate = false)
+            FluentItem(
+                icon = {
+                    Icon(Icons.Default.ClipboardCode, null, modifier = Modifier.fillMaxSize())
+                },
+                title = languageBasic.adminCode,
+                subtitle = languageBasic.adminCodeSubtitle
+            ) {
+                val open = remember { mutableStateOf(false) }
+                Column(
+                    horizontalAlignment = Alignment.End
+                ) {
+                    TextButton(
+                        onClick = {
+                            open.value = true
+                        },
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text(
+                            try {
+                                RootCode.valueOf(
+                                    preferencesStore.preference[PreferencesName.ROOT_CODE.toString()] ?: ""
+                                )
+                            } catch (e: Exception) {
+                                RootCode.SU
+                            }.toString()
+                        )
+                    }
+                }
+                DropdownMenu(expanded = open.value, onDismissRequest = { open.value = false }) {
+                    RootCode.values().toList()
+                        .onEach {
+                            DropdownMenuItem(
+                                text = {
+                                    Text(it.toString())
+                                },
+                                onClick = {
+                                    CoroutineScope(Dispatchers.IO).launch {
+                                        preferencesStore.preference[PreferencesName.ROOT_CODE.toString()] =
+                                            it.toString()
+                                        preferencesStore.submit()
+                                        open.value = false
+                                    }
+                                }
+                            )
+                        }
+                }
+            }
+        }
+    }
+
 }

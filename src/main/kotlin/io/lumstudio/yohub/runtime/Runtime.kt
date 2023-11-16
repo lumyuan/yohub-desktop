@@ -194,6 +194,7 @@ class AndroidKitStore(runtimeDir: File): Runtime() {
     }
 
     val androidToolkitPath = "/data/local/tmp/.yohub-desktop"
+    val androidTmpPath = "/sdcard/.yohub-desktop"
 
     infix fun file(name: String): String = "$unzipPath${File.separator}$name"
 

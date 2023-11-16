@@ -35,10 +35,10 @@ fun Dialog(
     title: String,
     visible: Boolean,
     content: @Composable () -> Unit,
-    cancelButtonText: String,
-    onCancel: () -> Unit,
-    confirmButtonText: String,
-    onConfirm: () -> Unit
+    cancelButtonText: String? = null,
+    onCancel: (() -> Unit)? = null,
+    confirmButtonText: String? = null,
+    onConfirm: (() -> Unit)? = null
 ) {
     val visibleState = remember { MutableTransitionState(false) }
 
@@ -88,18 +88,66 @@ fun Dialog(
                         // Divider
                         Box(Modifier.height(1.dp).background(FluentTheme.colors.stroke.surface.default))
                         // Button Grid
-                        Box(Modifier.height(80.dp).padding(horizontal = 25.dp), Alignment.Center) {
-                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                AccentButton(modifier = Modifier.weight(1f), onClick = onConfirm, buttonColors = accentButtonColors()) {
-                                    Text(confirmButtonText, color = MaterialTheme.colorScheme.background)
-                                }
-                                Button(modifier = Modifier.weight(1f), onClick = onCancel) {
-                                    Text(cancelButtonText)
+                        if (!(onConfirm == null && onCancel == null)) {
+                            Box(Modifier.height(80.dp).padding(horizontal = 25.dp), Alignment.Center) {
+                                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    if (onConfirm != null) {
+                                        AccentButton(modifier = Modifier.weight(1f), onClick = onConfirm, buttonColors = accentButtonColors()) {
+                                            Text(confirmButtonText ?: "", color = MaterialTheme.colorScheme.background)
+                                        }
+                                    }
+                                    if (onCancel != null) {
+                                        Button(modifier = Modifier.weight(1f), onClick = onCancel) {
+                                            Text(cancelButtonText ?: "")
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalAnimationApi::class)
+@Composable
+fun DialogBasic(
+    visible: Boolean,
+    content: @Composable () -> Unit,
+) {
+    val visibleState = remember { MutableTransitionState(false) }
+
+    LaunchedEffect(visible) {
+        visibleState.targetState = visible
+    }
+
+    if (visibleState.currentState || visibleState.targetState) Popup(
+        popupPositionProvider = rememberCursorPositionProvider(
+            windowMargin = 0.dp,
+            alignment = Alignment.Center,
+        ),
+        focusable = true
+    ) {
+        Box(
+            Modifier.fillMaxSize()
+                .background(Color.Black.copy(0.3f))
+                .pointerInput(Unit) {},
+            contentAlignment = Alignment.Center
+        ) {
+
+            val tween = tween<Float>(
+                easing = FluentEasing.FastInvokeEasing,
+                durationMillis = FluentDuration.QuickDuration
+            )
+
+            AnimatedVisibility(
+                visibleState = visibleState,
+                enter = fadeIn(tween) + scaleIn(tween, initialScale = 1.1f),
+                exit = fadeOut(tween) + scaleOut(tween, targetScale = 1.1f)
+            ) {
+                content()
             }
         }
     }

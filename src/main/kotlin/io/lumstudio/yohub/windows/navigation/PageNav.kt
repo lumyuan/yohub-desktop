@@ -1,16 +1,21 @@
 package io.lumstudio.yohub.windows.navigation
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.outlined.Android
-import androidx.compose.material.icons.outlined.PlayForWork
-import androidx.compose.material.icons.outlined.Start
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import com.konyaco.fluent.icons.Icons
 import com.konyaco.fluent.icons.regular.*
 import io.appoutlet.karavel.Page
 import io.lumstudio.yohub.R
 import io.lumstudio.yohub.lang.LocalLanguageType
+import io.lumstudio.yohub.ui.component.Toolbar
 import io.lumstudio.yohub.windows.*
 
 enum class PageNav(
@@ -43,6 +48,12 @@ enum class PageNav(
     ),
     FlashImage(
         page = FlashImagePage()
+    ),
+    AdvancedFunction(
+      page = AdvancedFunctionPage()
+    ),
+    ImageBackup(
+        page = ImageBackupPage().apply { parent = AdvancedFunction.page }
     ),
     Settings(
         page = SettingsPage(),
@@ -247,6 +258,7 @@ class SettingsPage : NavPage(isNavigation = false) {
         nestedItems = arrayListOf(
             LanguagePage(),
             ThemeSetting(),
+            AdvancedSettingPage(),
             VersionSetting(),
             OpenSourceLicense(),
         )
@@ -266,9 +278,60 @@ class FlashImagePage : NavPage() {
 
     override fun subtitle(): String = LocalLanguageType.value.lang.subtitleFlashImage
 
-
     @Composable
     override fun content() {
         FlashImageScreen(this)
     }
+}
+
+class AdvancedFunctionPage: NavPage() {
+    override fun icon(): @Composable () -> Unit = {
+        Icon(Icons.Default.Grid, null)
+    }
+
+    override fun label(): String = LocalLanguageType.value.lang.labelAdvancedFunction
+
+    override fun title(): String? = null
+
+    override fun subtitle(): String? = null
+
+    init {
+        nestedItems = arrayListOf(
+            ImageBackupPage().apply { parent = this@AdvancedFunctionPage }
+        )
+    }
+
+    @Composable
+    override fun content() {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth().padding(start = 16.dp, top = 16.dp, end = 16.dp)
+            ) {
+                Toolbar(label())
+            }
+            AdvancedFunctionScreen(this@AdvancedFunctionPage)
+        }
+    }
+}
+
+class ImageBackupPage: NavPage(isNavigation = false) {
+    override fun icon(): @Composable () -> Unit = {
+        Icon(Icons.Default.DocumentFolder, null)
+    }
+
+    override fun label(): String = LocalLanguageType.value.lang.labelImageBackup
+
+    override fun title(): String? = null
+
+    override fun subtitle(): String? = null
+
+    @Composable
+    override fun content() {
+        LinkedScaffold(this) {
+            ImageBackupScreen()
+        }
+    }
+
 }

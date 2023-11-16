@@ -100,7 +100,8 @@ private fun OutputLayout(outPath: MutableState<String>, fileChooser: JFileChoose
             },
             value = outPath.value,
             onValueChange = { outPath.value = it },
-            modifier = Modifier.fillMaxWidth().weight(1f)
+            modifier = Modifier.fillMaxWidth().weight(1f),
+            singleLine = true
         )
         Spacer(modifier = Modifier.size(16.dp))
         TextButton(
@@ -162,7 +163,8 @@ private fun FilterLayout(
                         Icon(androidx.compose.material.icons.Icons.Default.Close, null)
                     }
                 }
-            }
+            },
+            singleLine = true
         )
         Spacer(modifier = Modifier.size(16.dp))
         AnimatedVisibility(loadState.value) {

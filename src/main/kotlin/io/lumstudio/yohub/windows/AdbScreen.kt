@@ -133,7 +133,6 @@ fun LinkedScaffold(navPage: NavPage, content: @Composable ColumnScope.() -> Unit
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun LinkedLayout(adbPage: AdbPage, deviceStore: DeviceStore) {
     val languageBasic = LocalLanguageType.value.lang
@@ -181,25 +180,7 @@ private fun LinkedLayout(adbPage: AdbPage, deviceStore: DeviceStore) {
         Spacer(modifier = Modifier.size(28.dp))
         Text(languageBasic.adbAreaFunctions, style = MaterialTheme.typography.bodySmall)
         Spacer(modifier = Modifier.size(8.dp))
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-            adbPage.nestedItems?.onEach {
-                FlowButton(
-                    icon = {
-                        it.icon().invoke()
-                    },
-                    onClick = {
-                        if (deviceStore.device?.state != ClientState.DEVICE) {
-                            sendNotice(languageBasic.insufficientPermissions, languageBasic.pleaseLinkAdbDevice)
-                        } else {
-                            selectPage.value = it
-                            adbPage.karavel?.navigate(it)
-                        }
-                    }
-                ) {
-                    Text(it.label())
-                }
-            }
-        }
+        AdbFlowFeature(adbPage)
     }
 
     LaunchedEffect(deviceStore.device) {

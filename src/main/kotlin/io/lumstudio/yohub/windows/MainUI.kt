@@ -66,9 +66,9 @@ fun MainUI() {
         onCloseRequest = {
             ioCoroutine.ioScope.launch {
                 keepShellStore cmd adbStore.adbDevice(null, "kill-server")
-                applicationScope.exitApplication()
-                exitProcess(0)
             }
+            applicationScope.exitApplication()
+            exitProcess(0)
         },
         state = windowState,
     ) {
@@ -320,7 +320,7 @@ private fun DeviceItem(
     var label by remember { mutableStateOf(lang.checkIndexDevice) }
     var sub by remember { mutableStateOf(lang.checkIndexDevice) }
 
-    LaunchedEffect(label) {
+    LaunchedEffect(label, lang) {
         withContext(Dispatchers.IO) {
             when (navItem.type) {
                 ClientType.ADB, ClientType.ADB_AB, ClientType.ADB_VAB -> {

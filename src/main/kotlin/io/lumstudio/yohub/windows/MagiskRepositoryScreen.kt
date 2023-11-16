@@ -69,7 +69,8 @@ fun MagiskRepositoryScreen(magiskRepositoryPage: MagiskRepositoryPage) {
                             Icon(androidx.compose.material.icons.Icons.Default.Close, null)
                         }
                     }
-                }
+                },
+                singleLine = true
             )
 
             Spacer(modifier = Modifier.size(28.dp))

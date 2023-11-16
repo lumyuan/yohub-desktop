@@ -9,6 +9,7 @@ import io.lumstudio.yohub.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.resource
 import java.awt.SystemTray
@@ -33,25 +34,28 @@ fun micaApplication(
 }
 
 @OptIn(ExperimentalResourceApi::class)
-fun sendNotice(title: String, message: String, onClick: () -> Unit = {}) {
-    CoroutineScope(Dispatchers.IO).launch {
-        if (!SystemTray.isSupported()) {
-            println("SystemTray is not supported on this platform.")
-            return@launch
-        }
-        try {
-            val systemTray = SystemTray.getSystemTray()
-            val trayIcon = TrayIcon(ImageIO.read(ByteArrayInputStream(resource(R.icon.logo).readBytes())), "YoHub")
-            trayIcon.isImageAutoSize = true
-            trayIcon.addMouseListener(object : MouseAdapter() {
-                override fun mouseClicked(e: MouseEvent) {
-                    onClick()
-                }
-            })
-            systemTray.add(trayIcon)
-            trayIcon.displayMessage(title, message, TrayIcon.MessageType.INFO)
-        }catch (e: Exception) {
-            e.printStackTrace()
-        }
+fun sendNotice(
+    title: String,
+    message: String,
+    messageType: TrayIcon.MessageType = TrayIcon.MessageType.NONE,
+    onClick: () -> Unit = {}
+) {
+    if (!SystemTray.isSupported()) {
+        println("SystemTray is not supported on this platform.")
+        return
+    }
+    try {
+        val systemTray = SystemTray.getSystemTray()
+        val trayIcon = TrayIcon(ImageIO.read(ByteArrayInputStream(runBlocking { resource(R.icon.logo).readBytes() })), "YoHub")
+        trayIcon.isImageAutoSize = true
+        trayIcon.addMouseListener(object : MouseAdapter() {
+            override fun mouseClicked(e: MouseEvent) {
+                onClick()
+            }
+        })
+        systemTray.add(trayIcon)
+        trayIcon.displayMessage(title, message, messageType)
+    } catch (e: Exception) {
+        e.printStackTrace()
     }
 }
