@@ -1,9 +1,6 @@
 package io.lumstudio.yohub.common.net.api.impl
 
-import io.lumstudio.yohub.common.net.pojo.ApiException
-import io.lumstudio.yohub.common.net.pojo.MagiskRepo
-import io.lumstudio.yohub.common.net.pojo.ResponseBody
-import io.lumstudio.yohub.common.net.pojo.toMagiskRepos
+import io.lumstudio.yohub.common.net.pojo.*
 
 /**
  * 预处理数据(错误)
@@ -27,5 +24,8 @@ object Repository {
 
     suspend fun releaseByHuskyDG(): List<MagiskRepo> =
         ServiceBuilder.publicService("https://api.github.com").releaseByHuskyDG().toMagiskRepos(false)
+
+    suspend fun appRepos(): List<YoHubRepos> =
+        ServiceBuilder.publicService("https://api.github.com").appRepos()
 
 }

@@ -1,9 +1,13 @@
 package io.lumstudio.yohub.common.net.factory
 
+import com.google.gson.GsonBuilder
+import io.lumstudio.yohub.common.net.converter.JsonConverterFactory
 import io.lumstudio.yohub.common.net.interceptor.BusinessErrorInterceptor
+import io.lumstudio.yohub.common.utils.DateDeserializer
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 /**
@@ -13,11 +17,18 @@ object PublicApiFactory {
 
     // OkHttpClient客户端
     private val mClient: OkHttpClient by lazy { newClient() }
+
     /**
      * 创建API Service接口实例
      */
     fun <T> createService(baseUrl: String, clazz: Class<T>): T = Retrofit.Builder().baseUrl(baseUrl).client(mClient)
-        .addConverterFactory(GsonConverterFactory.create())
+        .addConverterFactory(
+            JsonConverterFactory(
+                GsonBuilder()
+                    .registerTypeAdapter(Date::class.java, DateDeserializer())
+                    .create()
+            )
+        )
         .build().create(clazz)
 
     /**

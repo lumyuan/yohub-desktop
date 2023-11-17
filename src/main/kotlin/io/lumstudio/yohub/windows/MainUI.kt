@@ -62,7 +62,7 @@ fun MainUI() {
     val lang = LocalLanguageType.value.lang
     Window(
         title = lang.appName,
-        icon = painterResource(R.icon.logoRound),
+        icon = painterResource(R.icon.logo),
         onCloseRequest = {
             ioCoroutine.ioScope.launch {
                 keepShellStore cmd adbStore.adbDevice(null, "kill-server")
@@ -77,6 +77,8 @@ fun MainUI() {
             val navs = PageNav.values().toList().filter { it.page.isNavigation }
             val karavel by remember { mutableStateOf(Karavel(navs.first().page)) }
             Row(modifier = Modifier.fillMaxSize()) {
+                //更新窗口
+                UpdateAppWindow()
                 var expanded by remember { mutableStateOf(true) }
                 SideNav(
                     modifier = Modifier.fillMaxHeight(),

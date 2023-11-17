@@ -689,6 +689,12 @@ class OpenSourceLicense : NavPage(isNavigation = false) {
                 tip = "桌面端图片加载框架, load-the-image Apply to compose-jb(desktop), Used to load network and local pictures, supports caching.",
                 url = "https://github.com/ltttttttttttt/load-the-image"
             ),
+            LicenseBean(
+                title = "Compose-Rich-Editor",
+                author = "MohamedRejeb",
+                tip = "A Rich text editor library for both Jetpack Compose and Compose Multiplatform, fully customizable and supports the common rich text editor features.",
+                url = "https://github.com/MohamedRejeb/Compose-Rich-Editor"
+            ),
         )
     }
 

@@ -10,8 +10,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.konyaco.fluent.icons.Icons
-import com.konyaco.fluent.icons.regular.DeviceEq
-import com.konyaco.fluent.icons.regular.Power
+import com.konyaco.fluent.icons.regular.*
 import io.lumstudio.yohub.common.LocalIOCoroutine
 import io.lumstudio.yohub.common.shell.LocalKeepShell
 import io.lumstudio.yohub.lang.LocalLanguageType
@@ -79,7 +78,6 @@ fun DeviceScreen() {
                     label = String.format(lang.linkedDevice, DeviceName.value)
                     sub = String.format(lang.deviceType, device.type)
                 }
-
                 Column {
                     Text(label)
                     if (sub.isNotEmpty()) {
@@ -91,6 +89,27 @@ fun DeviceScreen() {
             var contentText by remember { mutableStateOf("") }
             var displayDialog by remember { mutableStateOf(false) }
             var onConfirm by remember { mutableStateOf({ }) }
+
+            AnimatedVisibility(
+                selectDevice != null
+                        && (selectDevice.type == ClientType.ADB_AB || selectDevice.type == ClientType.ADB_VAB)
+                        && selectDevice.state != ClientState.UNAUTHORIZED
+            ) {
+                val slot = remember { mutableStateOf("") }
+                LaunchedEffect(slot) {
+                    slot.value = (keepShellStore adbShell "getprop ro.boot.slot_suffix").replace("\n", "").replace(" ", "")
+                }
+                if (slot.value.isNotEmpty()) {
+                    FlowButton(
+                        onClick = {  },
+                        icon = {
+                            Icon(Icons.Default.Phone, null, modifier = Modifier.fillMaxSize())
+                        }
+                    ) {
+                        Text(String.format(lang.deviceSlot, slot.value.uppercase()))
+                    }
+                }
+            }
 
             AnimatedVisibility(
                 selectDevice != null

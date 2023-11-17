@@ -7,6 +7,10 @@ import com.google.gson.JsonParseException
 import java.lang.reflect.Type
 import java.text.ParseException
 import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.Date
 
 
@@ -14,6 +18,8 @@ class DateDeserializer : JsonDeserializer<Date?> {
     private val sf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
 
     private val sf1 = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+
+    private val sf2 = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
 
     @Throws(JsonParseException::class)
     override fun deserialize(je: JsonElement, type: Type, jdc: JsonDeserializationContext): Date? {
@@ -23,14 +29,15 @@ class DateDeserializer : JsonDeserializer<Date?> {
                 return sf.parse(myDate)
             } catch (e: ParseException) {
                 e.printStackTrace()
-                try {
-                    return Date(myDate.toLong())
+                return try {
+                    Date(myDate.toLong())
                 } catch (ex: Exception) {
                     ex.printStackTrace()
                     try {
-                        return sf1.parse(myDate)
+                        sf1.parse(myDate)
                     } catch (e: Exception) {
                         e.printStackTrace()
+                        sf2.parse(myDate)
                     }
                 }
             }

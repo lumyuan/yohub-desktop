@@ -237,5 +237,11 @@ abstract class LanguageBasic(
     val backupFinishedMessage: String,
     val confirmBackupImage: String,
     val backupAllImage: String,
+    val hasNewVersion: String,
+    val gotoDownload: String,
+    val updateVersionText: String,
+    val deviceSlot: String,
+
+
 )
 

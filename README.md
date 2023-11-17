@@ -31,12 +31,15 @@
       - 黑域一键激活
       - 更多功能开发中...
 - 镜像刷写（自动检测设备分区）
+- 高级功能
+   - 分区备份（备份字库等）
 
 更多新功能敬请期待~~
 
 ## 程序部分界面截图（RELEASE-1.0.4）
 ![app_screenshot_home.png](resources/md/app_screenshot_home.png)
 ![app_screenshot_adb.png](resources/md/app_screenshot_adb.png)
+![app_screenshot_backuo_image.png](resources/md/app_screenshot_backuo_image.png)
 
 ## 讨论
 * QQ群：945339560
@@ -51,5 +54,8 @@
 
 ## Logo版权与许可
 © Copyright @ 2023 优檀云网络科技 All Rights Reserved
+
+本工具箱专为发烧级玩家开发并且免费使用，严禁使用本工具箱进行任何包括但不限于非法盈利或倒卖等活动，若一意孤行我司将使用法律途径进行维权，欢迎大家检举。
+- 我司监事邮箱：2205903933@qq.com
 
 LICENSE: [Apache 2.0](LICENSE)

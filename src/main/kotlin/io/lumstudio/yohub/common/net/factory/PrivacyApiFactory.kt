@@ -10,15 +10,15 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 /**
- * ½Ó¿ÚÇëÇó¹¤³§
+ * æ¥å£è¯·æ±‚å·¥å‚
  */
 object PrivacyApiFactory {
 
-    // OkHttpClient¿Í»§¶Ë
+    // OkHttpClientå®¢æˆ·ç«¯
     private val mClient: OkHttpClient by lazy { newClient() }
 
     /**
-     * ´´½¨API Service½Ó¿ÚÊµÀı
+     * åˆ›å»ºAPI Serviceæ¥å£å®ä¾‹
      */
     fun <T> createService(baseUrl: String, clazz: Class<T>): T =
         Retrofit.Builder().baseUrl(baseUrl).client(mClient)
@@ -32,12 +32,12 @@ object PrivacyApiFactory {
             .build().create(clazz)
 
     /**
-     * OkHttpClient¿Í»§¶Ë
+     * OkHttpClientå®¢æˆ·ç«¯
      */
     private fun newClient(): OkHttpClient = OkHttpClient.Builder().apply {
-        connectTimeout(30, TimeUnit.SECONDS)// Á¬½ÓÊ±¼ä£º30s³¬Ê±
-        readTimeout(10, TimeUnit.SECONDS)// ¶ÁÈ¡Ê±¼ä£º10s³¬Ê±
-        writeTimeout(10, TimeUnit.SECONDS)// Ğ´ÈëÊ±¼ä£º10s³¬Ê±
+        connectTimeout(30, TimeUnit.SECONDS)// è¿æ¥æ—¶é—´ï¼š30sè¶…æ—¶
+        readTimeout(10, TimeUnit.SECONDS)// è¯»å–æ—¶é—´ï¼š10sè¶…æ—¶
+        writeTimeout(10, TimeUnit.SECONDS)// å†™å…¥æ—¶é—´ï¼š10sè¶…æ—¶
         addInterceptor(BusinessErrorInterceptor())
     }.build()
 }

@@ -17,6 +17,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.rememberCursorPositionProvider
@@ -48,6 +49,7 @@ fun Dialog(
 
     if (visibleState.currentState || visibleState.targetState) Popup(
         popupPositionProvider = rememberCursorPositionProvider(
+            offset = DpOffset(0.dp, 0.dp),
             windowMargin = 0.dp,
             alignment = Alignment.Center,
         ),

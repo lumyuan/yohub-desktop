@@ -548,6 +548,7 @@ private suspend fun backupTask(
     partitions: List<PartitionBean>
 ) = withContext(Dispatchers.IO) {
     val languageBasic = LocalLanguageType.value.lang
+    val timeMillis = System.currentTimeMillis()
     taskLog.clear()
     val tempPath = "${androidKitStore.androidToolkitPath}/backup"
     keepShellStore adbShell "mkdir -p $tempPath"
@@ -555,7 +556,7 @@ private suspend fun backupTask(
     var completeCount = 0
     for ((index, partitionBean) in partitions.withIndex()) {
         if (!actionState.value) break
-        taskLog.add("Task: backup [${partitionBean.name}]")
+        taskLog.add("Task: backup [${partitionBean.name}] running...")
         val getPath = "$tempPath/${partitionBean.name}.img"
         val getCmd = "su -c dd if=${rootPath.value}${partitionBean.name} of=$getPath"
         val tempOut = keepShellStore adbShell getCmd
@@ -576,23 +577,32 @@ private suspend fun backupTask(
             } else {
                 failCount++
             }
-            taskLog[index] = taskLog[index] + " $copyOut"
+            taskLog[index] = taskLog[index] + " ${copyOut.replace("\n", "")}"
             keepShellStore adbShell "rm -rf $getPath"
         }
     }
+    val time = (System.currentTimeMillis() - timeMillis) / 1000
+    val formatSeconds = formatSeconds(time)
     if (!actionState.value) {
         sendNotice(
             languageBasic.backupImageCancel,
-            String.format(languageBasic.backupImageCancelMessage, partitions.size, taskLog.size)
+            String.format(languageBasic.backupImageCancelMessage, partitions.size, taskLog.size, formatSeconds)
         )
     } else {
         sendNotice(
             languageBasic.backupFinished,
-            String.format(languageBasic.backupFinishedMessage, completeCount, failCount, partitions.size)
+            String.format(languageBasic.backupFinishedMessage, completeCount, failCount, partitions.size, formatSeconds)
         )
     }
     taskLog.add("")
     backupState.value = false
     actionState.value = false
     taskLog.clear()
+}
+
+private fun formatSeconds(seconds: Long): String {
+    val hour = seconds / 3600
+    val minute = (seconds % 3600) / 60
+    val second = (seconds % 3600) % 60
+    return String.format("%02d:%02d:%02d", hour, minute, second)
 }

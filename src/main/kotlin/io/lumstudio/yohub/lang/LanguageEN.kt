@@ -211,13 +211,15 @@ object LanguageEN : LanguageBasic(
     backupTaskTitle = "In partition backup",
     backupTaskMessage = "Please don't disconnect or turn off the mobile phone while the partition backup task is in progress, otherwise the data may be damaged!",
     backupImageCancel = "Backup Task Canceled",
-    backupImageCancelMessage = "The backup task has been cancelled. Out of %d tasks, %d finished.",
+    backupImageCancelMessage = "The backup task has been cancelled. Out of %d tasks, %d finished, time: %s",
     tryCancel = "Canceling...",
     backupFolderIsNotExists = "Please enter a correct backup path!",
     backupFinished = "Backup completed!",
-    backupFinishedMessage = "The backup task has been completed! %d succeeded, %d failed, a total of %d tasks.",
+    backupFinishedMessage = "The backup task has been completed! %d succeeded, %d failed, a total of %d tasks, time: %s",
     confirmBackupImage = "Are you sure you want to perform the backup partition task? Please don't disconnect or turn off the device! The process may last for a long time, ranging from 5 to 30 minutes, depending on the performance of the device and the connection speed between the mobile phone and the computer.\n\nTasks: %d tasks in total. Click [Confirm] to continue.",
     backupAllImage = "Back up the complete font",
-
-
+    hasNewVersion = "New Version!",
+    gotoDownload = "Download",
+    updateVersionText = "Version: %s\nUpdate: %s",
+    deviceSlot = "Device Slot: %s"
 )

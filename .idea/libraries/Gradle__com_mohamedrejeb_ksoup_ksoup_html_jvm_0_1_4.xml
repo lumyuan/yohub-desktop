@@ -1,0 +1,12 @@
+﻿<component name="libraryTable">
+  <library name="Gradle: com.mohamedrejeb.ksoup:ksoup-html-jvm:0.1.4" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="com.mohamedrejeb.ksoup" artifactId="ksoup-html-jvm" version="0.1.4" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.mohamedrejeb.ksoup/ksoup-html-jvm/0.1.4/396f3d8fbc59dcdb9cedc32cd0b4328547a08e97/ksoup-html-jvm-0.1.4.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.mohamedrejeb.ksoup/ksoup-html-jvm/0.1.4/fe58b8355dcf66a198670b807184e56e81d00e52/ksoup-html-jvm-0.1.4-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

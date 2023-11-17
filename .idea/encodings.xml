@@ -10,6 +10,7 @@
     <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/common/net/api/impl" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/common/net/converter" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/common/net/factory" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/common/net/factory/PrivacyApiFactory.kt" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/common/net/interceptor" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/common/net/param/response/SpringBootErrorBean.kt" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/common/net/pojo/ApiException.kt" charset="UTF-8" />

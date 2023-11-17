@@ -211,13 +211,16 @@ object LanguageZHCN : LanguageBasic(
     backupTaskTitle = "分区备份中",
     backupTaskMessage = "分区备份任务执行中，请不要断开手机连接或关闭手机，否则可能会造成数据损坏！",
     backupImageCancel = "备份任务取消",
-    backupImageCancelMessage = "备份任务已取消。共%d个任务，已完成%d个。",
+    backupImageCancelMessage = "备份任务已取消。共%d个任务，已完成%d个，耗时：%s",
     tryCancel = "取消中...",
     backupFolderIsNotExists = "请输入一个正确的备份路径！",
     backupFinished = "备份完成！",
-    backupFinishedMessage = "备份任务已完成！%d个成功，%d个失败，共%d个任务。",
-    confirmBackupImage = "确定要执行备份分区任务吗？请不要断开连接或关闭设备！过程可能会持续很久，5~30分钟不等，具体看设备性能与手机与电脑的连接速度。\n\n清单：共%d个任务，点击【确认】按钮继续。",
+    backupFinishedMessage = "备份任务已完成！%d个成功，%d个失败，共%d个任务，耗时：%s",
+    confirmBackupImage = "确定要执行备份分区任务吗？请不要断开连接或关闭设备！过程可能会持续很久，5~30分钟不等，具体看设备性能和手机与电脑的连接速度。\n\n清单：共%d个任务，点击【确认】按钮继续。",
     backupAllImage = "备份完整字库",
-
+    hasNewVersion = "有更新啦~",
+    gotoDownload = "去下载",
+    updateVersionText = "版本：%s\n更新时间：%s",
+    deviceSlot = "活动插槽：%s"
 
 )

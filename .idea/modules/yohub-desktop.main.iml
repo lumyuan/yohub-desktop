@@ -46,7 +46,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Gradle: io.github.app-outlet:karavel:1.0.2" level="project" />
-    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.20" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.20" level="project" />
     <orderEntry type="library" name="Gradle: net.java.dev.jna:jna-platform:5.13.0" level="project" />
     <orderEntry type="library" name="Gradle: net.java.dev.jna:jna-platform-jpms:5.13.0" level="project" />
     <orderEntry type="library" name="Gradle: net.java.dev.jna:jna:5.13.0" level="project" />
@@ -61,6 +61,7 @@
     <orderEntry type="library" name="Gradle: com.mayakapps.compose:window-styler-jvm:0.3.2" level="project" />
     <orderEntry type="library" name="Gradle: com.konyaco:fluent-jvm:0.0.1-dev.6" level="project" />
     <orderEntry type="library" name="Gradle: com.konyaco:fluent-icons-extended-jvm:0.0.1-dev.6" level="project" />
+    <orderEntry type="library" name="Gradle: com.mohamedrejeb.richeditor:richeditor-compose-desktop:1.0.0-beta01" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.compose.material3:material3-desktop:1.4.1" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.compose.foundation:foundation-desktop:1.4.1" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.compose.animation:animation-desktop:1.4.1" level="project" />
@@ -69,10 +70,10 @@
     <orderEntry type="library" name="Gradle: org.jetbrains.compose.material:material-icons-extended-desktop:1.4.1" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.compose.ui:ui-desktop:1.4.1" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.compose.runtime:runtime-desktop:1.4.1" level="project" />
-    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.20" level="project" />
-    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib:1.8.20" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.20" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib:1.8.20" level="project" />
     <orderEntry type="library" name="Gradle: com.squareup.okhttp3:okhttp:3.14.9" level="project" />
-    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-common:1.8.20" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-common:1.8.20" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.compose.desktop:desktop-jvm:1.4.1" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains:annotations:13.0" level="project" />
     <orderEntry type="library" name="Gradle: com.squareup.okio:okio:1.17.2" level="project" />
@@ -90,9 +91,16 @@
     <orderEntry type="library" name="Gradle: org.jetbrains.compose.ui:ui-unit-desktop:1.4.1" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.compose.material:material-desktop:1.4.1" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib:1.8.22" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: org.jetbrains.skiko:skiko-awt-runtime-windows-x64:0.7.63" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: org.jetbrains.skiko:skiko-awt-runtime-linux-x64:0.7.16" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-common:1.8.22" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: com.mohamedrejeb.ksoup:ksoup-html-jvm:0.1.4" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.jetbrains:markdown-jvm:0.3.1" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: org.jetbrains.compose.ui:ui-util-desktop:1.4.1" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: org.jetbrains.kotlinx:atomicfu-jvm:0.17.0" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: com.mohamedrejeb.ksoup:ksoup-entites-jvm:0.1.4" level="project" />
   </component>
 </module>

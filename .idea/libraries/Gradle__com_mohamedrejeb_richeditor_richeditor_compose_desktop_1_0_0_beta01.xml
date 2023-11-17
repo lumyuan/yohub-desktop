@@ -1,0 +1,12 @@
+﻿<component name="libraryTable">
+  <library name="Gradle: com.mohamedrejeb.richeditor:richeditor-compose-desktop:1.0.0-beta01" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="com.mohamedrejeb.richeditor" artifactId="richeditor-compose-desktop" version="1.0.0-beta01" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.mohamedrejeb.richeditor/richeditor-compose-desktop/1.0.0-beta01/18e8c2165a992a9aea7a70069ca07f0fb4355900/richeditor-compose-desktop-1.0.0-beta01.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.mohamedrejeb.richeditor/richeditor-compose-desktop/1.0.0-beta01/39f8599f15654bef2834b8d6d047c4a5687ceb19/richeditor-compose-desktop-1.0.0-beta01-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

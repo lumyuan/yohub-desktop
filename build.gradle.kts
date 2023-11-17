@@ -58,6 +58,8 @@ dependencies {
     implementation("com.google.code.gson:gson:2.9.0")
 
     implementation("com.github.ltttttttttttt:load-the-image:1.0.8")
+
+    implementation("com.mohamedrejeb.richeditor:richeditor-compose:1.0.0-beta01")
 }
 
 compose.desktop {
@@ -79,7 +81,7 @@ compose.desktop {
 
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "YoHubDesktop"
-            packageVersion = "1.0.5"
+            packageVersion = "1.0.6"
 
             description = "YoHubTool For Desktop"
             copyright = "Copyright 2023 YoTanYun. All rights reserved."
