@@ -19,6 +19,7 @@ import io.lumstudio.yohub.R
 import io.lumstudio.yohub.common.LocalContext
 import io.lumstudio.yohub.common.net.api.impl.Repository
 import io.lumstudio.yohub.common.net.pojo.YoHubRepos
+import io.lumstudio.yohub.common.shell.MemoryUtil
 import io.lumstudio.yohub.common.utils.LocalPreferences
 import io.lumstudio.yohub.common.utils.PreferencesName
 import io.lumstudio.yohub.lang.LocalLanguageType
@@ -109,7 +110,9 @@ fun UpdateAppWindow() {
                                 String.format(
                                     languageBasic.updateVersionText,
                                     data.value?.name,
-                                    simpleDateFormat.value.format(data.value?.created_at)
+                                    simpleDateFormat.value.format(data.value?.created_at),
+                                    MemoryUtil.format(data.value?.assets?.get(0)?.size ?: 0L),
+                                    data.value?.assets?.get(0)?.download_count
                                 )
                             )
                             Spacer(modifier = Modifier.size(16.dp))
@@ -127,10 +130,9 @@ fun UpdateAppWindow() {
     )
 }
 
-private infix fun String.compareVersions(version2: String): Int {
+infix fun String.compareVersions(version2: String): Int {
     val parts1 = this.split(".")
     val parts2 = version2.split(".")
-
     for (i in 0 until maxOf(parts1.size, parts2.size)) {
         val num1 = if (i < parts1.size) parts1[i].toInt() else 0
         val num2 = if (i < parts2.size) parts2[i].toInt() else 0
@@ -138,6 +140,5 @@ private infix fun String.compareVersions(version2: String): Int {
         if (num1 < num2) return -1
         if (num1 > num2) return 1
     }
-
     return 0
 }

@@ -1,12 +1,13 @@
 package io.lumstudio.yohub.windows
 
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.TooltipArea
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.*
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -16,16 +17,25 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.google.gson.Gson
 import com.konyaco.fluent.component.NavigationItemSeparator
+import com.konyaco.fluent.component.Scrollbar
 import com.konyaco.fluent.component.ScrollbarContainer
 import com.konyaco.fluent.component.rememberScrollbarAdapter
 import com.konyaco.fluent.icons.Icons
 import com.konyaco.fluent.icons.regular.*
+import com.lt.load_the_image.rememberImagePainter
+import com.mohamedrejeb.richeditor.model.rememberRichTextState
+import com.mohamedrejeb.richeditor.ui.material3.RichText
+import io.lumstudio.yohub.R
 import io.lumstudio.yohub.common.LocalContext
 import io.lumstudio.yohub.common.LocalIOCoroutine
+import io.lumstudio.yohub.common.net.api.impl.Repository
+import io.lumstudio.yohub.common.net.pojo.YoHubRepos
 import io.lumstudio.yohub.common.sendNotice
+import io.lumstudio.yohub.common.shell.MemoryUtil
 import io.lumstudio.yohub.common.utils.*
 import io.lumstudio.yohub.lang.LanguageType
 import io.lumstudio.yohub.lang.LocalLanguageType
+import io.lumstudio.yohub.model.request
 import io.lumstudio.yohub.runtime.LocalInstallThemesPath
 import io.lumstudio.yohub.theme.*
 import io.lumstudio.yohub.ui.component.*
@@ -33,11 +43,15 @@ import io.lumstudio.yohub.windows.navigation.NavPage
 import io.lumstudio.yohub.windows.navigation.SettingsPage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.awt.FileDialog
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.text.SimpleDateFormat
 import javax.swing.JFrame
 
 @Composable
@@ -220,6 +234,7 @@ class ThemeSetting : NavPage(isNavigation = false) {
 
             val themeName = remember { mutableStateOf("") }
             val colorPath = remember { mutableStateOf("") }
+            val window = LocalWindowMain.current
             Dialog(
                 title = languageBasic.generateTheme,
                 visible = generateState.value,
@@ -240,7 +255,7 @@ class ThemeSetting : NavPage(isNavigation = false) {
                             val light = HashMap<String, String>()
                             val dark = HashMap<String, String>()
                             val kt = String(readBytes(FileInputStream(colorFile)))
-                            val list = kt.split("\n").toList().filter { it.contains("val md_theme_") }
+                            val list = kt.split("\n").toList().filter { it.contains("val ") }
                             if (list.isEmpty()) {
                                 sendNotice(languageBasic.themeAnalysisFail, languageBasic.isNotEffectiveColorFile)
                             } else if (themeName.value.trim().isEmpty()) {
@@ -263,9 +278,8 @@ class ThemeSetting : NavPage(isNavigation = false) {
                                     val customColorTheme =
                                         CustomColorTheme(name = themeName.value, light = lightColor, dark = darkColor)
                                     val json = gson.toJson(customColorTheme)
-                                    val fileDialog = FileDialog(JFrame())
+                                    val fileDialog = FileDialog(window, "", FileDialog.SAVE)
                                     fileDialog.file = "${themeName.value}.json"
-                                    fileDialog.mode = FileDialog.SAVE
                                     fileDialog.isVisible = true
                                     val path = fileDialog.directory + fileDialog.file
                                     writeBytes(FileOutputStream(path), json.toByteArray())
@@ -362,6 +376,7 @@ class ThemeSetting : NavPage(isNavigation = false) {
         themeName: MutableState<String>,
         colorPath: MutableState<String>
     ) {
+        val window = LocalWindowMain.current
         val languageBasic = LocalLanguageType.value.lang
         Column(
             modifier = Modifier.fillMaxWidth()
@@ -419,8 +434,7 @@ class ThemeSetting : NavPage(isNavigation = false) {
                 Spacer(modifier = Modifier.size(16.dp))
                 Button(
                     onClick = {
-                        val fileDialog = FileDialog(JFrame())
-                        fileDialog.mode = FileDialog.LOAD
+                        val fileDialog = FileDialog(window, "", FileDialog.LOAD)
                         fileDialog.isVisible = true
                         val path = fileDialog.directory + fileDialog.file
                         if (File(path).exists()) {
@@ -551,6 +565,8 @@ private fun ColorThemeItemInstall(
     colorThemeItems: SnapshotStateList<ColorLoader.ColorThemeItem>
 ) {
     val languageBasic = LocalLanguageType.value.lang
+    val window = LocalWindowMain.current
+
     TooltipArea(
         tooltip = {
             TooltipText {
@@ -564,7 +580,7 @@ private fun ColorThemeItemInstall(
                 .clip(RoundedCornerShape(4.dp))
                 .clickable {
                     CoroutineScope(Dispatchers.IO).launch {
-                        colorLoader.installColorTheme()
+                        colorLoader.installColorTheme(window)
                         colorThemeItems.clear()
                         colorThemeItems.addAll(colorLoader.loadInstalledColorThemes())
                     }
@@ -599,8 +615,9 @@ class VersionSetting : NavPage(isNavigation = false) {
         Column {
             Toolbar(label(), enableAnimate = false)
             FluentItem(
-                Icons.Default.Open,
-                languageBasic.openSourceLicenseUrl
+                Icons.Default.Info,
+                languageBasic.softVersion,
+                subtitle = String.format(languageBasic.appVersion, contextStore.versionTag)
             ) {
                 TextButton(
                     onClick = {
@@ -608,8 +625,134 @@ class VersionSetting : NavPage(isNavigation = false) {
                     },
                     shape = RoundedCornerShape(8.dp)
                 ) {
-                    Text(languageBasic.gotoUrl)
+                    Text(languageBasic.openSourceLicenseUrl)
                 }
+                Spacer(modifier = Modifier.size(16.dp))
+
+                val open = remember { mutableStateOf(false) }
+                val hasUpdate = remember { mutableStateOf(false) }
+                val repos = remember { mutableStateListOf<YoHubRepos>() }
+                val richTextState = rememberRichTextState()
+                val data = remember { mutableStateOf<YoHubRepos?>(null) }
+                val preferencesStore = LocalPreferences.current
+                val simpleDateFormat = remember { mutableStateOf(SimpleDateFormat("yyyy-MM-dd HH:mm:ss")) }
+                LaunchedEffect(open) {
+                    snapshotFlow { open.value }
+                        .onEach {
+                            if (it) {
+                                request(
+                                    showError = false,
+                                    {
+                                        repos.clear()
+                                        repos.addAll(Repository.appRepos())
+                                        val yoHubRepos = repos.first()
+                                        data.value = yoHubRepos
+                                        //判断GitHub上的Release版本是否高于本地版本
+                                        hasUpdate.value = contextStore.versionTag compareVersions yoHubRepos.tag_name < 0 && (preferencesStore.preference[PreferencesName.IGNORE_VERSION.toString()] != yoHubRepos.tag_name || !yoHubRepos.prerelease)
+                                        if (!hasUpdate.value) {
+                                            sendNotice(languageBasic.tips, languageBasic.isLatest)
+                                        }
+                                        richTextState.setMarkdown(yoHubRepos.body)
+                                        open.value = false
+                                    }
+                                )
+                            }
+                        }.launchIn(this)
+                }
+
+                AnimatedVisibility(
+                    !open.value,
+                ) {
+                    Button(
+                        onClick = {
+                            open.value = true
+                        },
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text(languageBasic.checkVerion)
+                    }
+                }
+
+                AnimatedVisibility(
+                    open.value,
+                ) {
+                    CircularProgressIndicator(modifier = Modifier.size(32.dp), strokeWidth = 2.dp)
+                }
+
+                Dialog(
+                    visible = hasUpdate.value,
+                    title = languageBasic.hasNewVersion,
+                    confirmButtonText = languageBasic.gotoDownload,
+                    onConfirm = {
+                        contextStore.startBrowse(repos.first().assets.first().browser_download_url)
+                    },
+                    cancelButtonText = if (data.value?.prerelease == true) {
+                        languageBasic.cancel
+                    } else null,
+                    onCancel = if (data.value?.prerelease == true) {
+                        {
+                            CoroutineScope(Dispatchers.IO).launch {
+                                preferencesStore.preference[PreferencesName.IGNORE_VERSION.toString()] = data.value?.tag_name
+                                preferencesStore.submit()
+                                hasUpdate.value = false
+                            }
+                        }
+                    } else null,
+                    content = {
+                        Row(
+                            modifier = Modifier.fillMaxWidth().height(250.dp)
+                        ) {
+                            val scrollState = rememberScrollState()
+                            Column(
+                                modifier = Modifier.fillMaxWidth().height(250.dp).weight(1f)
+                                    .verticalScroll(scrollState)
+                            ) {
+                                SelectionContainer {
+                                    Column {
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            val imagePainter = rememberImagePainter(
+                                                data.value?.assets?.first()?.uploader?.avatar_url ?: "",
+                                                R.icon.logoRound
+                                            )
+                                            Image(
+                                                painter = imagePainter,
+                                                null,
+                                                modifier = Modifier.size(45.dp).clip(RoundedCornerShape(22.5.dp)).clickable {
+                                                    contextStore.startBrowse(data.value?.assets?.first()?.uploader?.html_url ?: "")
+                                                }
+                                            )
+                                            Spacer(modifier = Modifier.size(16.dp))
+                                            Text(
+                                                data.value?.assets?.first()?.uploader?.login ?: "Unknown",
+                                                style = MaterialTheme.typography.titleLarge
+                                            )
+                                        }
+                                        Spacer(modifier = Modifier.size(16.dp))
+                                        Text(
+                                            String.format(
+                                                languageBasic.updateVersionText,
+                                                data.value?.name,
+                                                simpleDateFormat.value.format(data.value?.created_at),
+                                                MemoryUtil.format(data.value?.assets?.get(0)?.size ?: 0L),
+                                                data.value?.assets?.get(0)?.download_count
+                                            )
+                                        )
+                                        Spacer(modifier = Modifier.size(16.dp))
+                                        RichText(state = richTextState, style = MaterialTheme.typography.labelMedium)
+                                    }
+                                }
+                            }
+                            Scrollbar(
+                                isVertical = true,
+                                adapter = androidx.compose.foundation.rememberScrollbarAdapter(scrollState),
+                                modifier = Modifier.fillMaxHeight()
+                            )
+                        }
+                    }
+                )
             }
         }
     }

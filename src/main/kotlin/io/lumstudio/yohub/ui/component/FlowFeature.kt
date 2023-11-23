@@ -30,7 +30,7 @@ fun AdbFlowFeature(page: NavPage) {
                     if (deviceStore.device?.state != ClientState.DEVICE) {
                         sendNotice(languageBasic.insufficientPermissions, languageBasic.pleaseLinkAdbDevice)
                     } else {
-                        selectPage.value = it
+                        selectPage.value = it.parent ?: it
                         page.karavel?.navigate(it)
                     }
                 }

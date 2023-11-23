@@ -1,19 +1,12 @@
-
-import java.io.BufferedReader
-import java.io.InputStreamReader
+import io.lumstudio.yohub.common.utils.FileDownloader
+import kotlin.system.exitProcess
 
 
 fun main() {
-    val adbCommand = "C:\\Users\\22059\\AppData\\Local\\.yohub-desktop\\runtime\\adb\\adb shell dumpsys SurfaceFlinger --list-layers"
-
-    val process = Runtime.getRuntime().exec(adbCommand)
-    val reader = BufferedReader(InputStreamReader(process.inputStream))
-
-    var line: String
-    while (reader.readLine().also { line = it } != null) {
-        if (line.contains("GLES")) {
-            println(line)
-        }
-    }
+    val url = "https://github.com/topjohnwu/Magisk/releases/download/v26.4/Magisk-v26.4.apk"
+    val path = "C:\\Users\\22059\\Desktop\\ui\\Magisk-v26.4.apk"
+    FileDownloader.downloadFile(url, path)
+    println("进程结束")
+    exitProcess(0)
 }
 

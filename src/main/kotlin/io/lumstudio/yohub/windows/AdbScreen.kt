@@ -55,6 +55,13 @@ fun AdbScreen(adbPage: AdbPage) {
     }
 }
 
+val LocalAndroidState = compositionLocalOf<AndroidState> { error("Not provided.") }
+
+@Stable
+data class AndroidState(
+    val sdk: Int,
+)
+
 @Composable
 fun LinkedScaffold(navPage: NavPage, content: @Composable ColumnScope.() -> Unit) {
     val deviceStore = LocalDevice.current
@@ -107,7 +114,21 @@ fun LinkedScaffold(navPage: NavPage, content: @Composable ColumnScope.() -> Unit
                 Toolbar(navPage.label())
             }
             AnimatedVisibility(deviceStore.device?.state == ClientState.DEVICE) {
-                content()
+                val androidState = remember { mutableStateOf(AndroidState(0)) }
+                LaunchedEffect(Unit) {
+                    withContext(Dispatchers.IO) {
+                        androidState.value = AndroidState(
+                            sdk = (keepShellStore adbShell "getprop ro.build.version.sdk").replace("\n", "")
+                                .replace(" ", "").toInt(),
+
+                            )
+                    }
+                }
+                CompositionLocalProvider(
+                    LocalAndroidState provides androidState.value
+                ) {
+                    content()
+                }
             }
             AnimatedVisibility(deviceStore.device?.state != ClientState.DEVICE) {
                 Box(

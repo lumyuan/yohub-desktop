@@ -45,6 +45,7 @@
     <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/windows/PayloadScreen.kt" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/windows/SettingsScreen.kt" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/kotlin/io/lumstudio/yohub/windows/navigation/PageNav.kt" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/test/java/USBDeviceMonitor.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/test/kotlin/MainTest.kt" charset="UTF-8" />
     <file url="PROJECT" charset="UTF-8" />
   </component>

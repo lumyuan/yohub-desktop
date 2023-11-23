@@ -7,6 +7,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -71,6 +72,7 @@ fun FluentItem(
 @Composable
 fun FluentItem(
     softWrap: Boolean = false,
+    selectable: Boolean = false,
     icon: (@Composable () -> Unit)? = null,
     title: String,
     subtitle: String? = null,
@@ -101,15 +103,32 @@ fun FluentItem(
             Column(
                 modifier = Modifier.fillMaxWidth().weight(1f)
             ) {
-                Text(title, style = MaterialTheme.typography.bodyLarge, softWrap = false)
-                subtitle?.also {
-                    Spacer(modifier = Modifier.size(4.dp))
-                    Text(
-                        it,
-                        style = MaterialTheme.typography.labelSmall,
-                        softWrap = softWrap,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = .8f)
-                    )
+                if (selectable) {
+                    SelectionContainer {
+                        Column {
+                            Text(title, style = MaterialTheme.typography.bodyLarge, softWrap = false)
+                            subtitle?.also {
+                                Spacer(modifier = Modifier.size(4.dp))
+                                Text(
+                                    it,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    softWrap = softWrap,
+                                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = .8f)
+                                )
+                            }
+                        }
+                    }
+                }else {
+                    Text(title, style = MaterialTheme.typography.bodyLarge, softWrap = false)
+                    subtitle?.also {
+                        Spacer(modifier = Modifier.size(4.dp))
+                        Text(
+                            it,
+                            style = MaterialTheme.typography.labelSmall,
+                            softWrap = softWrap,
+                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = .8f)
+                        )
+                    }
                 }
             }
             Spacer(modifier = Modifier.size(16.dp))

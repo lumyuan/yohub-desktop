@@ -137,7 +137,7 @@ fun WindowScope.MicaTheme(
     val systemDarkMode = isSystemInDarkTheme()
     val darkStore =
         remember { DarkStore(if (themeStore.theme == DarkTheme.SYSTEM) systemDarkMode else themeStore.theme == DarkTheme.DARK) }
-    val typographyStore = remember { TypographyStore(Font(R.font.miSansVf)) }
+    val typographyStore = remember { TypographyStore(Font(R.font.sourceHanSans)) }
 
     val preferencesStore = LocalPreferences.current
     val model = preferencesStore.preference[PreferencesName.DARK_MODEL.toString()]

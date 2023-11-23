@@ -2,8 +2,8 @@ package io.lumstudio.yohub.common.shell
 
 import androidx.compose.runtime.compositionLocalOf
 import io.lumstudio.yohub.runtime.AdbStore
+import io.lumstudio.yohub.runtime.MagiskPatcherStore
 import io.lumstudio.yohub.runtime.PayloadDumperStore
-import io.lumstudio.yohub.runtime.PythonStore
 
 /**
  * Created by Hello on 2018/01/23.
@@ -14,8 +14,7 @@ val LocalKeepShell = compositionLocalOf<KeepShellStore> { error("Not provided.")
 class KeepShellStore(
     private val workPath: String,
     private val adbStore: AdbStore,
-    private val pythonStore: PythonStore,
-    private val payloadDumperStore: PayloadDumperStore,
+    private val magiskPatcherStore: MagiskPatcherStore
 ) {
     private val keepShells = HashMap<String, KeepShell>()
 
@@ -88,7 +87,6 @@ class KeepShellStore(
     infix fun adb(cmd: String) = doCmdSync(adbStore adb cmd)
     infix fun adbShell(cmd: String) = doCmdSync(adbStore adb "shell \"$cmd\"")
     infix fun fastboot(cmd: String) = doCmdSync(adbStore fastboot cmd)
-    infix fun python(cmd: String) = doCmdSync(pythonStore py cmd)
-    infix fun payload(cmd: String) = doCmdSync(payloadDumperStore payload cmd)
 
+    infix fun magiskPatcher(cmd: String) = getInstance("magisk-patcher").let { it.doCmdSync("cd ${magiskPatcherStore.magiskPatcherHostFile.absolutePath}"); it.doCmdSync(cmd) }
 }

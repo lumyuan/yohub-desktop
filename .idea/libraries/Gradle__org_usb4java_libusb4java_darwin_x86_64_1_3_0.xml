@@ -1,0 +1,10 @@
+﻿<component name="libraryTable">
+  <library name="Gradle: org.usb4java:libusb4java:darwin-x86-64:1.3.0" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="org.usb4java" artifactId="libusb4java" version="1.3.0" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.usb4java/libusb4java/1.3.0/1fdaa8ec7cfad158be58fbc8e2867d05f2b5fe63/libusb4java-1.3.0-darwin-x86-64.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

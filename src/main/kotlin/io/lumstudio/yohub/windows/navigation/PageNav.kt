@@ -55,6 +55,9 @@ enum class PageNav(
     ImageBackup(
         page = ImageBackupPage().apply { parent = AdvancedFunction.page }
     ),
+//    FastRoot(
+//      page = FastRootPage().apply { parent = AdvancedFunction.page }
+//    ),
     Settings(
         page = SettingsPage(),
     )
@@ -121,7 +124,16 @@ class MagicMaskModulesPage : NavPage() {
 
     @Composable
     override fun content() {
-        MagicMaskModulesScreen(this)
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth().padding(start = 16.dp, top = 16.dp, end = 16.dp)
+            ) {
+                Toolbar(label())
+            }
+            MagicMaskModulesScreen(this@MagicMaskModulesPage)
+        }
     }
 }
 
@@ -129,9 +141,9 @@ class MagiskPatcherPage : NavPage(isNavigation = false) {
     override fun icon(): @Composable () -> Unit = { Icon(Icons.Default.MobileOptimized, null) }
     override fun label(): String = LocalLanguageType.value.lang.labelMagiskPatcher
 
-    override fun title(): String = LocalLanguageType.value.lang.titleMagiskPatcher
+    override fun title(): String? = null
 
-    override fun subtitle(): String = LocalLanguageType.value.lang.subtitleMagiskPatcher
+    override fun subtitle(): String? = null
 
     @Composable
     override fun content() {
@@ -297,7 +309,8 @@ class AdvancedFunctionPage: NavPage() {
 
     init {
         nestedItems = arrayListOf(
-            ImageBackupPage().apply { parent = this@AdvancedFunctionPage }
+            ImageBackupPage().apply { parent = this@AdvancedFunctionPage },
+//            FastRootPage().apply { parent = this@AdvancedFunctionPage }
         )
     }
 
@@ -332,6 +345,24 @@ class ImageBackupPage: NavPage(isNavigation = false) {
         LinkedScaffold(this) {
             ImageBackupScreen()
         }
+    }
+
+}
+
+class FastRootPage: NavPage(isNavigation = false) {
+    override fun icon(): @Composable () -> Unit = {
+        Icon(Icons.Default.FastForward, null)
+    }
+
+    override fun label(): String = LocalLanguageType.value.lang.labelFastRoot
+
+    override fun title(): String = LocalLanguageType.value.lang.titleFastRoot
+
+    override fun subtitle(): String = LocalLanguageType.value.lang.subtitleFastRoot
+
+    @Composable
+    override fun content() {
+
     }
 
 }

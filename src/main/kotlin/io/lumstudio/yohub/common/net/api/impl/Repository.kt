@@ -1,6 +1,7 @@
 package io.lumstudio.yohub.common.net.api.impl
 
 import io.lumstudio.yohub.common.net.pojo.*
+import retrofit2.Call
 
 /**
  * 预处理数据(错误)
@@ -27,5 +28,8 @@ object Repository {
 
     suspend fun appRepos(): List<YoHubRepos> =
         ServiceBuilder.publicService("https://api.github.com").appRepos()
+
+    fun downloadFile(url: String): Call<okhttp3.ResponseBody> =
+        ServiceBuilder.publicService("https://github.com").downloadFile(url)
 
 }

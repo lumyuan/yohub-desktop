@@ -41,18 +41,17 @@ import kotlinx.coroutines.withContext
 import java.awt.Desktop
 import java.awt.FileDialog
 import java.io.File
-import java.io.FilenameFilter
-import javax.swing.JFrame
 
 @Composable
 fun PayloadScreen(payloadPage: PayloadPage) {
     val languageBasic = LocalLanguageType.value.lang
     val keepShellStore = LocalKeepShell.current
     val payloadDumperStore = LocalPayloadDumperRuntime.current
+    val window = LocalWindowMain.current
 
     val targetPath = remember { mutableStateOf("") }
     val outPath = remember { mutableStateOf("") }
-    val fileDialog = remember { FileDialog(JFrame()) }
+    val fileDialog = remember { FileDialog(window) }
 
     val loadState = remember { mutableStateOf(false) }
     val imageList = remember { mutableStateListOf<Image>() }
@@ -174,7 +173,7 @@ private fun TargetPathEditor(targetPath: MutableState<String>, outPath: MutableS
         Spacer(modifier = Modifier.size(16.dp))
         Button(
             onClick = {
-                fileDialog.filenameFilter = FilenameFilter { _, name -> name.endsWith(".bin") }
+                fileDialog.file = "*.bin"
                 fileDialog.mode = FileDialog.LOAD
                 fileDialog.isVisible = true
                 if (fileDialog.file?.endsWith(".bin") == true) {

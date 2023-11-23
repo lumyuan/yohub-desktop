@@ -61,8 +61,8 @@ class ColorLoader(
         customColorThemes
     }
 
-    suspend fun installColorTheme() = withContext(Dispatchers.IO) {
-        val fileDialog = FileDialog(JFrame())
+    suspend fun installColorTheme(jFrame: JFrame) = withContext(Dispatchers.IO) {
+        val fileDialog = FileDialog(jFrame)
         val languageBasic = LocalLanguageType.value.lang
         fileDialog.filenameFilter = FilenameFilter { _, name -> name.endsWith(".json") }
         fileDialog.mode = FileDialog.LOAD

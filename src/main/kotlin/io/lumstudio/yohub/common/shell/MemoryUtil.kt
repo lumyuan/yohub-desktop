@@ -82,7 +82,7 @@ class MemoryUtil(private val keepShellStore: KeepShellStore) {
             tempInfo.toLong()
         } catch (e: Exception) {
             e.printStackTrace()
-            -1L
+            0L
         }
         return MemoryInfo(MemoryType.string2type(type), info)
     }

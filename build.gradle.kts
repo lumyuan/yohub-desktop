@@ -26,17 +26,7 @@ dependencies {
     implementation(compose.material3)
     implementation(compose.materialIconsExtended)
     implementation(compose.runtime)
-    implementation(compose.animation)
-    implementation(compose.foundation)
     implementation(compose.ui)
-    implementation(compose.uiTooling)
-    @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
-    implementation(compose.desktop.components.animatedImage)
-
-    @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
-    implementation(compose.desktop.components.splitPane)
-
-    implementation(compose.preview)
 
     @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
     implementation(compose.components.resources)
@@ -57,9 +47,15 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.google.code.gson:gson:2.9.0")
 
+    implementation("com.squareup.okio:okio:2.10.0")
+
     implementation("com.github.ltttttttttttt:load-the-image:1.0.8")
 
     implementation("com.mohamedrejeb.richeditor:richeditor-compose:1.0.0-beta01")
+
+    implementation("org.usb4java:usb4java:1.3.0")
+    implementation("org.usb4java:usb4java-javax:1.3.0")
+
 }
 
 compose.desktop {
@@ -81,21 +77,19 @@ compose.desktop {
 
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "YoHubDesktop"
-            packageVersion = "1.0.6"
+            packageVersion = "1.0.9"
 
             description = "YoHubTool For Desktop"
             copyright = "Copyright 2023 YoTanYun. All rights reserved."
             vendor = "YoTanYun"
 
             windows {
-//                console = true
                 dirChooser = true
                 perUserInstall = true
                 menuGroup = "start-menu-group"
                 upgradeUuid = "1B6938C2-AB9B-47A9-889F-C8DD2AA317A4"
                 this.shortcut = true
                 iconFile.set(file("resources/win/icons/ic_launcher_logo.ico"))
-
             }
         }
     }

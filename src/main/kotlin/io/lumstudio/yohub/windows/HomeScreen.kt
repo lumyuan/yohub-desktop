@@ -25,12 +25,12 @@ fun HomeScreen(homePage: HomePage) {
         Column(
             modifier = Modifier.verticalScroll(rememberScrollState())
         ) {
-            PageNav.values().toList().filter { it.page.title() != null && it.page.isNavigation }.onEach {
+            PageNav.values().toList().filter { it.page.title() != null && it.page.subtitle() != null }.onEach {
                 Row(
                     modifier = Modifier.clip(RoundedCornerShape(8.dp))
                         .clickable {
                             homePage.karavel?.navigate(it.page)
-                            selectPage.value = it.page
+                            selectPage.value = it.page.parent ?: it.page
                         }
                 ) {
                     Row(

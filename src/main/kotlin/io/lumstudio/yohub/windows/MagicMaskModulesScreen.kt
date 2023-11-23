@@ -7,10 +7,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -19,13 +16,18 @@ import androidx.compose.ui.text.platform.Font
 import androidx.compose.ui.unit.dp
 import com.konyaco.fluent.component.ScrollbarContainer
 import com.konyaco.fluent.component.rememberScrollbarAdapter
+import com.konyaco.fluent.icons.Icons
+import com.konyaco.fluent.icons.regular.AppsAddIn
 import io.lumstudio.yohub.R
 import io.lumstudio.yohub.common.sendNotice
 import io.lumstudio.yohub.common.shell.KeepShellStore
 import io.lumstudio.yohub.common.shell.LocalKeepShell
 import io.lumstudio.yohub.common.utils.FileCopyUtils
 import io.lumstudio.yohub.lang.LocalLanguageType
-import io.lumstudio.yohub.runtime.*
+import io.lumstudio.yohub.runtime.LocalMagiskPatcherRuntime
+import io.lumstudio.yohub.runtime.MagiskPatcherStore
+import io.lumstudio.yohub.ui.component.FlowButton
+import io.lumstudio.yohub.ui.component.FluentItem
 import io.lumstudio.yohub.ui.component.Toolbar
 import io.lumstudio.yohub.windows.navigation.MagicMaskModulesPage
 import io.lumstudio.yohub.windows.navigation.MagiskPatcherPage
@@ -36,50 +38,61 @@ import kotlinx.coroutines.withContext
 import java.awt.Desktop
 import java.awt.FileDialog
 import java.io.File
-import java.io.FilenameFilter
 import java.text.SimpleDateFormat
 import java.util.*
-import javax.swing.JFrame
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun MagicMaskModulesScreen(magicMaskModulesPage: MagicMaskModulesPage) {
-    val scrollState = rememberScrollState()
-    ScrollbarContainer(
-        adapter = rememberScrollbarAdapter(scrollState),
+    Column(
+        modifier = Modifier.fillMaxSize()
     ) {
-        Column(
-            modifier = Modifier.fillMaxHeight().verticalScroll(scrollState).padding(16.dp)
+        val scrollState = rememberScrollState()
+        ScrollbarContainer(
+            adapter = rememberScrollbarAdapter(scrollState),
         ) {
-            magicMaskModulesPage.nestedItems?.onEach {
-                Box(
-                    modifier = Modifier.clip(RoundedCornerShape(8.dp))
-                        .clickable {
-                            magicMaskModulesPage.karavel?.navigate(it)
+            Column(
+                modifier = Modifier.fillMaxHeight().verticalScroll(scrollState)
+                    .padding(start = 16.dp, bottom = 16.dp, end = 16.dp)
+            ) {
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                    magicMaskModulesPage.nestedItems?.onEach {
+                        FlowButton(
+                            icon = {
+                                it.icon().invoke()
+                            },
+                            onClick = {
+                                selectPage.value = it.parent ?: it
+                                magicMaskModulesPage.karavel?.navigate(it)
+                            }
+                        ) {
+                            Text(it.label())
                         }
-                ) {
-                    Text(
-                        it.label(),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(16.dp)
-                    )
+                    }
                 }
             }
         }
     }
 }
 
+private val magiskVersion by lazy {
+    arrayOf(
+        "Magisk-26.4",
+        "Magisk-Delta-26301"
+    )
+}
+
 @Composable
 fun MagiskPatcherScreen(magiskPatcherPage: MagiskPatcherPage) {
     val languageBasic = LocalLanguageType.value.lang
     val keepShellStore = LocalKeepShell.current
-    val runtimeStore = LocalRuntime.current
-    val pythonStore = LocalPythonRuntime.current
     val magiskPatcherStore = LocalMagiskPatcherRuntime.current
+    val window = LocalWindowMain.current
 
     val targetPath = remember { mutableStateOf("") }
     val outPath = remember { mutableStateOf("") }
-    val fileDialog = remember { FileDialog(JFrame()) }
+    val fileDialog = remember { FileDialog(window) }
+    val version = remember { mutableStateOf(magiskVersion.first()) }
 
     val scrollState = rememberScrollState()
     ScrollbarContainer(
@@ -90,6 +103,39 @@ fun MagiskPatcherScreen(magiskPatcherPage: MagiskPatcherPage) {
         ) {
             Toolbar(magiskPatcherPage.label())
             TargetPathEditor(targetPath, outPath, fileDialog)
+            Spacer(modifier = Modifier.size(8.dp))
+            FluentItem(
+                icon = {
+                       Icon(Icons.Default.AppsAddIn, null, modifier = Modifier.fillMaxSize())
+                },
+                title = languageBasic.magiskVersion
+            ) {
+                var open by remember { mutableStateOf(false) }
+                TextButton(
+                    onClick = {
+                        open = true
+                    },
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text(version.value)
+                }
+                DropdownMenu(
+                    expanded = open,
+                    onDismissRequest = { open = false }
+                ) {
+                    magiskVersion.onEach {
+                        DropdownMenuItem(
+                            text = {
+                                Text(it)
+                            },
+                            onClick = {
+                                open = false
+                                version.value = it
+                            }
+                        )
+                    }
+                }
+            }
             Spacer(modifier = Modifier.size(8.dp))
             OutputPathEditor(targetPath, outPath)
 
@@ -104,14 +150,13 @@ fun MagiskPatcherScreen(magiskPatcherPage: MagiskPatcherPage) {
                         onClick = {
                             CoroutineScope(Dispatchers.IO).launch {
                                 patcherImage(
-                                    runtimeStore,
                                     keepShellStore,
-                                    pythonStore,
-                                    magiskPatcherStore,
                                     targetPath,
                                     outPath,
                                     text,
-                                    patcherState
+                                    patcherState,
+                                    magiskPatcherStore,
+                                    version
                                 )
                             }
                         },
@@ -171,7 +216,7 @@ private fun TargetPathEditor(targetPath: MutableState<String>, outPath: MutableS
         Spacer(modifier = Modifier.size(16.dp))
         Button(
             onClick = {
-                fileDialog.filenameFilter = FilenameFilter { _, name -> name.endsWith(".img") }
+                fileDialog.file = "*.img"
                 fileDialog.mode = FileDialog.LOAD
                 fileDialog.isVisible = true
                 if (fileDialog.file?.endsWith(".img") == true) {
@@ -234,21 +279,20 @@ private val dateFormat by lazy {
 }
 
 private suspend fun patcherImage(
-    runtimeStore: RuntimeStore,
     keepShellStore: KeepShellStore,
-    pythonStore: PythonStore,
-    magiskPatcherStore: MagiskPatcherStore,
     targetPath: MutableState<String>,
     outPath: MutableState<String>,
     text: MutableState<String>,
-    patcherState: MutableState<Boolean>
+    patcherState: MutableState<Boolean>,
+    magiskPatcherStore: MagiskPatcherStore,
+    version: MutableState<String>
 ) = withContext(Dispatchers.IO) {
     val languageBasic = LocalLanguageType.value.lang
     text.value = languageBasic.bootPatching
     patcherState.value = true
-    val out = keepShellStore cmd pythonStore.py(magiskPatcherStore.script("boot_patch.py \"${targetPath.value}\""))
-    if (out.contains("- Repacking boot image")) {
-        val tempPath = File(runtimeStore.runtimeFile, "new-boot.img")
+    val out = keepShellStore magiskPatcher "boot_patch \"${targetPath.value}\" true false false \"${version.value}\""
+    if (out.split("\n").last { it.isNotEmpty() }.contains("Success")) {
+        val tempPath = File(magiskPatcherStore.magiskPatcherHostFile, "new-boot.img")
         val outFile = File(outPath.value, "magisk-patched-${dateFormat.format(Date())}.img")
         try {
             FileCopyUtils.copyFile(tempPath, outFile)

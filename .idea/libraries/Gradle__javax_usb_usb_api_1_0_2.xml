@@ -1,0 +1,12 @@
+﻿<component name="libraryTable">
+  <library name="Gradle: javax.usb:usb-api:1.0.2" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="javax.usb" artifactId="usb-api" version="1.0.2" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/javax.usb/usb-api/1.0.2/f0ae0d322a99811cf79d508d37f3dc2d82753070/usb-api-1.0.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/javax.usb/usb-api/1.0.2/4b6337e574535ac803bbc05f3f22808d8bdba0d0/usb-api-1.0.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

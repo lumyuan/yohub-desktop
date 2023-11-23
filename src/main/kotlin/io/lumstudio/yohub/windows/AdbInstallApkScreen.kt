@@ -48,9 +48,11 @@ fun AdbInstallApkScreen() {
 private fun InstallLayout() {
     val languageBasic = LocalLanguageType.value.lang
     val keepShellStore = LocalKeepShell.current
+    val window = LocalWindowMain.current
+
     val installState = remember { mutableStateOf(false) }
     val targetPath = remember { mutableStateOf("") }
-    val fileDialog by remember { mutableStateOf(FileDialog(JFrame())) }
+    val fileDialog by remember { mutableStateOf(FileDialog(window)) }
     TargetPathEditor(targetPath, fileDialog)
     Spacer(modifier = Modifier.size(16.dp))
     val exists = remember { mutableStateOf(false) }

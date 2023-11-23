@@ -77,28 +77,6 @@ class AdbStore(runtimeDir: File, private val deviceStore: DeviceStore) : Runtime
     infix fun fastboot(cmd: String): String = fastbootDevice(deviceStore.device?.id, cmd)
 }
 
-val LocalPythonRuntime = compositionLocalOf<PythonStore> { error("Not provided.") }
-
-class PythonStore(runtimeDir: File) : Runtime() {
-
-    val pythonHostFile: File by lazy {
-        val file = File(runtimeDir, "python")
-        if (!file.exists()) {
-            file.mkdirs()
-        }; file
-    }
-
-    val resourceName: String by lazy {
-        when {
-            hostOs.isWindows -> R.raw.pythonWin
-            hostOs.isMacOS -> R.raw.pythonMacOs
-            else -> R.raw.pythonLinux
-        }
-    }
-
-    infix fun py(cmd: String): String = "$pythonHostFile${File.separator}python $cmd"
-}
-
 val LocalPayloadDumperRuntime = compositionLocalOf<PayloadDumperStore> { error("Not provided.") }
 
 class PayloadDumperStore(runtimeDir: File) : Runtime() {
@@ -126,7 +104,7 @@ val LocalMagiskPatcherRuntime = compositionLocalOf<MagiskPatcherStore> { error("
 class MagiskPatcherStore(runtimeDir: File) : Runtime() {
 
     val magiskPatcherHostFile: File by lazy {
-        val file = File(runtimeDir, "script")
+        val file = File(runtimeDir, "magisk-patcher")
         if (!file.exists()) {
             file.mkdirs()
         }; file
@@ -140,7 +118,7 @@ class MagiskPatcherStore(runtimeDir: File) : Runtime() {
         }
     }
 
-    infix fun script(cmd: String): String = "$magiskPatcherHostFile${File.separator}$cmd"
+    infix fun patcher(cmd: String): String = "$magiskPatcherHostFile${File.separator}$cmd"
 }
 
 val LocalFastbootDriverRuntime = compositionLocalOf<FastbootDriverStore> { error("Not provided.") }

@@ -11,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.awt.ComposeWindow
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.DpOffset
@@ -28,7 +29,8 @@ import io.lumstudio.yohub.common.LocalApplication
 import io.lumstudio.yohub.common.LocalIOCoroutine
 import io.lumstudio.yohub.common.shell.LocalKeepShell
 import io.lumstudio.yohub.common.utils.BrandLogoUtil
-import io.lumstudio.yohub.lang.LanguageType
+import io.lumstudio.yohub.common.utils.LocalPreferences
+import io.lumstudio.yohub.common.utils.PreferencesName
 import io.lumstudio.yohub.lang.LocalLanguageType
 import io.lumstudio.yohub.runtime.*
 import io.lumstudio.yohub.theme.MicaTheme
@@ -48,6 +50,8 @@ val selectPage by lazy(mode = LazyThreadSafetyMode.SYNCHRONIZED) {
     mutableStateOf<NavPage?>(null)
 }
 
+val LocalWindowMain = compositionLocalOf<ComposeWindow> { error("Not provided.") }
+
 @OptIn(ExperimentalAnimationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun MainUI() {
@@ -55,6 +59,7 @@ fun MainUI() {
     val adbStore = LocalAdbRuntime.current
     val keepShellStore = LocalKeepShell.current
     val ioCoroutine = LocalIOCoroutine.current
+    val preferencesStore = LocalPreferences.current
     val windowState = rememberWindowState(
         position = WindowPosition(Alignment.Center),
         size = DpSize(1000.dp, 750.dp)
@@ -72,136 +77,149 @@ fun MainUI() {
         },
         state = windowState,
     ) {
-        MicaTheme {
-            window.minimumSize = Dimension(800, 600)
-            val navs = PageNav.values().toList().filter { it.page.isNavigation }
-            val karavel by remember { mutableStateOf(Karavel(navs.first().page)) }
-            Row(modifier = Modifier.fillMaxSize()) {
-                //更新窗口
-                UpdateAppWindow()
-                var expanded by remember { mutableStateOf(true) }
-                SideNav(
-                    modifier = Modifier.fillMaxHeight(),
-                    expanded = expanded,
-                    onExpandStateChange = { expanded = it },
-                    autoSuggestionBox = {
-                        val searchFuns = remember { mutableStateOf("") }
-                        var dropdownMenuState by remember { mutableStateOf(false) }
-                        Column(
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            OutlinedTextField(
-                                value = searchFuns.value,
-                                onValueChange = {
-                                    if (it.trim().isEmpty()) {
-                                        dropdownMenuState = false
-                                        searchFuns.value = ""
-                                    }else {
-                                        searchFuns.value = it
-                                        dropdownMenuState = true
-                                    }
-                                },
-                                label = {
-                                    Text(lang.searchFunctions, softWrap = false)
-                                },
-                                leadingIcon = {
-                                    Icon(Icons.Default.Search, null)
-                                },
-                                trailingIcon = {
-                                    if (searchFuns.value.trim().isNotEmpty()) {
-                                        IconButton(
-                                            onClick = {
-                                                CoroutineScope(Dispatchers.IO).launch {
-                                                    dropdownMenuState = false
-                                                    delay(100)
-                                                    searchFuns.value = ""
-                                                }
-                                            }
-                                        ) {
-                                            Icon(androidx.compose.material.icons.Icons.Default.Close, null)
-                                        }
-                                    }
-                                },
-                                singleLine = true
-                            )
-                            DropdownMenu(
-                                dropdownMenuState,
-                                onDismissRequest = {
-                                    dropdownMenuState = false
-                                },
-                                focusable = false
-                            ) {
-                                PageNav.values().toList()
-                                    .sortedBy { it.page.label() }
-                                    .filter { it.page.label().lowercase().contains(searchFuns.value.trim().lowercase()) }
-                                    .onEach {
-                                        DropdownMenuItem(
-                                            modifier = Modifier.width(280.dp),
-                                            leadingIcon = {
-                                                Box(
-                                                    modifier = Modifier.size(16.dp),
-                                                    contentAlignment = Alignment.Center
-                                                ) {
-                                                    it.page.icon().invoke()
-                                                }
-                                            },
-                                            text = {
-                                                Text(it.page.label(), style = MaterialTheme.typography.labelMedium)
-                                            },
-                                            onClick = {
-                                                CoroutineScope(Dispatchers.IO).launch {
-                                                    dropdownMenuState = false
-                                                    selectPage.value = it.page.parent
-                                                    karavel.navigate(it.page)
-                                                    delay(100)
-                                                    searchFuns.value = ""
-                                                    selectPage.value = it.page
-                                                }
-                                            }
-                                        )
-                                    }
+        CompositionLocalProvider(
+            LocalWindowMain provides this.window
+        ) {
+            MicaTheme {
+                window.minimumSize = Dimension(800, 600)
+                val navs = PageNav.values().toList().filter { it.page.isNavigation }
+                val karavel by remember { mutableStateOf(Karavel(navs.first().page)) }
+                Row(modifier = Modifier.fillMaxSize()) {
+                    //更新窗口
+                    UpdateAppWindow()
+                    val expanded = remember { mutableStateOf(preferencesStore.preference[PreferencesName.NAV_EXPANDED.toString()] != "false") }
+
+                    LaunchedEffect(expanded) {
+                        snapshotFlow { expanded.value }
+                            .onEach {
+                                preferencesStore.preference[PreferencesName.NAV_EXPANDED.toString()] = "$it"
+                                preferencesStore.submit()
                             }
+                            .launchIn(this)
+                    }
+
+                    SideNav(
+                        modifier = Modifier.fillMaxHeight(),
+                        expanded = expanded.value,
+                        onExpandStateChange = { expanded.value = it },
+                        autoSuggestionBox = {
+                            val searchFuns = remember { mutableStateOf("") }
+                            var dropdownMenuState by remember { mutableStateOf(false) }
+                            Column(
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                OutlinedTextField(
+                                    value = searchFuns.value,
+                                    onValueChange = {
+                                        if (it.trim().isEmpty()) {
+                                            dropdownMenuState = false
+                                            searchFuns.value = ""
+                                        }else {
+                                            searchFuns.value = it
+                                            dropdownMenuState = true
+                                        }
+                                    },
+                                    label = {
+                                        Text(lang.searchFunctions, softWrap = false)
+                                    },
+                                    leadingIcon = {
+                                        Icon(Icons.Default.Search, null)
+                                    },
+                                    trailingIcon = {
+                                        if (searchFuns.value.trim().isNotEmpty()) {
+                                            IconButton(
+                                                onClick = {
+                                                    CoroutineScope(Dispatchers.IO).launch {
+                                                        dropdownMenuState = false
+                                                        delay(100)
+                                                        searchFuns.value = ""
+                                                    }
+                                                }
+                                            ) {
+                                                Icon(androidx.compose.material.icons.Icons.Default.Close, null)
+                                            }
+                                        }
+                                    },
+                                    singleLine = true
+                                )
+                                DropdownMenu(
+                                    dropdownMenuState,
+                                    onDismissRequest = {
+                                        dropdownMenuState = false
+                                    },
+                                    focusable = false
+                                ) {
+                                    PageNav.values().toList()
+                                        .sortedBy { it.page.label() }
+                                        .filter { it.page.label().lowercase().contains(searchFuns.value.trim().lowercase()) }
+                                        .onEach {
+                                            DropdownMenuItem(
+                                                modifier = Modifier.width(280.dp),
+                                                leadingIcon = {
+                                                    Box(
+                                                        modifier = Modifier.size(16.dp),
+                                                        contentAlignment = Alignment.Center
+                                                    ) {
+                                                        it.page.icon().invoke()
+                                                    }
+                                                },
+                                                text = {
+                                                    Text(it.page.label(), style = MaterialTheme.typography.labelMedium)
+                                                },
+                                                onClick = {
+                                                    CoroutineScope(Dispatchers.IO).launch {
+                                                        dropdownMenuState = false
+                                                        selectPage.value = it.page.parent ?: it.page
+                                                        karavel.navigate(it.page)
+                                                        delay(100)
+                                                        searchFuns.value = ""
+                                                    }
+                                                }
+                                            )
+                                        }
+                                }
+                            }
+                        },
+                        footer = {
+                            NavigationItem(karavel, PageNav.Settings.page, false, selectPage = selectPage)
                         }
-                    },
-                    footer = {
-                        NavigationItem(karavel, PageNav.Settings.page, false, selectPage = selectPage)
-                    }
-                ) {
-                    DevicesItem()
-                    navs.forEach { navItem ->
-                        NavigationItem(karavel, navItem.page, selectPage = selectPage)
-                    }
-                }
-                Column(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    OutlinedCard(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(8.dp),
-                        colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.background),
-                        border = BorderStroke(.5.dp, DividerDefaults.color)
                     ) {
-                        DeviceScreen()
+                        DevicesItem(expanded)
+                        navs.forEach { navItem ->
+                            NavigationItem(karavel, navItem.page, selectPage = selectPage)
+                        }
                     }
-                    Spacer(modifier = Modifier.size(16.dp))
-                    OutlinedCard(
-                        modifier = Modifier.fillMaxSize(),
-                        shape = RoundedCornerShape(8.dp),
-                        colors = CardDefaults.elevatedCardColors(),
-                        border = BorderStroke(.5.dp, DividerDefaults.color)
+                    Column(
+                        modifier = Modifier.fillMaxSize()
                     ) {
-                        CompositionLocalProvider(
-                            LocalExpand provides expanded,
+                        OutlinedCard(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(8.dp),
+                            colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.background),
+                            border = BorderStroke(.5.dp, DividerDefaults.color)
                         ) {
-                            AnimatedContent(
-                                karavel.currentPage(),
-                                Modifier.fillMaxHeight().weight(1f),
-                                transitionSpec = {
-                                    fadeIn(tween()) +
-                                            slideInVertically(tween()) { it / 6 } with
-                                            fadeOut(tween())
-                                }) {
-                                it.content()
+                            DeviceScreen()
+                        }
+                        Spacer(modifier = Modifier.size(16.dp))
+                        OutlinedCard(
+                            modifier = Modifier.fillMaxSize(),
+                            shape = RoundedCornerShape(8.dp),
+                            colors = CardDefaults.elevatedCardColors(),
+                            border = BorderStroke(.5.dp, DividerDefaults.color)
+                        ) {
+                            CompositionLocalProvider(
+                                LocalExpand provides expanded.value,
+                            ) {
+                                AnimatedContent(
+                                    karavel.currentPage(),
+                                    Modifier.fillMaxHeight().weight(1f),
+                                    transitionSpec = {
+                                        fadeIn(tween()) +
+                                                slideInVertically(tween()) { it / 6 } with
+                                                fadeOut(tween())
+                                    }) {
+                                    it.content()
+                                }
                             }
                         }
                     }
@@ -213,7 +231,7 @@ fun MainUI() {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun DevicesItem() {
+private fun DevicesItem(expanded: MutableState<Boolean>) {
     val lang = LocalLanguageType.value.lang
     val devicesStore = LocalDevices.current
     val expandedItems = remember {
@@ -239,7 +257,11 @@ private fun DevicesItem() {
         SideNavItem(
             false,
             onClick = {
-                expandedItems.value = !expandedItems.value
+                if (expanded.value) {
+                    expandedItems.value = !expandedItems.value
+                }else {
+                    expanded.value = true
+                }
             },
             icon = { Icon(androidx.compose.material.icons.Icons.Default.TabletAndroid, null) },
             content = { Text(lang.tooltipTextDevice, style = MaterialTheme.typography.labelLarge, softWrap = false) },
@@ -409,11 +431,8 @@ private fun NavigationItem(
         mutableStateOf(false)
     }
 
-    LaunchedEffect(selectPage) {
-        snapshotFlow { selectPage.value }
-            .onEach {
-                if (it?.label() == navItem.label()) expandedItems.value = true
-            }.launchIn(this)
+    LaunchedEffect(selectPage.value) {
+        if (selectPage.value?.label() == navItem.label()) expandedItems.value = true
     }
 
     TooltipArea(

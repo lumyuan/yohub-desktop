@@ -19,9 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.konyaco.fluent.component.Scrollbar
 import com.konyaco.fluent.icons.Icons
-import com.konyaco.fluent.icons.regular.Apps
-import com.konyaco.fluent.icons.regular.DrawerArrowDownload
-import com.konyaco.fluent.icons.regular.Search
+import com.konyaco.fluent.icons.regular.*
 import io.lumstudio.yohub.common.sendNotice
 import io.lumstudio.yohub.common.shell.KeepShellStore
 import io.lumstudio.yohub.common.shell.LocalKeepShell
@@ -29,6 +27,7 @@ import io.lumstudio.yohub.common.shell.MemoryUtil
 import io.lumstudio.yohub.lang.LocalLanguageType
 import io.lumstudio.yohub.runtime.AndroidKitStore
 import io.lumstudio.yohub.runtime.LocalAndroidToolkit
+import io.lumstudio.yohub.ui.component.Dialog
 import io.lumstudio.yohub.ui.component.FluentItem
 import io.lumstudio.yohub.ui.component.TooltipText
 import kotlinx.coroutines.CoroutineScope
@@ -273,7 +272,7 @@ private fun ColumnScope.ListLayout(
                             val installPath = table[2]
                             val size: Long = try {
                                 table[6].toLong()
-                            }catch (e: Exception){
+                            } catch (e: Exception) {
                                 -1L
                             }
                             val packageInfo = table[3].substring(table[3].indexOf(":") + 2).split("' ")
@@ -329,81 +328,189 @@ private fun ColumnScope.ListLayout(
             modifier = Modifier.fillMaxSize()
         ) {
             val scrollState = rememberLazyListState()
-            LazyColumn(modifier = Modifier.fillMaxWidth().weight(1f).padding(start = 16.dp, end = 16.dp), state = scrollState) {
-                appList.toList().filter {
-                    it.label.lowercase()
-                        .replace(" ", "")
-                        .contains(
-                            searchState.value.replace(" ", "")
-                                .lowercase()
-                        )
-                            || it.packageName.lowercase()
-                        .replace(" ", "")
-                        .contains(
-                            searchState.value.replace(" ", "")
-                                .lowercase()
-                        )
-                }.onEach {
-                    item {
-                        FluentItem(
-                            softWrap = true,
-                            icon = {
-                                Icon(Icons.Default.Apps, null, modifier = Modifier.fillMaxSize())
-                            },
-                            title = it.label,
-                            subtitle = String.format(lang.appInfoFormat, it.packageName, MemoryUtil.format(it.size), "${it.versionName}(${it.versionCode})", it.targetSdkVersion)
-                        ) {
-                            TooltipArea(
-                                tooltip = {
-                                    TooltipText {
-                                        Text(String.format(lang.pickApp, it.label))
-                                    }
-                                }
+            val dialog = remember { mutableStateOf(false) }
+            val app = remember { mutableStateOf(AppInfo("", "", "", "", "", "", "", 0)) }
+            val selectIndex = remember { mutableStateOf(-1) }
+            LazyColumn(
+                modifier = Modifier.fillMaxWidth().weight(1f).padding(start = 16.dp, end = 16.dp),
+                state = scrollState
+            ) {
+                appList.toList().forEachIndexed { index, it ->
+                    if (it.label.lowercase()
+                            .replace(" ", "")
+                            .contains(
+                                searchState.value.replace(" ", "")
+                                    .lowercase()
+                            )
+                        || it.packageName.lowercase()
+                            .replace(" ", "")
+                            .contains(
+                                searchState.value.replace(" ", "")
+                                    .lowercase()
+                            )
+                    ) {
+                        item {
+                            FluentItem(
+                                softWrap = true,
+                                selectable = true,
+                                icon = {
+                                    Icon(Icons.Default.Apps, null, modifier = Modifier.fillMaxSize())
+                                },
+                                title = it.label + if (it.installPath.contains("/disabled_package/")) {
+                                    lang.appDisabled
+                                } else "",
+                                subtitle = String.format(
+                                    lang.appInfoFormat,
+                                    it.packageName,
+                                    MemoryUtil.format(it.size),
+                                    "${it.versionName}(${it.versionCode})",
+                                    it.targetSdkVersion
+                                )
                             ) {
+
+                                val open = remember { mutableStateOf(false) }
                                 var state by remember { mutableStateOf(true) }
-                                AnimatedVisibility(
-                                    visible = state,
-                                    enter = fadeIn(),
-                                    exit = fadeOut()
-                                ) {
-                                    IconButton(
-                                        onClick = {
-                                            val file = File(outPath.value)
-                                            if (file.exists() && file.isDirectory) {
-                                                CoroutineScope(Dispatchers.IO).launch {
-                                                    state = false
-                                                    val out = keepShellStore adb "pull \"${it.installPath}\" \"${
-                                                        File(
-                                                            outPath.value,
-                                                            it.label
-                                                        ).absolutePath
-                                                    }.apk\""
-                                                    println(out)
-                                                    if (out.contains("1 file pulled")) {
-                                                        sendNotice(
-                                                            lang.noticePickAppSuccess,
-                                                            out.substring(out.indexOf(":") + 1).trim()
-                                                        )
-                                                    } else {
-                                                        sendNotice(lang.noticePickAppFail, out)
-                                                    }
-                                                    state = true
-                                                }
-                                            } else {
-                                                sendNotice(lang.noticePickAppFail, lang.noticeMessagePickAppFail)
-                                            }
-                                        },
-                                        enabled = state
-                                    ) {
-                                        Icon(Icons.Default.DrawerArrowDownload, null)
+                                val androidState = LocalAndroidState.current
+
+                                TooltipArea(
+                                    tooltip = {
+                                        TooltipText {
+                                            Text(lang.labelSettings)
+                                        }
                                     }
-                                }
-                                AnimatedVisibility(
-                                    visible = !state,
-                                    enter = fadeIn(),
-                                    exit = fadeOut()
                                 ) {
-                                    CircularProgressIndicator(modifier = Modifier.size(28.dp), strokeWidth = 2.dp)
+                                    AnimatedVisibility(
+                                        visible = state,
+                                        enter = fadeIn(),
+                                        exit = fadeOut()
+                                    ) {
+                                        Column {
+                                            IconButton(
+                                                onClick = {
+                                                    open.value = true
+                                                }
+                                            ) {
+                                                Icon(Icons.Default.ArrowRight, null)
+                                            }
+                                            DropdownMenu(
+                                                expanded = open.value,
+                                                onDismissRequest = { open.value = false }
+                                            ) {
+                                                DropdownMenuItem(
+                                                    text = {
+                                                        Text(lang.textPickup)
+                                                    },
+                                                    onClick = {
+                                                        open.value = false
+                                                        val file = File(outPath.value)
+                                                        if (file.exists() && file.isDirectory) {
+                                                            CoroutineScope(Dispatchers.IO).launch {
+                                                                state = false
+                                                                val out =
+                                                                    keepShellStore adb "pull \"${it.installPath}\" \"${
+                                                                        File(
+                                                                            outPath.value,
+                                                                            it.label
+                                                                        ).absolutePath
+                                                                    }.apk\""
+                                                                if (out.contains("1 file pulled")) {
+                                                                    sendNotice(
+                                                                        lang.noticePickAppSuccess,
+                                                                        out.substring(out.indexOf(":") + 1).trim()
+                                                                    )
+                                                                } else {
+                                                                    sendNotice(lang.noticePickAppFail, out)
+                                                                }
+                                                                state = true
+                                                            }
+                                                        } else {
+                                                            sendNotice(
+                                                                lang.noticePickAppFail,
+                                                                lang.noticeMessagePickAppFail
+                                                            )
+                                                        }
+                                                    }
+                                                )
+                                                DropdownMenuItem(
+                                                    text = {
+                                                        Text(lang.textEnable)
+                                                    },
+                                                    onClick = {
+                                                        open.value = false
+                                                        CoroutineScope(Dispatchers.IO).launch {
+                                                            val out =
+                                                                keepShellStore adbShell "pm enable ${it.packageName}"
+                                                            val out1 = if (androidState.sdk >= 34) {
+                                                                keepShellStore adbShell "pm unsuspend ${it.packageName}"
+                                                            } else {
+                                                                "Package ${it.packageName} new suspended state"
+                                                            }
+                                                            if (out.contains("Package ${it.packageName} new state") && out1.contains(
+                                                                    "Package ${it.packageName} new suspended state"
+                                                                )
+                                                            ) {
+                                                                sendNotice(
+                                                                    lang.noticeAppEnabled,
+                                                                    String.format(
+                                                                        lang.noticeAppEnabledMessage,
+                                                                        it.label
+                                                                    )
+                                                                )
+                                                            } else {
+                                                                sendNotice(lang.noticeAppEnabledFail, "$out\n\n$out1")
+                                                            }
+                                                        }
+                                                    }
+                                                )
+                                                DropdownMenuItem(
+                                                    text = {
+                                                        Text(lang.textDisable)
+                                                    },
+                                                    onClick = {
+                                                        open.value = false
+                                                        CoroutineScope(Dispatchers.IO).launch {
+                                                            val out =
+                                                                keepShellStore adbShell "pm ${if (androidState.sdk >= 34) "suspend" else "disable-user"} ${it.packageName}"
+                                                            if (!out.contains("Package ${it.packageName} new state") || out.contains(
+                                                                    "Package ${it.packageName} new suspended state"
+                                                                )
+                                                            ) {
+                                                                sendNotice(
+                                                                    lang.noticeAppDisabled,
+                                                                    String.format(
+                                                                        lang.noticeAppDisabledMessage,
+                                                                        it.label
+                                                                    )
+                                                                )
+                                                            } else {
+                                                                sendNotice(lang.noticeAppDisabledFail, out)
+                                                            }
+                                                        }
+                                                    }
+                                                )
+                                                DropdownMenuItem(
+                                                    text = {
+                                                        Text(lang.textUninstall)
+                                                    },
+                                                    onClick = {
+                                                        app.value = it
+                                                        selectIndex.value = index
+                                                        open.value = false
+                                                        dialog.value = true
+                                                    }
+                                                )
+
+                                            }
+                                        }
+                                    }
+
+                                    AnimatedVisibility(
+                                        visible = !state,
+                                        enter = fadeIn(),
+                                        exit = fadeOut()
+                                    ) {
+                                        CircularProgressIndicator(modifier = Modifier.size(28.dp), strokeWidth = 2.dp)
+                                    }
                                 }
                             }
                         }
@@ -414,6 +521,33 @@ private fun ColumnScope.ListLayout(
                 isVertical = true,
                 modifier = Modifier.fillMaxHeight(),
                 adapter = rememberScrollbarAdapter(scrollState),
+            )
+            Dialog(
+                visible = dialog.value,
+                title = lang.tips,
+                content = {
+                    Text(String.format(lang.dialogUninstallApp, DeviceName.value, app.value.label))
+                },
+                confirmButtonText = lang.defined,
+                onConfirm = {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val out = keepShellStore adb "uninstall ${app.value.packageName}"
+                        if (out.contains("Success")) {
+                            sendNotice(
+                                lang.noticeAppUninstall,
+                                String.format(lang.noticeAppUninstallMessage, app.value.label)
+                            )
+                            appList.removeAt(selectIndex.value)
+                        } else {
+                            sendNotice(lang.noticeAppUninstallFail, out)
+                        }
+                        dialog.value = false
+                    }
+                },
+                cancelButtonText = lang.cancel,
+                onCancel = {
+                    dialog.value = false
+                }
             )
         }
     }

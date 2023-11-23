@@ -78,9 +78,8 @@ fun StartWindow() {
     val runtimeStore = remember { RuntimeStore(contextStore.rootDir) }
     val deviceStore = remember { DeviceStore() }
     val adbRuntimeStore = remember { AdbStore(runtimeStore.runtimeFile, deviceStore) }
-    val pythonStore = remember { PythonStore(runtimeStore.runtimeFile) }
     val payloadDumperStore = remember { PayloadDumperStore(runtimeStore.runtimeFile) }
-    val magiskPatcherStore = remember { MagiskPatcherStore(pythonStore.pythonHostFile) }
+    val magiskPatcherStore = remember { MagiskPatcherStore(runtimeStore.runtimeFile) }
     val androidKitStore = remember { AndroidKitStore(runtimeStore.runtimeFile) }
 
     val driverStore = remember { DriverStore() }
@@ -89,8 +88,7 @@ fun StartWindow() {
         KeepShellStore(
             runtimeStore.runtimeFile.absolutePath,
             adbRuntimeStore,
-            pythonStore,
-            payloadDumperStore,
+            magiskPatcherStore,
         )
     }
 
@@ -100,18 +98,32 @@ fun StartWindow() {
     val devicesStore = remember { DevicesStore(devices) }
 
     //加载设备
-    InputDevicesWatcher(
-        onChange = {
-            loadAndroidDevices(
-                keepShellStore = keepShellStore,
-                adbRuntimeStore = adbRuntimeStore,
-                deviceStore = deviceStore,
-                devicesStore = devicesStore,
-                driverStore = driverStore
-            )
-        },
-        true
-    )
+    when {
+        hostOs.isWindows -> InputDevicesWatcherWithWindows(
+            onChange = {
+                loadAndroidDevices(
+                    keepShellStore = keepShellStore,
+                    adbRuntimeStore = adbRuntimeStore,
+                    deviceStore = deviceStore,
+                    devicesStore = devicesStore,
+                    driverStore = driverStore
+                )
+            },
+            true
+        )
+        hostOs.isLinux && hostOs.isMacOS -> InputDevicesWatcherWithLinux(
+            onChange = {
+                loadAndroidDevices(
+                    keepShellStore = keepShellStore,
+                    adbRuntimeStore = adbRuntimeStore,
+                    deviceStore = deviceStore,
+                    devicesStore = devicesStore,
+                    driverStore = driverStore
+                )
+            },
+            true
+        )
+    }
 
     //初始化全局配置
     CompositionLocalProvider(
@@ -121,7 +133,6 @@ fun StartWindow() {
         LocalRuntime provides runtimeStore,
         LocalDevice provides deviceStore,
         LocalAdbRuntime provides adbRuntimeStore,
-        LocalPythonRuntime provides pythonStore,
         LocalPayloadDumperRuntime provides payloadDumperStore,
         LocalMagiskPatcherRuntime provides magiskPatcherStore,
         LocalFastbootDriverRuntime provides fastbootDriverStore,
@@ -279,7 +290,6 @@ private fun LoadConfigurations(
     tipText: MutableState<String>
 ) {
     val adbStore = LocalAdbRuntime.current
-    val pythonStore = LocalPythonRuntime.current
     val payloadDumperStore = LocalPayloadDumperRuntime.current
     val magiskPatcherStore = LocalMagiskPatcherRuntime.current
     val fastbootDriverStore = LocalFastbootDriverRuntime.current
@@ -298,13 +308,6 @@ private fun LoadConfigurations(
                 adbStore.installRuntime(
                     resource(adbStore.resourceName).readBytes(),
                     adbStore.adbHostFile.absolutePath
-                )
-            }
-            run {
-                tipText.value = languageBasic.initPythonRuntime
-                pythonStore.installRuntime(
-                    resource(pythonStore.resourceName).readBytes(),
-                    pythonStore.pythonHostFile.absolutePath
                 )
             }
             run {

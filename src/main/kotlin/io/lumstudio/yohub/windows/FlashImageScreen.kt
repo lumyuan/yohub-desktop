@@ -37,7 +37,6 @@ import kotlinx.coroutines.launch
 import java.awt.FileDialog
 import java.io.File
 import java.io.FilenameFilter
-import javax.swing.JFrame
 
 @Composable
 fun FlashImageScreen(flashImagePage: FlashImagePage) {
@@ -122,18 +121,21 @@ class LinkedPage : NavPage(isNavigation = false) {
     override fun content() {
         val languageBasic = LocalLanguageType.value.lang
         val keepShellStore = LocalKeepShell.current
+        val window = LocalWindowMain.current
+
         val bootPath = remember { mutableStateOf("") }
-        val filter = remember { mutableStateOf(true) }
+        val filter = remember { mutableStateOf(false) }
+        val vab = remember { mutableStateOf(false) }
         val partitionName = remember { mutableStateOf("") }
         val partitionList = remember { mutableStateOf(ArrayList<Partition>()) }
         val flashState = remember { mutableStateOf(false) }
-        val fileDialog = remember { FileDialog(JFrame()) }
+        val fileDialog = remember { FileDialog(window) }
         val text = remember { mutableStateOf(languageBasic.flashImage) }
         var displayDialog by remember { mutableStateOf(false) }
         TargetPathEditor(bootPath, fileDialog)
         Spacer(modifier = Modifier.size(16.dp))
-        PartitionChooser(partitionName, filter, partitionList, keepShellStore)
-        loadPartition(filter, partitionList, keepShellStore)
+        PartitionChooser(partitionName, filter, partitionList, keepShellStore, vab)
+        loadPartition(filter, partitionList, keepShellStore, vab)
         Column {
             AnimatedVisibility(partitionName.value.isNotBlank() && bootPath.value.endsWith(".img") && File(bootPath.value).exists()) {
                 Column {
@@ -171,7 +173,7 @@ class LinkedPage : NavPage(isNavigation = false) {
             onConfirm = {
                 displayDialog = false
                 CoroutineScope(Dispatchers.IO).launch {
-                    flashTask(flashState, text, keepShellStore, bootPath, partitionName)
+                    flashTask(flashState, text, keepShellStore, bootPath, partitionName, filter, vab)
                 }
             },
             content = {
@@ -184,7 +186,8 @@ class LinkedPage : NavPage(isNavigation = false) {
 private fun loadPartition(
     filter: MutableState<Boolean>,
     partitionList: MutableState<ArrayList<Partition>>,
-    keepShellStore: KeepShellStore
+    keepShellStore: KeepShellStore,
+    vab: MutableState<Boolean>
 ) {
     CoroutineScope(Dispatchers.IO).launch {
         val list = ArrayList<Partition>()
@@ -196,6 +199,7 @@ private fun loadPartition(
                 val start = "partition-type:"
                 val end = ":"
                 var name = it.substring(it.indexOf(start) + start.length, it.lastIndexOf(end))
+                if (name.endsWith("_b")) vab.value = true
                 if (filter.value) {
                     if (!name.endsWith("_b")) {
                         if (name.endsWith("_a")) {
@@ -216,13 +220,21 @@ private fun flashTask(
     text: MutableState<String>,
     keepShellStore: KeepShellStore,
     bootPath: MutableState<String>,
-    partitionName: MutableState<String>
+    partitionName: MutableState<String>,
+    filter: MutableState<Boolean>,
+    vab: MutableState<Boolean>
 ) {
     val languageBasic = LocalLanguageType.value.lang
     val timeMillis = System.currentTimeMillis()
     flashState.value = true
     text.value = languageBasic.flashing
-    val out = keepShellStore fastboot "flash ${partitionName.value} \"${bootPath.value}\""
+    val cmd = "flash ${
+        //如果支持AB分区并且开启了AB分区过滤则默认把boot镜像刷入全部分区（适配Android14）
+        if (vab.value && filter.value && (partitionName.value.contains("boot"))) {
+            "${partitionName.value}_ab"
+        } else partitionName.value
+    } \"${bootPath.value}\""
+    val out = keepShellStore fastboot cmd
     val end = out.split("\n").last { it.trim().isNotEmpty() }
     if (out.uppercase().contains("OKAY") && out.contains("Finished")) {
         sendNotice(
@@ -260,7 +272,7 @@ private fun TargetPathEditor(targetPath: MutableState<String>, fileDialog: FileD
         Spacer(modifier = Modifier.size(16.dp))
         Button(
             onClick = {
-                fileDialog.filenameFilter = FilenameFilter { _, name -> name.endsWith(".img") }
+                fileDialog.file = "*.img"
                 fileDialog.mode = FileDialog.LOAD
                 fileDialog.isVisible = true
                 if (fileDialog.file?.endsWith(".img") == true) {
@@ -281,7 +293,8 @@ private fun PartitionChooser(
     partitionName: MutableState<String>,
     filter: MutableState<Boolean>,
     partitionList: MutableState<ArrayList<Partition>>,
-    keepShellStore: KeepShellStore
+    keepShellStore: KeepShellStore,
+    vab: MutableState<Boolean>
 ) {
     val languageBasic = LocalLanguageType.value.lang
     var dropdownMenuState by remember { mutableStateOf(false) }
@@ -294,21 +307,21 @@ private fun PartitionChooser(
                 String.format(languageBasic.partitionSelected, partitionName.value)
             }
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(8.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .clickable {
-                        filter.value = !filter.value
-                        loadPartition(filter, partitionList, keepShellStore)
-                    }
-            ) {
-                Checkbox(
-                    filter.value,
-                    onCheckedChange = null,
-                    enabled = false
-                )
-                Text(languageBasic.aBSlotFilter, style = MaterialTheme.typography.labelMedium)
+            if (vab.value) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.clip(RoundedCornerShape(8.dp))
+                        .clickable {
+                            filter.value = !filter.value
+                            loadPartition(filter, partitionList, keepShellStore, vab)
+                        }.padding(8.dp)
+                ) {
+                    Checkbox(
+                        filter.value,
+                        onCheckedChange = null,
+                    )
+                    Text(languageBasic.aBSlotFilter, style = MaterialTheme.typography.labelMedium)
+                }
             }
             Spacer(modifier = Modifier.size(28.dp))
             Column {

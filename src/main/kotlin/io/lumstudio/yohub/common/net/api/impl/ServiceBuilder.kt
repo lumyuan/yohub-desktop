@@ -2,8 +2,7 @@ package io.lumstudio.yohub.common.net.api.impl
 
 import io.lumstudio.yohub.common.net.api.PrivacyService
 import io.lumstudio.yohub.common.net.api.PublicService
-import io.lumstudio.yohub.common.net.factory.PrivacyApiFactory
-import io.lumstudio.yohub.common.net.factory.PublicApiFactory
+import io.lumstudio.yohub.common.net.factory.ApiFactory
 
 object ServiceBuilder {
 
@@ -19,10 +18,10 @@ object ServiceBuilder {
         baseUrlBeta
     }
 
-    fun privacyService(): PrivacyService = PrivacyApiFactory.createService(getUrl(), PrivacyService::class.java)
+    fun privacyService(): PrivacyService = ApiFactory.createService(getUrl(), PrivacyService::class.java)
 
-    fun publicService(): PublicService = PublicApiFactory.createService(getUrl(), PublicService::class.java)
+    fun publicService(): PublicService = ApiFactory.createService(getUrl(), PublicService::class.java)
 
-    fun publicService(baseUrl: String): PublicService = PublicApiFactory.createService(baseUrl, PublicService::class.java)
+    fun publicService(baseUrl: String): PublicService = ApiFactory.createService(baseUrl, PublicService::class.java)
 
 }

@@ -29,7 +29,7 @@ class ContextStore {
     val packageName: String = "YoHubDesktop"
     val rootPath: String = ".yohub-desktop"
 
-    val versionTag: String = "1.0.6"
+    val versionTag: String = "1.0.9"
 
     //缓存目录
     val rootDir by lazy {

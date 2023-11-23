@@ -13,7 +13,7 @@ import java.io.FileOutputStream
 val LocalPreferences = compositionLocalOf<PreferencesStore> { error("Not provided.") }
 
 enum class PreferencesName {
-    DARK_MODEL, COLOR_THEME, LANGUAGE, ROOT_CODE, IGNORE_VERSION
+    DARK_MODEL, COLOR_THEME, LANGUAGE, ROOT_CODE, IGNORE_VERSION, NAV_EXPANDED
 }
 
 class PreferencesStore(
