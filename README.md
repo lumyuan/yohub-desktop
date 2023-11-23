@@ -20,7 +20,7 @@
 ## 功能
 - payload提取镜像
 - Magisk专区
-  - 修补Boot（Root）
+  - 修补Boot（支持Delta）
   - Magisk管理器下载（官方版与Delta）
 - ADB专区
     - 设备状态实时监测
@@ -40,6 +40,9 @@
 ![app_screenshot_home.png](resources/md/app_screenshot_home.png)
 ![app_screenshot_adb.png](resources/md/app_screenshot_adb.png)
 ![app_screenshot_backuo_image.png](resources/md/app_screenshot_backuo_image.png)
+
+## 软件主题文件下载
+<a href="https://www.123pan.com/s/kykmjv-CyJi.html">解压后使用工具箱逐一导入即可</a>
 
 ## 讨论
 * QQ群：945339560
