@@ -650,7 +650,7 @@ class VersionSetting : NavPage(isNavigation = false) {
                                         //判断GitHub上的Release版本是否高于本地版本
                                         hasUpdate.value = contextStore.versionTag compareVersions yoHubRepos.tag_name < 0 && (preferencesStore.preference[PreferencesName.IGNORE_VERSION.toString()] != yoHubRepos.tag_name || !yoHubRepos.prerelease)
                                         if (!hasUpdate.value) {
-                                            sendNotice(languageBasic.tips, languageBasic.isLatest)
+                                            sendNotice(LocalLanguageType.value.lang.tips, LocalLanguageType.value.lang.isLatest)
                                         }
                                         richTextState.setMarkdown(yoHubRepos.body)
                                         open.value = false

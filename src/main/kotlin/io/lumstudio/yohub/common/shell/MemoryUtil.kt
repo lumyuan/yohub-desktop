@@ -1,7 +1,5 @@
 package io.lumstudio.yohub.common.shell
 
-import org.jetbrains.skiko.hostOs
-
 class MemoryUtil(private val keepShellStore: KeepShellStore) {
 
     data class MemoryInfo(

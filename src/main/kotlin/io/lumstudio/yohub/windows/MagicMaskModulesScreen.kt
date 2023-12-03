@@ -75,13 +75,6 @@ fun MagicMaskModulesScreen(magicMaskModulesPage: MagicMaskModulesPage) {
     }
 }
 
-private val magiskVersion by lazy {
-    arrayOf(
-        "Magisk-26.4",
-        "Magisk-Delta-26301"
-    )
-}
-
 @Composable
 fun MagiskPatcherScreen(magiskPatcherPage: MagiskPatcherPage) {
     val languageBasic = LocalLanguageType.value.lang
@@ -92,7 +85,12 @@ fun MagiskPatcherScreen(magiskPatcherPage: MagiskPatcherPage) {
     val targetPath = remember { mutableStateOf("") }
     val outPath = remember { mutableStateOf("") }
     val fileDialog = remember { FileDialog(window) }
-    val version = remember { mutableStateOf(magiskVersion.first()) }
+    val version = remember { mutableStateOf("") }
+    val magiskVersionFile = File(magiskPatcherStore.magiskPatcherHostFile, "prebuilt")
+
+    LaunchedEffect(Unit) {
+        version.value = magiskVersionFile.listFiles()?.first()?.name ?: ""
+    }
 
     val scrollState = rememberScrollState()
     ScrollbarContainer(
@@ -123,14 +121,14 @@ fun MagiskPatcherScreen(magiskPatcherPage: MagiskPatcherPage) {
                     expanded = open,
                     onDismissRequest = { open = false }
                 ) {
-                    magiskVersion.onEach {
+                    magiskVersionFile.listFiles()?.toList()?.sortedBy { it.name }?.onEach {
                         DropdownMenuItem(
                             text = {
-                                Text(it)
+                                Text(it.name)
                             },
                             onClick = {
                                 open = false
-                                version.value = it
+                                version.value = it.name
                             }
                         )
                     }

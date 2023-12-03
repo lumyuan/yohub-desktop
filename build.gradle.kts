@@ -75,7 +75,7 @@ compose.desktop {
 
             includeAllModules = true
 
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb, TargetFormat.Exe)
             packageName = "YoHubDesktop"
             packageVersion = "1.0.9"
 
