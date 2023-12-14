@@ -143,6 +143,9 @@ fun StartWindow() {
         LocalInstallThemesPath provides installThemesPathStore,
         LocalAndroidToolkit provides androidKitStore,
     ) {
+        val languageType = LocalLanguageType.value
+        //全局异常捕获
+        CrashHandler.init(contextStore, languageType)
         val propertyLoadState = remember { mutableStateOf(false) }
         //初始化全局配置
         InitProperties(preferencesStore, propertyLoadState)

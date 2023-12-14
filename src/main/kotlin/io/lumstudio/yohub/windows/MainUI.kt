@@ -5,6 +5,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.window.WindowDraggableArea
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.TabletAndroid
 import androidx.compose.material3.*
@@ -20,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.rememberWindowState
+import com.google.gson.Gson
 import com.konyaco.fluent.component.NavigationItemSeparator
 import com.konyaco.fluent.icons.Icons
 import com.konyaco.fluent.icons.regular.Search
@@ -32,6 +34,7 @@ import io.lumstudio.yohub.common.utils.BrandLogoUtil
 import io.lumstudio.yohub.common.utils.LocalPreferences
 import io.lumstudio.yohub.common.utils.PreferencesName
 import io.lumstudio.yohub.lang.LocalLanguageType
+import io.lumstudio.yohub.model.configurations.WindowSize
 import io.lumstudio.yohub.runtime.*
 import io.lumstudio.yohub.theme.MicaTheme
 import io.lumstudio.yohub.ui.component.LocalExpand
@@ -41,9 +44,12 @@ import io.lumstudio.yohub.ui.component.TooltipText
 import io.lumstudio.yohub.windows.navigation.NavPage
 import io.lumstudio.yohub.windows.navigation.PageNav
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import java.awt.Color
 import java.awt.Dimension
+import kotlin.math.roundToInt
 import kotlin.system.exitProcess
 
 val selectPage by lazy(mode = LazyThreadSafetyMode.SYNCHRONIZED) {
@@ -60,10 +66,36 @@ fun MainUI() {
     val keepShellStore = LocalKeepShell.current
     val ioCoroutine = LocalIOCoroutine.current
     val preferencesStore = LocalPreferences.current
+    val gson = Gson()
+    var size = DpSize(1000.dp, 750.dp)
+
+    //加载窗口大小
+    preferencesStore.preference[PreferencesName.WINDOW_SIZE.toString()]?.also {
+        try {
+            val windowSize = gson.fromJson(it, WindowSize::class.java)
+            size = DpSize(windowSize.width.dp, windowSize.height.dp)
+        }catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     val windowState = rememberWindowState(
         position = WindowPosition(Alignment.Center),
-        size = DpSize(1000.dp, 750.dp)
+        size = size
     )
+
+    //保存窗口大小
+    LaunchedEffect(windowState) {
+        snapshotFlow { windowState.size }
+            .onEach {
+                val format = Gson()
+                val json = format.toJson(WindowSize(it.width.value.roundToInt(), it.height.value.roundToInt()))
+                preferencesStore.preference[PreferencesName.WINDOW_SIZE.toString()] = json
+                preferencesStore.submit()
+            }.flowOn(Dispatchers.IO)
+            .launchIn(this)
+    }
+
     val lang = LocalLanguageType.value.lang
     Window(
         title = lang.appName,
@@ -82,6 +114,9 @@ fun MainUI() {
         ) {
             MicaTheme {
                 window.minimumSize = Dimension(800, 600)
+                val background = MaterialTheme.colorScheme.background
+                window.background = Color(background.red, background.green, background.blue)
+
                 val navs = PageNav.values().toList().filter { it.page.isNavigation }
                 val karavel by remember { mutableStateOf(Karavel(navs.first().page)) }
                 Row(modifier = Modifier.fillMaxSize()) {

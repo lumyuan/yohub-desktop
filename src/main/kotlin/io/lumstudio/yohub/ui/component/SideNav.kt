@@ -3,22 +3,33 @@ package io.lumstudio.yohub.ui.component
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
+import androidx.compose.foundation.gestures.onDrag
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import com.google.gson.Gson
 import com.konyaco.fluent.FluentTheme
 import com.konyaco.fluent.animation.FluentDuration
 import com.konyaco.fluent.animation.FluentEasing
@@ -30,6 +41,15 @@ import com.konyaco.fluent.icons.Icons
 import com.konyaco.fluent.icons.regular.ChevronDown
 import com.konyaco.fluent.icons.regular.Navigation
 import com.konyaco.fluent.icons.regular.Search
+import io.lumstudio.yohub.common.utils.LocalPreferences
+import io.lumstudio.yohub.common.utils.PreferencesName
+import io.lumstudio.yohub.lang.LocalLanguageType
+import io.lumstudio.yohub.model.configurations.NavBarWidth
+import io.lumstudio.yohub.windows.LocalWindowMain
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.awt.Cursor
 
 val LocalExpand = compositionLocalOf { false }
 private val LocalNavigationLevel = compositionLocalOf { 0 }
@@ -45,97 +65,191 @@ fun SideNav(
     footer: @Composable (() -> Unit)? = null,
     content: @Composable () -> Unit
 ) {
+    val density = LocalDensity.current
+    val preferencesStore = LocalPreferences.current
+    val minWidth = 220.dp
+    val maxWidth = 320.dp
+
+    val window = LocalWindowMain.current
+
+    val languageType = LocalLanguageType.value
+
+    val widthState = rememberSaveable {
+        mutableStateOf(320.dp)
+    }
+
+    //加载导航栏宽度
+    preferencesStore.preference[PreferencesName.NAV_BAR_WIDTH.toString()]?.also {
+        try {
+            val gson = Gson()
+            val navBarWidth = gson.fromJson(it, NavBarWidth::class.java)
+            val dp = navBarWidth.dp.dp
+            widthState.value = if (dp < minWidth) minWidth else if (dp > maxWidth) maxWidth else dp
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    var dragState by remember { mutableStateOf(false) }
+
     val width by animateDpAsState(
-        if (expanded) 320.dp else 48.dp,
-        tween(durationMillis = 400)
+        if (expanded) widthState.value else 48.dp,
+        tween(durationMillis = if (dragState) 0 else 400)
     )
 
-    Column(modifier = modifier.width(width)) {
-        Spacer(Modifier.height(8.dp))
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(horizontal = 4.dp).height(42.dp)
-        ) {
-            TooltipArea(
-                tooltipPlacement = TooltipPlacement.CursorPoint(
-                    offset = DpOffset(50.dp, 0.dp),
-                    alignment = Alignment.Center,
-                ),
-                tooltip = {
-                    TooltipText {
-                        Text(if (expanded) "关闭导航" else "打开导航")
-                    }
-                }
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Column(modifier = modifier.width(width)) {
+            Spacer(Modifier.height(8.dp))
+            val languageBasic = languageType.lang
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(horizontal = 4.dp).height(42.dp)
             ) {
-                SubtleIconButton(
-                    modifier = Modifier.padding(vertical = 4.dp).size(38.dp, 34.dp),
-                    onClick = { onExpandStateChange(!expanded) },
-                ) {
-                    Icon(Icons.Default.Navigation, "Expand")
-                }
-            }
-        }
-
-        CompositionLocalProvider(
-            LocalExpand provides expanded,
-            LocalNavigationLevel provides 0
-        ) {
-            autoSuggestionBox?.let {
                 TooltipArea(
                     tooltipPlacement = TooltipPlacement.CursorPoint(
                         offset = DpOffset(50.dp, 0.dp),
                         alignment = Alignment.Center,
                     ),
                     tooltip = {
-                        if (!expanded) {
-                            TooltipText {
-                                Text("搜索功能")
-                            }
+                        TooltipText {
+                            Text(if (expanded) languageBasic.collapseNav else languageBasic.openNav)
                         }
                     }
                 ) {
-                    Box(
-                        contentAlignment = Alignment.TopStart,
-                        modifier = Modifier
+                    SubtleIconButton(
+                        modifier = Modifier.padding(vertical = 4.dp).size(38.dp, 34.dp),
+                        onClick = { onExpandStateChange(!expanded) },
                     ) {
-                        if (expanded) {
+                        Icon(Icons.Default.Navigation, "Expand")
+                    }
+                }
+            }
+
+            CompositionLocalProvider(
+                LocalExpand provides expanded,
+                LocalNavigationLevel provides 0
+            ) {
+                autoSuggestionBox?.let {
+                    if (!expanded) {
+                        TooltipArea(
+                            tooltipPlacement = TooltipPlacement.CursorPoint(
+                                offset = DpOffset(50.dp, 0.dp),
+                                alignment = Alignment.Center,
+                            ),
+                            tooltip = {
+                                TooltipText {
+                                    Text(languageBasic.searchFuns)
+                                }
+                            }
+                        ) {
+                            Box(
+                                contentAlignment = Alignment.TopStart,
+                                modifier = Modifier
+                            ) {
+                                SideNavItem(
+                                    selected = false,
+                                    onClick = {
+                                        onExpandStateChange(true)
+                                    },
+                                    icon = {
+                                        Icon(Icons.Default.Search, null)
+                                    },
+                                    content = {}
+                                )
+                            }
+                        }
+                    } else {
+                        Box(
+                            contentAlignment = Alignment.TopStart,
+                            modifier = Modifier
+                        ) {
                             Box(modifier = Modifier.padding(horizontal = 16.dp).padding(top = 2.dp)) {
                                 it()
                             }
-                        } else {
-                            SideNavItem(
-                                selected = false,
-                                onClick = {
-                                    onExpandStateChange(true)
-                                },
-                                icon = {
-                                    Icon(Icons.Default.Search, null)
-                                },
-                                content = {}
-                            )
                         }
                     }
                 }
-            }
-            val scrollState = rememberScrollState()
-            ScrollbarContainer(
-                adapter = rememberScrollbarAdapter(scrollState),
-                modifier = Modifier.weight(1f)
-            ) {
-                Column(
-                    modifier = Modifier.fillMaxHeight().verticalScroll(scrollState).padding(
-                        bottom = 8.dp
-                    )
+                val scrollState = rememberScrollState()
+                ScrollbarContainer(
+                    adapter = rememberScrollbarAdapter(scrollState),
+                    modifier = Modifier.weight(1f)
                 ) {
-                    content()
+                    Column(
+                        modifier = Modifier.fillMaxHeight().verticalScroll(scrollState).padding(
+                            bottom = 8.dp
+                        )
+                    ) {
+                        content()
+                    }
+                }
+                footer?.let {
+                    // Divider
+                    NavigationItemSeparator(modifier = Modifier.padding(bottom = 4.dp))
+                    it()
+                    Spacer(Modifier.height(4.dp))
                 }
             }
-            footer?.let {
-                // Divider
-                NavigationItemSeparator(modifier = Modifier.padding(bottom = 4.dp))
-                it()
-                Spacer(Modifier.height(4.dp))
+        }
+
+        val color = DividerDefaults.color
+        AnimatedVisibility(expanded) {
+            Box(
+                modifier = Modifier.padding(start = 4.dp, end = 4.dp)
+                    .fillMaxHeight()
+                    .width(8.dp)
+                    .drawWithContent {
+                        val height = this.size.height
+                        this.drawRoundRect(
+                            color,
+                            topLeft = Offset(1.dp.value, 0f),
+                            size = Size(6.dp.value, height - 16.dp.value),
+                            cornerRadius = CornerRadius(4.dp.value)
+                        )
+                        this.drawContent()
+                    }
+                    .onDrag(
+                        enabled = expanded,
+                        onDragStart = {
+                            dragState = true
+                        },
+                        onDragEnd = {
+                            dragState = false
+                        }
+                    ) {
+                        val offset = (it.x / density.density).dp
+                        widthState.value += offset
+                        if (widthState.value < minWidth) {
+                            widthState.value = minWidth
+                        } else if (widthState.value > maxWidth) {
+                            widthState.value = maxWidth
+                        }
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val gson = Gson()
+                            val json = gson.toJson(NavBarWidth(widthState.value.value))
+                            preferencesStore.preference[PreferencesName.NAV_BAR_WIDTH.toString()] = json
+                            preferencesStore.submit()
+                        }
+                    }.pointerInput(Unit) {
+                        awaitPointerEventScope {
+                            while (true) {
+                                val event = awaitPointerEvent()
+                                if (expanded) {
+                                    when (event.type) {
+                                        PointerEventType.Enter -> {
+                                            window.cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
+                                        }
+
+                                        PointerEventType.Exit -> {
+                                            window.cursor = Cursor.getDefaultCursor()
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+            ) {
+
             }
         }
     }

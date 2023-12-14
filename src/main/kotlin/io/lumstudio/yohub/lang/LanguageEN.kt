@@ -245,5 +245,9 @@ object LanguageEN : LanguageBasic(
     checkVerion = "Check New Feature",
     softVersion = "App Version",
     isLatest = "Latest version",
+    appHasError = "An Error Occurred In Application",
+    openNav = "Open Nav",
+    collapseNav = "Collapse Nav",
+    searchFuns = "Search Functions",
 
 )

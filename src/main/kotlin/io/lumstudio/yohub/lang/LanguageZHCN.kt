@@ -245,4 +245,8 @@ object LanguageZHCN : LanguageBasic(
     checkVerion = "检测更新",
     softVersion = "软件版本",
     isLatest = "已是最新版",
+    appHasError = "软件发生错误",
+    openNav = "打开导航",
+    collapseNav = "关闭导航",
+    searchFuns = "搜索功能项",
 )

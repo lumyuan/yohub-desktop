@@ -54,7 +54,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="yohub-desktop.main" />
-    <orderEntry type="module" module-name="yohub-desktop.main" scope="RUNTIME" />
     <orderEntry type="library" name="Gradle: io.github.app-outlet:karavel:1.0.2" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.20" level="project" />
     <orderEntry type="library" name="Gradle: net.java.dev.jna:jna-platform:5.13.0" level="project" />

@@ -5,7 +5,9 @@ import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -77,14 +79,25 @@ fun Dialog(
                         .background(MaterialTheme.colorScheme.background)
                 ) {
                     Column(Modifier.background(MaterialTheme.colorScheme.secondaryContainer.copy(alpha = .3f))) {
-                        Column(Modifier.background(MaterialTheme.colorScheme.background).padding(24.dp).fillMaxWidth()) {
+                        Column(
+                            Modifier
+                                .background(MaterialTheme.colorScheme.background)
+                                .padding(24.dp)
+                                .fillMaxWidth()
+                                .weight(1f, fill = false)
+                        ) {
                             Text(
                                 style = MaterialTheme.typography.titleLarge,
                                 text = title,
                             )
                             Spacer(Modifier.height(12.dp))
-                            ProvideTextStyle(MaterialTheme.typography.bodySmall) {
-                                content()
+                            Column(
+                                modifier = Modifier.fillMaxWidth()
+                                    .verticalScroll(rememberScrollState())
+                            ) {
+                                ProvideTextStyle(MaterialTheme.typography.bodySmall) {
+                                    content()
+                                }
                             }
                         }
                         // Divider

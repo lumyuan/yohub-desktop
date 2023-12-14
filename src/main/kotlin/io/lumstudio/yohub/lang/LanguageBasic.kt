@@ -264,6 +264,10 @@ abstract class LanguageBasic(
     val checkVerion: String,
     val softVersion: String,
     val isLatest: String,
+    val appHasError: String,
+    val openNav: String,
+    val collapseNav: String,
+    val searchFuns: String,
 
 )
 
