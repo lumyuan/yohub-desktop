@@ -77,7 +77,7 @@ compose.desktop {
 
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb, TargetFormat.Exe)
             packageName = "YoHubDesktop"
-            packageVersion = "1.0.9"
+            packageVersion = "1.0.10"
 
             description = "YoHubTool For Desktop"
             copyright = "Copyright 2023 YoTanYun. All rights reserved."
@@ -88,7 +88,7 @@ compose.desktop {
                 perUserInstall = true
                 menuGroup = "start-menu-group"
                 upgradeUuid = "1B6938C2-AB9B-47A9-889F-C8DD2AA317A4"
-                this.shortcut = true
+                shortcut = true
                 iconFile.set(file("resources/win/icons/ic_launcher_logo.ico"))
             }
         }
