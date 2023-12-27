@@ -237,20 +237,18 @@ fun SideNav(
                                 if (expanded) {
                                     when (event.type) {
                                         PointerEventType.Enter -> {
-                                            window.cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
+                                            window.components.first().cursor = Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR)
                                         }
 
                                         PointerEventType.Exit -> {
-                                            window.cursor = Cursor.getDefaultCursor()
+                                            window.components.first().cursor = Cursor.getDefaultCursor()
                                         }
                                     }
                                 }
                             }
                         }
                     }
-            ) {
-
-            }
+            ) {}
         }
     }
 }

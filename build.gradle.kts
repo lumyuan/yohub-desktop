@@ -63,7 +63,7 @@ compose.desktop {
     application {
         mainClass = "io.lumstudio.yohub.YoHubApplicationKt"
 
-        javaHome = System.getenv("JDK_21")
+        javaHome = System.getenv("JAVA_21")
 
         buildTypes.release {
             proguard {

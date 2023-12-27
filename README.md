@@ -61,4 +61,9 @@
 本工具箱专为发烧级玩家开发并且免费使用，严禁使用本工具箱进行任何包括但不限于非法盈利或倒卖等活动，若一意孤行我司将使用法律途径进行维权，欢迎大家检举。
 - 我司监事邮箱：2205903933@qq.com
 
+## 支持一下
+<img src="resources/avatar.jpg" style="width: 60px; height: 60px; border-radius: 30px; margin-right: 4px" alt="avatar">
+<span style="font-size: 60px; margin-right: 16px">:</span>
+<a href="https://www.buymeacoffee.com/lumyuan" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
+
 LICENSE: [Apache 2.0](LICENSE)
